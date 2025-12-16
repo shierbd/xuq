@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A阶段聚类汇总 - Cluster Summary A3</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 3px solid #4CAF50;
+            padding-bottom: 10px;
+        }
+        .info {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            border-left: 4px solid #2196F3;
+        }
+        .info strong {
+            color: #1976D2;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            vertical-align: top;
+        }
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        tr:nth-child(even) {
+            background-color: #fafafa;
+        }
+        .phrase-col {
+            max-width: 300px;
+            word-wrap: break-word;
+        }
+        .example-col {
+            max-width: 400px;
+            word-wrap: break-word;
+            font-size: 13px;
+            color: #555;
+        }
+        .number-col {
+            text-align: right;
+            font-weight: bold;
+        }
+        .translate-tip {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            border-left: 4px solid #ffc107;
+        }
+        .translate-tip strong {
+            color: #ff9800;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>A阶段聚类汇总 - Cluster Summary A3</h1>
+
+        <div class="info">
+            <strong>文件信息：</strong><br>
+            文件：cluster_summary_A3.csv<br>
+            数据行数：64 (共 64 条)<br>
+            列数：11
+        </div>
+
+        <div class="translate-tip">
+            <strong>如何翻译此页面：</strong><br>
+            • <strong>Chrome浏览器</strong>：右键点击页面 → 选择"翻译为中文"<br>
+            • <strong>Edge浏览器</strong>：右键点击页面 → 选择"翻译"<br>
+            • <strong>Firefox浏览器</strong>：安装"To Google Translate"扩展<br>
+            • 或者复制文本到 Google翻译/DeepL 进行翻译
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>cluster_id_A</th>
+                    <th>cluster_size</th>
+                    <th>total_frequency</th>
+                    <th>avg_frequency</th>
+                    <th>seed_words_in_cluster</th>
+                    <th>total_search_volume</th>
+                    <th>avg_search_volume</th>
+                    <th>example_phrases</th>
+                    <th>avg_word_count</th>
+                    <th>question_ratio</th>
+                    <th>noise_flag</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="number-col">42.00</td>
+                    <td class="number-col">502.00</td>
+                    <td class="number-col">502.00</td>
+                    <td class="number-col">1</td>
+                    <td>code</td>
+                    <td class="number-col">17,257,200.00</td>
+                    <td class="number-col">34,376.89</td>
+                    <td class="phrase-col">00989 area code; 202 telephone code; 203 area code; 205 area code; 206 telephone code</td>
+                    <td class="number-col">3.41</td>
+                    <td class="number-col">0.02</td>
+                    <td class="number-col">0.00</td>
+                </tr>
+                <tr>
+                    <td class="number-col">39.00</td>
+                    <td class="number-col">306.00</td>
+                    <td class="number-col">309.00</td>
+                    <td class="number-col">1.01</td>
+                    <td>Best,builder,code,pattern,style</td>
+                    <td class="number-col">3,212,200.00</td>
+                    <td class="number-col">10,497.39</td>
+                    <td class="phrase-col">best buy coupon code; build a bear promo code; northern tool promo code; 32 degrees discount code; abercrombie & fitch coupons and promo codes</td>
+                    <td class="number-col">3.47</td>
+                    <td class="number-col">0</td>
+                    <td class="number-col">0.00</td>
+                </tr>
+                <tr>
+                    <td class="number-col">35.00</td>
+                    <td class="number-col">92.00</td>
+                    <td class="number-col">96.00</td>
+                    <td class="number-col">1.04</td>
+                    <td>Best,How-to,maker,style,top</td>
+                    <td class="number-col">885,700.00</td>
+                    <td class="number-col">9,627.17</td>
+                    <td class="phrase-col">how to cook top sirloin steak; how to make a soft boiled egg; how to make over easy eggs; how to make ribs in the oven; beef cuts best</td>
+                    <td class="number-col">5.58</td>
+                    <td class="number-col">0.84</td>
+                    <td class="number-col">0.00</td>
+                </tr>
+                <tr>
+                    <td class="number-col">56.00</td>
+                    <td class="number-col">79.00</td>
+                    <td class="number-col">79.00</td>
+                    <td class="number-col">1</td>
+                    <td>Best,ideas</td>
+                    <td class="number-col">748,300.00</td>
+                    <td class="number-col">9,472.15</td>
+                    <td class="phrase-col">50 best restaurants in the world; best accommodation hawaii; best beaches in california; best beaches in costa rica; best beaches in florida</td>
+                    <td class="number-col">4.48</td>
+                    <td class="number-col">0</td>
+                    <td class="number-col">0.00</td>
+                </tr>
+                <tr>
+                    <td class="number-col">54.00</td>
+                    <td class="number-col">77.00</td>
+                    <td class="number-col">77.00</td>
+                    <td class="number-col">1</td>
+                    <td>Best,How-to,face,ideas,style,top</td>
+                    <td class="number-col">661,400.00</td>
+                    <td class="number-col">8,589.61</td>
+                    <td class="phrase-col">beard beard styles; beard styles men; best beard trimmers for men; best clarifying shampoo; best concealer for mature skin</td>
+                    <td class="number-col">4.16</td>
+                    <td class="number-col">0.03</td>
+                    <td class="number-col">0.00</td>
+                </tr>
+                <tr>
+                    <td class="number-col">14.00</td>
+                    <td class="number-col">71.00</td>
+                    <td class="number-col">74.00</td>
+                    <td class="number-col">1.04</td>
+                    <td>How-to,anime,assistant,maker,starter</td>
+                    <td class="number-col">807,400.00</td>
+                    <td class="number-col">11,371.83</td>
+                    <td class="phrase-col">how much do dental assistants make; how much does a medical assistant make; how to become an anesthesiologist assistant; administrative assistant; administrative assistant job description</td>
+                    <td class="number-col">4.10</td>
+                    <td class="number-col">0.23</td>
+                    <td class="number-col">0.00</td>
+                </tr>
+                <tr>
+                    <td class="number-col">22.00</td>
+                    <td class="number-col">61.00</td>
+                    <td class="number-col">61.00</td>
+                    <td class="number-col">1</td>
+                    <td>logo</td>
+                    <td class="number-col">570,200.00</td>
+                    <td class="number-col">9,347.54</td>
+                    <td class="phrase-col">alfa romeo logo; alligator logo; army logo; astros logo; atlanta falcons logo</td>
+                    <td class="number-col">2.48</td>
+                    <td class="number-col">0</td>
+                    <td class="number-col">0.00</td>
+                </tr>
+                <tr>
+                    <td class="number-col">23.00</td>
+                    <td class="number-col">58.00</td>
+                    <td class="number-col">58.00</td>
+                    <td class="number-col">1</td>
+                    <td>calculator</td>
+                    <td class="number-col">614,400.00</td>
+                    <td class="number-col">10,593.10</td>
+                    <td class="phrase-col">401k loan calculator; asphalt calculator; auto calculator loan; auto finance calculator online; auto financing calculator</td>
+                    <td class="number-col">3.10</td>
+                    <td class="number-col">0</td>
+                    <td class="number-col">0.00</td>
+                </tr>
+                <tr>
+                    <td class="number-col">7.00</td>
+                    <td class="number-col">57.00</td>
+                    <td class="number-col">57.00</td>
+                    <td class="number-col">1</td>
+                    <td>tester</td>
+                    <td class="number-col">889,800.00</td>
+                    <td class="number-col">15,610.53</td>
+                    <td class="phrase-col">albumin blood test; alkaline phosphatase blood test; ase practice test; ast blood test; bloodwork ck test</td>
+                    <td class="number-col">4.04</td>
+                    <td class="number-col">0.07</td>
+                    <td class="number-col">0.00</td>
+                </tr>
+                <tr>
+                    <td class="number-col">51.00</td>
+                    <td class="number-col">49.00</td>
+                    <td class="number-col">49.00</td>
+                    <td class="number-col">1</td>
+                    <td>top</td>
+                    <td class="number-col">532,600.00</td>
+                    <td class="number-col">10,869.39</td>
+                    <td class="phrase-col">black corset top; black halter top; black lace top; black tank top; black top</td>
+                    <td class="number-col">2.69</td>
+                    <td class="number-col">0</td>
+                    <td class="number-col">0.00</td>
+                </tr>
+                <tr>
+                    <td class="number-col">61.00</td>
+                    <td class="number-col">48.00</td>
+                    <td class="number-col">49.00</td>
+                    <td class="number-col">1.02</td>
+                    <td>Best,builder,designer,ideas</td>
+                    <td class="number-col">557,400.00</td>
+                    <td class="number-col">11,612.50</td>
+                    <td class="phrase-col">fingernail design ideas for short nails; acrylic designs for nails; acrylic nail designs; acrylic nail ideas; best gel nail polish</td>
+                    <td class="number-col">3.58</td>
+                    <td class="number-col">0</td>
+                    <td class="number-col">0.00</td>
+                </tr>
+                <tr>
+                    <td class="number-col">1.00</td>
+                    <td class="number-col">47.00</td>
+                    <td class="number-col">47.00</td>
+                    <td class="number-col">1</td>
+                    <td>starter</td>
+                    <td class="number-col">379,800.00</td>
+                    <td class="number-col">8,080.85</td>
+                    <td class="phrase-col">adjectives starting with ag; adjectives starting with ay; adjectives that start with a; adjectives that start with b; adjectives that start with c</td>
+                    <td class="number-col">5.11</td>
+                    <td class="number-col">0</td>
+                    <td class="number-col">0.00</td>
+                </tr>
+                <tr>
+                    <td class="number-col">29.00</td>
+                    <td class="number-col">46.00</td>
+                    <td class="number-col">47.00</td>
+                    <td class="number-col">1.02</td>
+                    <td>Best,How-to,finder,model,video,viewer</td>
+                    <td class="number-col">774,900.00</td>
+                    <td class="number-col">16,845.65</td>
+                    <td class="phrase-col">how to download instagram videos; best nudes; best of the best porn; best pornographic videos; best sex videos</td>
+                    <td class="number-col">3.28</td>
+                    <td class="number-col">0.09</td>
+                    <td class="number-col">0.00</td>
+                </tr>
+                <tr>
+                    <td class="number-col">34.00</td>
+                    <td class="number-col">45.00</td>
+                    <td class="number-col">45.00</td>
+                    <td class="number-col">1</td>
+                    <td>Best,tool</td>
+                    <td class="number-col">475,000.00</td>
+                    <td class="number-col">10,555.56</td>
+                    <td class="phrase-col">bag tool bag; best backpack; construction tools; craftman tool box; dewalt tool box</td>
+                    <td class="number-col">3.09</td>
+                    <td class="number-col">0</td>
+                    <td class="number-col">0.00</td>
+                </tr>
+                <tr>
+                    <td class="number-col">49.00</td>
+                    <td class="number-col">39.00</td>
+                    <td class="number-col">42.00</td>
+                    <td class="number-col">1.08</td>
+                    <td>Best,How-to,maker,top</td>
+                    <td class="number-col">587,200.00</td>
+                    <td class="number-col">15,056.41</td>
+                    <td class="phrase-col">best keurig coffee maker; how to clean a coffee maker; how to clean coffee maker; best oven cleaner; best shower head</td>
+                    <td class="number-col">5.10</td>
+                    <td class="number-col">0.82</td>
+                    <td class="number-col">0.00</td>
+                </tr>
+                <tr>
+                    <td class="number-col">58.00</td>
+                    <td class="number-col">41.00</td>
+                    <td class="number-col">42.00</td>
+                    <td class="number-col">1.02</td>
+                    <td>Best,anime,designer,face,ideas,style</td>
+                    <td class="number-col">405,700.00</td>
+                    <td class="number-col">9,895.12</td>
+                    <td class="phrase-col">best friend tattoo ideas; anime tattoos; best friend tattoos; chest tattoo ideas for guys; couple tattoo ideas</td>
+                    <td class="number-col">3.34</td>
+                    <td class="number-col">0</td>
+                    <td class="number-col">0.00</td>
+                </tr>
+                <tr>
+                    <td class="number-col">19.00</td>
+                    <td class="number-col">40.00</td>
+                    <td class="number-col">41.00</td>
+                    <td class="number-col">1.02</td>
+                    <td>Best,anime</td>
+                    <td class="number-col">411,600.00</td>
+                    <td class="number-col">10,290</td>
+                    <td class="phrase-col">best video games; animal crossing amiibo cards; animal crossing characters; animal crossing gamecube; animal crossing games</td>
+                    <td class="number-col">3.45</td>
+                    <td class="number-col">0</td>
+                    <td class="number-col">0.00</td>
+                </tr>
+                <tr>
+                    <td class="number-col">28.00</td>
+                    <td class="number-col">33.00</td>
+                    <td class="number-col">39.00</td>
+                    <td class="number-col">1.18</td>
+                    <td>Best,How-to,maker,top</td>
+                    <td class="number-col">339,500.00</td>
+                    <td class="number-col">10,287.88</td>
+                    <td class="phrase-col">how to make bbq sauce with bbq sauce; how to make big mac sauce; how to make cocktail sauce; how to make honey and mustard sauce; how to make vodka sauce</td>
+                    <td class="number-col">3.64</td>
+                    <td class="number-col">0.24</td>
+                    <td class="number-col">0.00</td>
+                </tr>
+                <tr>
+                    <td class="number-col">46.00</td>
+                    <td class="number-col">37.00</td>
+                    <td class="number-col">37.00</td>
+                    <td class="number-col">1</td>
+                    <td>code</td>
+                    <td class="number-col">381,300.00</td>
+                    <td class="number-col">10,305.41</td>
+                    <td class="phrase-col">california state zip code; california zip code; code zip california; code zip las vegas; code zip san francisco</td>
+                    <td class="number-col">4.89</td>
+                    <td class="number-col">0</td>
+                    <td class="number-col">0.00</td>
+                </tr>
+                <tr>
+                    <td class="number-col">48.00</td>
+                    <td class="number-col">36.00</td>
+                    <td class="number-col">37.00</td>
+                    <td class="number-col">1.03</td>
+                    <td>How-to,anime,builder,maker,pattern,top</td>
+                    <td class="number-col">334,000.00</td>
+                    <td class="number-col">9,277.78</td>
+                    <td class="phrase-col">how to make a bow out of ribbon; animal toys; axolotl stuffed animal; creature stuffed animals; crochet animals</td>
+                    <td class="number-col">3.78</td>
+                    <td class="number-col">0.19</td>
+                    <td class="number-col">0.00</td>
+                </tr>
+                <tr>
+                    <td class="number-col">60.00</td>
+                    <td class="number-col">37.00</td>
+                    <td class="number-col">37.00</td>
+                    <td class="number-col">1</td>
+                    <td>How-to,ideas,tool</td>
+                    <td class="number-col">406,400.00</td>
+                    <td class="number-col">10,983.78</td>
+                    <td class="phrase-col">18th birthday ideas; 21st birthday ideas; 30th birthday ideas; 50th birthday party ideas; 60th birthday gift ideas</td>
+                    <td class="number-col">3.35</td>
+                    <td class="number-col">0.03</td>
+                    <td class="number-col">0.00</td>
+                </tr>
+                <tr>
+                    <td class="number-col">38.00</td>
+                    <td class="number-col">29.00</td>
+                    <td class="number-col">35.00</td>
+                    <td class="number-col">1.21</td>
+                    <td>Best,How-to,action,maker,tool</td>
+                    <td class="number-col">325,700.00</td>
+                    <td class="number-col">11,231.03</td>
+                    <td class="phrase-col">best countertop ice maker; best ice maker; best nugget ice maker; how to make creamed corn; how to make ice cream in gag</td>
+                    <td class="number-col">4.24</td>
+                    <td class="number-col">0.24</td>
+                    <td class="number-col">0.00</td>
+                </tr>
+                <tr>
+                    <td class="number-col">57.00</td>
+                    <td class="number-col">33.00</td>
+                    <td class="number-col">35.00</td>
+                    <td class="number-col">1.06</td>
+                    <td>anime</td>
+                    <td class="number-col">500,100.00</td>
+                    <td class="number-col">15,154.55</td>
+                    <td class="phrase-col">best anime sites; how to draw anime; 123 anime; 4 anime; anime and movies</td>
+                    <td class="number-col">2.45</td>
+                    <td class="number-col">0.03</td>
+                    <td class="number-col">0.00</td>
+                </tr>
+                <tr>
+                    <td class="number-col">18.00</td>
+                    <td class="number-col">32.00</td>
+                    <td class="number-col">32.00</td>
+                    <td class="number-col">1</td>
+                    <td>Best,How-to,translator</td>
+                    <td class="number-col">350,300.00</td>
+                    <td class="number-col">10,946.88</td>
+                    <td class="phrase-col">best vietnamese food near me; creole translation in english; creole translator; english for translators; english to creole translation</td>
+                    <td class="number-col">4.25</td>
+                    <td class="number-col">0.16</td>
+                    <td class="number-col">0.00</td>
+                </tr>
+                <tr>
+                    <td class="number-col">44.00</td>
+                    <td class="number-col">32.00</td>
+                    <td class="number-col">32.00</td>
+                    <td class="number-col">1</td>
+                    <td>code</td>
+                    <td class="number-col">308,700.00</td>
+                    <td class="number-col">9,646.88</td>
+                    <td class="phrase-col">chicago il usa zip code; chicago illinois address zip codes; chicago us zip code; columbia sc zip code; columbia zip code</td>
+                    <td class="number-col">4.66</td>
+                    <td class="number-col">0</td>
+                    <td class="number-col">0.00</td>
+                </tr>
+                <tr>
+                    <td class="number-col">45.00</td>
+                    <td class="number-col">26.00</td>
+                    <td class="number-col">26.00</td>
+                    <td class="number-col">1</td>
+                    <td>Best,How-to,builder,ideas</td>
+                    <td class="number-col">214,700.00</td>
+                    <td class="number-col">8,257.69</td>
+                    <td class="phrase-col">above ground pool deck ideas; best above ground pool; best above ground pools; best car vacuum; best clash royale deck</td>
+                    <td class="number-col">4.27</td>
+                    <td class="number-col">0.19</td>
+                    <td class="number-col">0.00</td>
+                </tr>
+                <tr>
+                    <td class="number-col">11.00</td>
+                    <td class="number-col">23.00</td>
+                    <td class="number-col">24.00</td>
+                    <td class="number-col">1.04</td>
+                    <td>Best,generator</td>
+                    <td class="number-col">448,000.00</td>
+                    <td class="number-col">19,478.26</td>
+                    <td class="phrase-col">best solar generator; 50 amp generator; dual fuel generator; gas in generator; generac generator</td>
+                    <td class="number-col">2.83</td>
+                    <td class="number-col">0.04</td>
+                    <td class="number-col">0.00</td>
+                </tr>
+                <tr>
+                    <td class="number-col">17.00</td>
+                    <td class="number-col">22.00</td>
+                    <td class="number-col">24.00</td>
+                    <td class="number-col">1.09</td>
+                    <td>How-to,calculator,figure,finder,tool</td>
+                    <td class="number-col">2,156,200.00</td>
+                    <td class="number-col">98,009.09</td>
+                    <td class="phrase-col">how to calculate ring size; circle area calculator; how do you figure out the size of a ring; how often to change tires; how often to rotate tires</td>
+                    <td class="number-col">5.23</td>
+                    <td class="number-col">0.82</td>
+                    <td class="number-col">0.00</td>
+                </tr>
+                <tr>
+                    <td class="number-col">41.00</td>
+                    <td class="number-col">24.00</td>
+                    <td class="number-col">24.00</td>
+                    <td class="number-col">1</td>
+                    <td>code,top</td>
+                    <td class="number-col">225,100.00</td>
+                    <td class="number-col">9,379.17</td>
+                    <td class="phrase-col">american cape cod homes; atlantic cod; autocamp cape cod; burger toppings; cape cod cape</td>
+                    <td class="number-col">2.96</td>
+                    <td class="number-col">0</td>
+                    <td class="number-col">0.00</td>
+                </tr>
+                <tr>
+                    <td class="number-col">53.00</td>
+                    <td class="number-col">22.00</td>
+                    <td class="number-col">23.00</td>
+                    <td class="number-col">1.05</td>
+                    <td>Best,ideas</td>
+                    <td class="number-col">220,600.00</td>
+                    <td class="number-col">10,027.27</td>
+                    <td class="phrase-col">best first date ideas; anniversary ideas; at home date night ideas; best gift in graduation; best wedding gifts</td>
+                    <td class="number-col">3.64</td>
+                    <td class="number-col">0</td>
+                    <td class="number-col">0.00</td>
+                </tr>
+                <tr>
+                    <td class="number-col">59.00</td>
+                    <td class="number-col">15.00</td>
+                    <td class="number-col">23.00</td>
+                    <td class="number-col">1.53</td>
+                    <td>action,face</td>
+                    <td class="number-col">178,100.00</td>
+                    <td class="number-col">11,873.33</td>
+                    <td class="phrase-col">batman action figures; godzilla action figures; marvel action figures; spider man action figure; spider man action figures</td>
+                    <td class="number-col">3.07</td>
+                    <td class="number-col">0</td>
+                    <td class="number-col">0.00</td>
+                </tr>
+                <tr>
+                    <td class="number-col">30.00</td>
+                    <td class="number-col">22.00</td>
+                    <td class="number-col">22.00</td>
+                    <td class="number-col">1</td>
+                    <td>Best,How-to</td>
+                    <td class="number-col">230,300.00</td>
+                    <td class="number-col">10,468.18</td>
+                    <td class="phrase-col">best bait for mouse traps; best way to get rid of mice; best way to get rid of roaches; how to get rid of bats; how to get rid of bees</td>
+                    <td class="number-col">6.91</td>
+                    <td class="number-col">0.86</td>
+                    <td class="number-col">0.00</td>
+                </tr>
+                <tr>
+                    <td class="number-col">52.00</td>
+                    <td class="number-col">21.00</td>
+                    <td class="number-col">21.00</td>
+                    <td class="number-col">1</td>
+                    <td>Best,top</td>
+                    <td class="number-col">184,400.00</td>
+                    <td class="number-col">8,780.95</td>
+                    <td class="phrase-col">best cross training shoes; best golf shoes; best hiking boots; best hiking shoes; best lifting shoes</td>
+                    <td class="number-col">3.90</td>
+                    <td class="number-col">0</td>
+                    <td class="number-col">0.00</td>
+                </tr>
+                <tr>
+                    <td class="number-col">62.00</td>
+                    <td class="number-col">21.00</td>
+                    <td class="number-col">21.00</td>
+                    <td class="number-col">1</td>
+                    <td>How-to</td>
+                    <td class="number-col">193,200.00</td>
+                    <td class="number-col">9,200</td>
+                    <td class="phrase-col">how to dissolve super glue; how to get gel nail polish off; how to get nail glue off skin; how to get nail polish out of clothes; how to get super glue off fingers</td>
+                    <td class="number-col">6.67</td>
+                    <td class="number-col">1</td>
+                    <td class="number-col">0.00</td>
+                </tr>
+                <tr>
+                    <td class="number-col">5.00</td>
+                    <td class="number-col">15.00</td>
+                    <td class="number-col">20.00</td>
+                    <td class="number-col">1.33</td>
+                    <td>How-to,finder,starter</td>
+                    <td class="number-col">209,800.00</td>
+                    <td class="number-col">13,986.67</td>
+                    <td class="phrase-col">how to disable find my iphone; how to find hidden apps on iphone; how to start in safe mode; how to turn off find my iphone; logging into find my iphone</td>
+                    <td class="number-col">6.47</td>
+                    <td class="number-col">0.93</td>
+                    <td class="number-col">0.00</td>
+                </tr>
+                <tr>
+                    <td class="number-col">13.00</td>
+                    <td class="number-col">18.00</td>
+                    <td class="number-col">20.00</td>
+                    <td class="number-col">1.11</td>
+                    <td>How-to,tester</td>
+                    <td class="number-col">198,200.00</td>
+                    <td class="number-col">11,011.11</td>
+                    <td class="phrase-col">how to test alternator; how to test car battery; battery load tester; battery tester; how to change airtag battery</td>
+                    <td class="number-col">4.22</td>
+                    <td class="number-col">0.61</td>
+                    <td class="number-col">0.00</td>
+                </tr>
+                <tr>
+                    <td class="number-col">31.00</td>
+                    <td class="number-col">18.00</td>
+                    <td class="number-col">20.00</td>
+                    <td class="number-col">1.11</td>
+                    <td>Best,song,top</td>
+                    <td class="number-col">204,700.00</td>
+                    <td class="number-col">11,372.22</td>
+                    <td class="phrase-col">top christian songs; top christmas songs; best christmas movies of all time; best hallmark christmas movies; christian christmas songs</td>
+                    <td class="number-col">3.50</td>
+                    <td class="number-col">0</td>
+                    <td class="number-col">0.00</td>
+                </tr>
+                <tr>
+                    <td class="number-col">2.00</td>
+                    <td class="number-col">19.00</td>
+                    <td class="number-col">19.00</td>
+                    <td class="number-col">1</td>
+                    <td>How-to,builder,example,generator,helper</td>
+                    <td class="number-col">161,400.00</td>
+                    <td class="number-col">8,494.74</td>
+                    <td class="phrase-col">build a sign; email signature examples; email signature generator; gmail generator; handwritten signature generator</td>
+                    <td class="number-col">4.74</td>
+                    <td class="number-col">0.63</td>
+                    <td class="number-col">0.00</td>
+                </tr>
+                <tr>
+                    <td class="number-col">37.00</td>
+                    <td class="number-col">17.00</td>
+                    <td class="number-col">19.00</td>
+                    <td class="number-col">1.12</td>
+                    <td>anime,video</td>
+                    <td class="number-col">288,500.00</td>
+                    <td class="number-col">16,970.59</td>
+                    <td class="phrase-col">funny animal videos; videos funny animal videos; cat video; cat videos for cats; dog videos</td>
+                    <td class="number-col">3.53</td>
+                    <td class="number-col">0</td>
+                    <td class="number-col">0.00</td>
+                </tr>
+                <tr>
+                    <td class="number-col">40.00</td>
+                    <td class="number-col">19.00</td>
+                    <td class="number-col">19.00</td>
+                    <td class="number-col">1</td>
+                    <td>Best,face,top</td>
+                    <td class="number-col">227,500.00</td>
+                    <td class="number-col">11,973.68</td>
+                    <td class="phrase-col">best bed for back pain; best bed for side sleepers; best crib mattress; best firm mattress; best inexpensive mattress</td>
+                    <td class="number-col">4.42</td>
+                    <td class="number-col">0</td>
+                    <td class="number-col">0.00</td>
+                </tr>
+                <tr>
+                    <td class="number-col">10.00</td>
+                    <td class="number-col">18.00</td>
+                    <td class="number-col">18.00</td>
+                    <td class="number-col">1</td>
+                    <td>How-to</td>
+                    <td class="number-col">162,900.00</td>
+                    <td class="number-col">9,050</td>
+                    <td class="phrase-col">how to cut a bell pepper; how to cut a cantaloupe; how to cut a kiwi; how to cut a papaya; how to cut a watermelon</td>
+                    <td class="number-col">5.67</td>
+                    <td class="number-col">1</td>
+                    <td class="number-col">0.00</td>
+                </tr>
+                <tr>
+                    <td class="number-col">24.00</td>
+                    <td class="number-col">15.00</td>
+                    <td class="number-col">18.00</td>
+                    <td class="number-col">1.20</td>
+                    <td>calculator,figure</td>
+                    <td class="number-col">290,000.00</td>
+                    <td class="number-col">19,333.33</td>
+                    <td class="phrase-col">how to calculate a percentage increase of a percentage; how to calculate percent increase; abv calculator; act calculator; act score calculator</td>
+                    <td class="number-col">3.20</td>
+                    <td class="number-col">0.20</td>
+                    <td class="number-col">0.00</td>
+                </tr>
+                <tr>
+                    <td class="number-col">27.00</td>
+                    <td class="number-col">18.00</td>
+                    <td class="number-col">18.00</td>
+                    <td class="number-col">1</td>
+                    <td>model</td>
+                    <td class="number-col">192,600.00</td>
+                    <td class="number-col">10,700</td>
+                    <td class="phrase-col">acura suv models; buick suv models; cadillac suv models; chevrolet suv models; chevy suv models</td>
+                    <td class="number-col">3.06</td>
+                    <td class="number-col">0</td>
+                    <td class="number-col">0.00</td>
+                </tr>
+                <tr>
+                    <td class="number-col">21.00</td>
+                    <td class="number-col">15.00</td>
+                    <td class="number-col">17.00</td>
+                    <td class="number-col">1.13</td>
+                    <td>Best,calculator,starter,tester</td>
+                    <td class="number-col">153,800.00</td>
+                    <td class="number-col">10,253.33</td>
+                    <td class="phrase-col">pregnancy test calculator; when is the best time to take a pregnancy test; conception indicator test; digital pregnancy test; dollar tree pregnancy test</td>
+                    <td class="number-col">4.60</td>
+                    <td class="number-col">0.40</td>
+                    <td class="number-col">0.00</td>
+                </tr>
+                <tr>
+                    <td class="number-col">33.00</td>
+                    <td class="number-col">13.00</td>
+                    <td class="number-col">17.00</td>
+                    <td class="number-col">1.31</td>
+                    <td>song,style</td>
+                    <td class="number-col">132,100.00</td>
+                    <td class="number-col">10,161.54</td>
+                    <td class="phrase-col">top 100 90s songs; top 100 songs of the 70s; top 80s songs; top 90s songs; 80's songs</td>
+                    <td class="number-col">3</td>
+                    <td class="number-col">0</td>
+                    <td class="number-col">0.00</td>
+                </tr>
+                <tr>
+                    <td class="number-col">55.00</td>
+                    <td class="number-col">15.00</td>
+                    <td class="number-col">17.00</td>
+                    <td class="number-col">1.13</td>
+                    <td>Best,face</td>
+                    <td class="number-col">142,100.00</td>
+                    <td class="number-col">9,473.33</td>
+                    <td class="phrase-col">best face wash; best face wash for men; best body lotion; best body lotion for dry skin; best face wash for oily skin</td>
+                    <td class="number-col">4.07</td>
+                    <td class="number-col">0</td>
+                    <td class="number-col">0.00</td>
+                </tr>
+                <tr>
+                    <td class="number-col">25.00</td>
+                    <td class="number-col">16.00</td>
+                    <td class="number-col">16.00</td>
+                    <td class="number-col">1</td>
+                    <td>song</td>
+                    <td class="number-col">126,200.00</td>
+                    <td class="number-col">7,887.50</td>
+                    <td class="phrase-col">electronic wedding songs; father daughter wedding songs; first dance songs; first dance wedding songs; introduction of bridal party songs</td>
+                    <td class="number-col">4.19</td>
+                    <td class="number-col">0</td>
+                    <td class="number-col">0.00</td>
+                </tr>
+                <tr>
+                    <td class="number-col">26.00</td>
+                    <td class="number-col">16.00</td>
+                    <td class="number-col">16.00</td>
+                    <td class="number-col">1</td>
+                    <td>Best</td>
+                    <td class="number-col">209,800.00</td>
+                    <td class="number-col">13,112.50</td>
+                    <td class="phrase-col">best 3 row suv; best 3rd row suv; best car for miles to the gallon; best car with good mileage; best family suv</td>
+                    <td class="number-col">4.06</td>
+                    <td class="number-col">0</td>
+                    <td class="number-col">0.00</td>
+                </tr>
+                <tr>
+                    <td class="number-col">0.00</td>
+                    <td class="number-col">14.00</td>
+                    <td class="number-col">15.00</td>
+                    <td class="number-col">1.07</td>
+                    <td>action,code</td>
+                    <td class="number-col">123,300.00</td>
+                    <td class="number-col">8,807.14</td>
+                    <td class="phrase-col">top class action lawsuits; balancing and settlement code; capital one class action lawsuit; capital one class action settlement; class action lawsuit no proof</td>
+                    <td class="number-col">4.93</td>
+                    <td class="number-col">0.07</td>
+                    <td class="number-col">0.00</td>
+                </tr>
+                <tr>
+                    <td class="number-col">32.00</td>
+                    <td class="number-col">13.00</td>
+                    <td class="number-col">15.00</td>
+                    <td class="number-col">1.15</td>
+                    <td>Best,song</td>
+                    <td class="number-col">144,200.00</td>
+                    <td class="number-col">11,092.31</td>
+                    <td class="phrase-col">best karaoke songs for women; top karaoke songs; 100 greatest karaoke songs album songs; duet karaoke songs; easiest guitar songs</td>
+                    <td class="number-col">3.85</td>
+                    <td class="number-col">0</td>
+                    <td class="number-col">0.00</td>
+                </tr>
+                <tr>
+                    <td class="number-col">36.00</td>
+                    <td class="number-col">15.00</td>
+                    <td class="number-col">15.00</td>
+                    <td class="number-col">1</td>
+                    <td>top</td>
+                    <td class="number-col">123,500.00</td>
+                    <td class="number-col">8,233.33</td>
+                    <td class="phrase-col">top flite golf clubs; top golf alpharetta; top golf auburn hills; top golf dallas; top golf el segundo</td>
+                    <td class="number-col">3.60</td>
+                    <td class="number-col">0</td>
+                    <td class="number-col">0.00</td>
+                </tr>
+                <tr>
+                    <td class="number-col">3.00</td>
+                    <td class="number-col">13.00</td>
+                    <td class="number-col">14.00</td>
+                    <td class="number-col">1.08</td>
+                    <td>code</td>
+                    <td class="number-col">127,100.00</td>
+                    <td class="number-col">9,776.92</td>
+                    <td class="phrase-col">find codes for rca universal remote; code rca remote; ge remote codes; ge universal remote codes; general electric universal remote codes</td>
+                    <td class="number-col">4.46</td>
+                    <td class="number-col">0</td>
+                    <td class="number-col">0.00</td>
+                </tr>
+                <tr>
+                    <td class="number-col">4.00</td>
+                    <td class="number-col">13.00</td>
+                    <td class="number-col">14.00</td>
+                    <td class="number-col">1.08</td>
+                    <td>Best,How-to,finder,maker,model,top</td>
+                    <td class="number-col">130,300.00</td>
+                    <td class="number-col">10,023.08</td>
+                    <td class="phrase-col">how to make money in one hour; best free onlyfans; best only fans; best onlyfans; how to make money as a teenager</td>
+                    <td class="number-col">3.46</td>
+                    <td class="number-col">0.23</td>
+                    <td class="number-col">0.00</td>
+                </tr>
+                <tr>
+                    <td class="number-col">6.00</td>
+                    <td class="number-col">13.00</td>
+                    <td class="number-col">14.00</td>
+                    <td class="number-col">1.08</td>
+                    <td>answer,finder,tester</td>
+                    <td class="number-col">122,700.00</td>
+                    <td class="number-col">9,438.46</td>
+                    <td class="phrase-col">ar test answers; acc reader book finder; accelerated reader book finder; aces assessment test; aces test</td>
+                    <td class="number-col">3.31</td>
+                    <td class="number-col">0</td>
+                    <td class="number-col">0.00</td>
+                </tr>
+                <tr>
+                    <td class="number-col">8.00</td>
+                    <td class="number-col">14.00</td>
+                    <td class="number-col">14.00</td>
+                    <td class="number-col">1</td>
+                    <td>How-to,example,format,template</td>
+                    <td class="number-col">183,500.00</td>
+                    <td class="number-col">13,107.14</td>
+                    <td class="phrase-col">annotated bibliography apa format; apa annotated bibliography template; apa format title page; apa research paper example; apa title page example</td>
+                    <td class="number-col">4</td>
+                    <td class="number-col">0.14</td>
+                    <td class="number-col">0.00</td>
+                </tr>
+                <tr>
+                    <td class="number-col">16.00</td>
+                    <td class="number-col">14.00</td>
+                    <td class="number-col">14.00</td>
+                    <td class="number-col">1</td>
+                    <td>How-to</td>
+                    <td class="number-col">137,600.00</td>
+                    <td class="number-col">9,828.57</td>
+                    <td class="phrase-col">how to cultivate onion; how to cut onions without crying; how to dice an onion; how to grow cilantro; how to grow garlic</td>
+                    <td class="number-col">4.50</td>
+                    <td class="number-col">1</td>
+                    <td class="number-col">0.00</td>
+                </tr>
+                <tr>
+                    <td class="number-col">20.00</td>
+                    <td class="number-col">14.00</td>
+                    <td class="number-col">14.00</td>
+                    <td class="number-col">1</td>
+                    <td>How-to,calculator,maker</td>
+                    <td class="number-col">135,600.00</td>
+                    <td class="number-col">9,685.71</td>
+                    <td class="phrase-col">decimal in fraction calculator; decimal to fraction calculator; how to convert a fraction to a decimal; how to convert decimal to fraction; how to make a decimal into a fraction</td>
+                    <td class="number-col">5.07</td>
+                    <td class="number-col">0.43</td>
+                    <td class="number-col">0.00</td>
+                </tr>
+                <tr>
+                    <td class="number-col">43.00</td>
+                    <td class="number-col">14.00</td>
+                    <td class="number-col">14.00</td>
+                    <td class="number-col">1</td>
+                    <td>code</td>
+                    <td class="number-col">137,300.00</td>
+                    <td class="number-col">9,807.14</td>
+                    <td class="phrase-col">colorado springs co zip code; colorado springs zip code; colorado zip code; denver co zip code; denver colorado usa zip code</td>
+                    <td class="number-col">4.36</td>
+                    <td class="number-col">0</td>
+                    <td class="number-col">0.00</td>
+                </tr>
+                <tr>
+                    <td class="number-col">50.00</td>
+                    <td class="number-col">14.00</td>
+                    <td class="number-col">14.00</td>
+                    <td class="number-col">1</td>
+                    <td>Best,How-to</td>
+                    <td class="number-col">109,400.00</td>
+                    <td class="number-col">7,814.29</td>
+                    <td class="phrase-col">best cooling blanket; best weighted blanket; how to clean a weighted blanket; how to hand wash clothes; how to wash a baseball cap</td>
+                    <td class="number-col">4.86</td>
+                    <td class="number-col">0.86</td>
+                    <td class="number-col">0.00</td>
+                </tr>
+                <tr>
+                    <td class="number-col">9.00</td>
+                    <td class="number-col">13.00</td>
+                    <td class="number-col">13.00</td>
+                    <td class="number-col">1</td>
+                    <td>Best,How-to</td>
+                    <td class="number-col">107,000.00</td>
+                    <td class="number-col">8,230.77</td>
+                    <td class="phrase-col">best way to store strawberries; how to can peaches; how to freeze peaches; how to freeze strawberries; how to grow strawberries</td>
+                    <td class="number-col">4.54</td>
+                    <td class="number-col">0.92</td>
+                    <td class="number-col">0.00</td>
+                </tr>
+                <tr>
+                    <td class="number-col">12.00</td>
+                    <td class="number-col">13.00</td>
+                    <td class="number-col">13.00</td>
+                    <td class="number-col">1</td>
+                    <td>tester</td>
+                    <td class="number-col">103,600.00</td>
+                    <td class="number-col">7,969.23</td>
+                    <td class="phrase-col">accu chek test strips; aquarium water test kit; dirt ph test kit; gold testing kit; lead test kit</td>
+                    <td class="number-col">3.46</td>
+                    <td class="number-col">0</td>
+                    <td class="number-col">0.00</td>
+                </tr>
+                <tr>
+                    <td class="number-col">15.00</td>
+                    <td class="number-col">13.00</td>
+                    <td class="number-col">13.00</td>
+                    <td class="number-col">1</td>
+                    <td>anime</td>
+                    <td class="number-col">78,900.00</td>
+                    <td class="number-col">6,069.23</td>
+                    <td class="phrase-col">anderson animal shelter; camarillo animal shelter; cobb county animal shelter; davis county animal shelter; devore animal shelter</td>
+                    <td class="number-col">3.46</td>
+                    <td class="number-col">0</td>
+                    <td class="number-col">0.00</td>
+                </tr>
+                <tr>
+                    <td class="number-col">47.00</td>
+                    <td class="number-col">13.00</td>
+                    <td class="number-col">13.00</td>
+                    <td class="number-col">1</td>
+                    <td>code</td>
+                    <td class="number-col">113,300.00</td>
+                    <td class="number-col">8,715.38</td>
+                    <td class="phrase-col">houston code zip; houston texas city zip code; houston texas usa zip code; houston us zip code; postal codes in houston</td>
+                    <td class="number-col">4.54</td>
+                    <td class="number-col">0</td>
+                    <td class="number-col">0.00</td>
+                </tr>
+                <tr>
+                    <td class="number-col">-1.00</td>
+                    <td class="number-col">3,786.00</td>
+                    <td class="number-col">3,935.00</td>
+                    <td class="number-col">1.04</td>
+                    <td>Best,How-to,action,advisor,agent,anime,answer,assistant,avatar,builder,calculator,code,composer,creator,designer,directory,editor,emoji,example,face,figure,finder,format,generator,helper,hint,ideas,logo,maker,model,pattern,portal,processor,simulator,solver,song,sound,starter,style,template,tester,tool,top,translator,video,viewer</td>
+                    <td class="number-col">39,242,700.00</td>
+                    <td class="number-col">10,365.21</td>
+                    <td class="phrase-col">how to calculate board feet; how to calculate opportunity cost; how to calculate square feet of a room; how to calculate z score; animal cell model</td>
+                    <td class="number-col">4.08</td>
+                    <td class="number-col">0.27</td>
+                    <td class="number-col">1.00</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

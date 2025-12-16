@@ -1,0 +1,1057 @@
+phrase,frequency,seed_word,Volume,source_type,word_count,phrase_length,has_question_word,has_best_or_top,is_question_like,query_type,cluster_id_A,cluster_size,is_noise,cluster_label_B,cluster_id_B,direction_keyword
+00989 area code,1,code,12100,keyword_tool,3,15,False,False,False,normal,42,502,False,0,code_B0,code
+202 telephone code,1,code,12100,keyword_tool,3,18,False,False,False,normal,42,502,False,0,code_B0,code
+203 area code,1,code,110000,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+205 area code,1,code,90500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+206 telephone code,1,code,9900,keyword_tool,3,18,False,False,False,normal,42,502,False,0,code_B0,code
+209 area code,1,code,165000,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+212 area code,1,code,49500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+213 area code,1,code,368000,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+217 area code,1,code,74000,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+224 area code,1,code,74000,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+225 area code,1,code,49500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+225 area code location,1,code,5400,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+229 area code,1,code,49500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+229 code,1,code,6600,keyword_tool,2,8,False,False,False,normal,42,502,False,0,code_B0,code
+231 area code,1,code,40500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+239 area code,1,code,90500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+240 area code,1,code,90500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+251 area code,1,code,49500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+256 area code,1,code,60500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+260 area code,1,code,40500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+262 area code,1,code,60500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+267 area code,1,code,110000,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+269 area code,1,code,33100,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+269 telephone area code,1,code,14800,keyword_tool,4,23,False,False,False,normal,42,502,False,0,code_B0,code
+276 area code,1,code,33100,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+281 area code,1,code,90500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+304 area code,1,code,74000,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+305 area code,1,code,135000,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+309 area code,1,code,49500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+310 area code,1,code,135000,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+310 area code location california,1,code,18100,keyword_tool,5,33,False,False,False,normal,42,502,False,0,code_B0,code
+310 telephone code,1,code,5400,keyword_tool,3,18,False,False,False,normal,42,502,False,0,code_B0,code
+313 area code,1,code,90500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+313 area code location,1,code,5400,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+314 area code,1,code,90500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+314 area code location,1,code,5400,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+314 code area,1,code,5400,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+315 area code,1,code,110000,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+316 area code,1,code,49500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+316 area code location,1,code,5400,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+317 area code,1,code,90500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+317 area code location,1,code,5400,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+318 area code,1,code,60500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+318 area code location,1,code,5400,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+318 is what area code,1,code,8100,keyword_tool,5,21,True,False,True,question,42,502,False,0,code_B0,code
+319 area code,1,code,40500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+320 area code,1,code,40500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+321 area code,1,code,90500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+323 area code,1,code,165000,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+323 area code location,1,code,9900,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+331 area code,1,code,40500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+332 area code,1,code,74000,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+336 area code,1,code,74000,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+337 area code,1,code,49500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+346 area code,1,code,135000,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+352 area code,1,code,90500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+361 area code,1,code,40500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+386 area code,1,code,60500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+408 area code,1,code,135000,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+408 phone area code,1,code,6600,keyword_tool,4,19,False,False,False,normal,42,502,False,0,code_B0,code
+409 area code,1,code,40500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+412 area code,1,code,74000,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+413 area code,1,code,60500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+414 area code,1,code,60500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+415 area code,1,code,165000,keyword_tool,3,13,False,False,False,normal,42,502,False,-1,code_B-1,code
+415 code area,1,code,9900,keyword_tool,3,13,False,False,False,normal,42,502,False,-1,code_B-1,code
+416 code area,1,code,14800,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+419 area code,1,code,60500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+423 area code,1,code,60500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+424 area code,1,code,165000,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+424 area code location,1,code,5400,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+425 area code,1,code,74000,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+434 area code,1,code,49500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+437 area code,1,code,90500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+440 telephone area code,1,code,9900,keyword_tool,4,23,False,False,False,normal,42,502,False,0,code_B0,code
+443 area code,1,code,90500,keyword_tool,3,13,False,False,False,normal,42,502,False,-1,code_B-1,code
+458 area code,1,code,22200,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+463 area code,1,code,22200,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+469 area code location,1,code,5400,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+470 area code,1,code,135000,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+470 area code georgia,1,code,12100,keyword_tool,4,21,False,False,False,normal,42,502,False,0,code_B0,code
+470 area code location,1,code,6600,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+470 country code,1,code,5400,keyword_tool,3,16,False,False,False,normal,42,502,False,0,code_B0,code
+478 area code,1,code,40500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+479 area code,1,code,49500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+484 area code,1,code,74000,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+501 area code,1,code,74000,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+502 area code,1,code,90500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+503 area code,1,code,90500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+504 area code location,1,code,5400,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+505 area code,1,code,74000,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+508 area code,1,code,74000,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+509 area code,1,code,60500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+509 area code location,1,code,6600,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+510 area code,1,code,135000,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+513 area code,1,code,90500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+515 area code,1,code,60500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+515 code,1,code,9900,keyword_tool,2,8,False,False,False,normal,42,502,False,0,code_B0,code
+516 area code,1,code,135000,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+516 area code location,1,code,5400,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+516 telephone area code,1,code,5400,keyword_tool,4,23,False,False,False,normal,42,502,False,0,code_B0,code
+517 area code,1,code,49500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+518 code area,1,code,27100,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+551 area code,1,code,60500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+551 is what area code,1,code,12100,keyword_tool,5,21,True,False,True,question,42,502,False,0,code_B0,code
+559 area code,1,code,90500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+559 area code california,1,code,8100,keyword_tool,4,24,False,False,False,normal,42,502,False,0,code_B0,code
+561 area code location,1,code,8100,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+562 area code,1,code,110000,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+562 area code location,1,code,8100,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+563 area code,1,code,27100,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+567 area code,1,code,27100,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+570 area code,1,code,60500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+571 area code,1,code,90500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+573 area code,1,code,49500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+574 area code,1,code,33100,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+575 area code,1,code,27100,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+580 area code,1,code,33100,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+585 area code,1,code,74000,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+586 area code,1,code,40500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+601 area code,1,code,60500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+602 area code,1,code,110000,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+603 area code,1,code,60500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+605 area code,1,code,49500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+606 area code,1,code,49500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+607 area code,1,code,60500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+608 area code,1,code,60500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+609 area code,1,code,90500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+609 telephone area code,1,code,5400,keyword_tool,4,23,False,False,False,normal,42,502,False,0,code_B0,code
+610 area code,1,code,60500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+610 pa area code,1,code,8100,keyword_tool,4,16,False,False,False,normal,42,502,False,0,code_B0,code
+612 area code,1,code,74000,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+612 telephone area code,1,code,18100,keyword_tool,4,23,False,False,False,normal,42,502,False,0,code_B0,code
+613 code area,1,code,8100,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+613 phone area code,1,code,5400,keyword_tool,4,19,False,False,False,normal,42,502,False,0,code_B0,code
+614 area code,1,code,90500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+615 area code,1,code,110000,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+619 area code location,1,code,6600,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+623 area code,1,code,49500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+626 area code,1,code,135000,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+626 area code location,1,code,5400,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+629 area code,1,code,27100,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+630 area code location,1,code,5400,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+631 area code,1,code,90500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+636 area code,1,code,40500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+646 area code,1,code,301000,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+646 area code location,1,code,8100,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+650 area code,1,code,90500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+660 area code,1,code,27100,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+661 area code,1,code,90500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+661 area code in california,1,code,22200,keyword_tool,5,27,False,False,False,normal,42,502,False,0,code_B0,code
+661 area code location,1,code,6600,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+662 area code,1,code,74000,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+667 area code,1,code,27100,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+678 area code,1,code,110000,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+681 area code,1,code,22200,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+682 area code,1,code,74000,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+702 area code,1,code,135000,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+702 area code location,1,code,5400,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+703 area code,1,code,90500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+706 area code,1,code,90500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+707 area code,1,code,135000,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+707 california area code,1,code,5400,keyword_tool,4,24,False,False,False,normal,42,502,False,0,code_B0,code
+713 area code,1,code,90500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+713 area code location,1,code,6600,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+713 telephone area code,1,code,6600,keyword_tool,4,23,False,False,False,normal,42,502,False,0,code_B0,code
+715 area code,1,code,49500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+716 area code,1,code,90500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+717 area code,1,code,90500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+719 area code,1,code,90500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+720 telephone area code,1,code,27100,keyword_tool,4,23,False,False,False,normal,42,502,False,0,code_B0,code
+724 area code,1,code,49500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+725 phone code,1,code,6600,keyword_tool,3,14,False,False,False,normal,42,502,False,0,code_B0,code
+727 area code location,1,code,6600,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+740 area code,1,code,60500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+754 area code,1,code,60500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+760 area code,1,code,110000,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+762 area code,1,code,33100,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+765 area code,1,code,49500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+769 area code,1,code,18100,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+773 area code,1,code,90500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+774 area code,1,code,60500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+779 area code,1,code,27100,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+781 area code,1,code,74000,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+803 area code location,1,code,8100,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+804 area code,1,code,90500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+804 area code location,1,code,6600,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+806 area code,1,code,49500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+808 area code,1,code,90500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+812 area code,1,code,60500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+813 area code,1,code,110000,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+813 area code location,1,code,5400,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+815 area code,1,code,60500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+818 area code location,1,code,9900,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+830 area code,1,code,33100,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+832 area code,1,code,135000,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+832 telephone area code,1,code,6600,keyword_tool,4,23,False,False,False,normal,42,502,False,0,code_B0,code
+833 area code,1,code,110000,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+843 area code,1,code,74000,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+844 area code,1,code,90500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+844 telephone code,1,code,9900,keyword_tool,3,18,False,False,False,normal,42,502,False,0,code_B0,code
+845 area code,1,code,74000,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+845 area code location,1,code,5400,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+845 phone code,1,code,14800,keyword_tool,3,14,False,False,False,normal,42,502,False,0,code_B0,code
+847 area code,1,code,74000,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+848 area code,1,code,40500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+855 area code,1,code,74000,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+857 area code,1,code,74000,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+857 area code massachusetts,1,code,8100,keyword_tool,4,27,False,False,False,normal,42,502,False,0,code_B0,code
+858 area code,1,code,74000,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+859 area code,1,code,49500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+860 area code,1,code,74000,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+862 area code,1,code,49500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+864 area code,1,code,60500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+865 area code,1,code,49500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+866 area code,1,code,60500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+866 area code location,1,code,8100,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+870 area code,1,code,74000,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+872 area code,1,code,49500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+903 area code,1,code,74000,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+903 area code location,1,code,6600,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+903 phone code,1,code,5400,keyword_tool,3,14,False,False,False,normal,42,502,False,0,code_B0,code
+904 area code,1,code,110000,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+904 area code location,1,code,8100,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+907 area code,1,code,40500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+912 area code,1,code,74000,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+913 area code,1,code,90500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+914 area code,1,code,90500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+916 area code in california,1,code,9900,keyword_tool,5,27,False,False,False,normal,42,502,False,0,code_B0,code
+917 area code location,1,code,9900,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+919 area code,1,code,110000,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+920 area code,1,code,60500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+928 area code,1,code,74000,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+928 area code location,1,code,8100,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+929 area code,1,code,201000,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+929 area code location,1,code,5400,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+931 area code,1,code,49500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+936 area code,1,code,40500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+937 area code,1,code,60500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+939 area code,1,code,22200,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+941 area code,1,code,60500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+949 area code,1,code,135000,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+949 area code location,1,code,5400,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+951 area code,1,code,165000,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+951 area code ca,1,code,5400,keyword_tool,4,16,False,False,False,normal,42,502,False,0,code_B0,code
+951 area code location,1,code,6600,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+954 area code,1,code,110000,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+954 area code in florida,1,code,6600,keyword_tool,5,24,False,False,False,normal,42,502,False,0,code_B0,code
+954 what area code,1,code,14800,keyword_tool,4,18,True,False,True,question,42,502,False,0,code_B0,code
+959 area code,1,code,33100,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+970 area code,1,code,74000,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+971 area code,1,code,60500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+972 area code location,1,code,8100,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+972 telephone area code,1,code,6600,keyword_tool,4,23,False,False,False,normal,42,502,False,0,code_B0,code
+973 area code,1,code,74000,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+978 area code,1,code,90500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+979 area code,1,code,40500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+980 area code,1,code,74000,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+984 area code,1,code,40500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+985 area code,1,code,40500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+989 area code,1,code,40500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area 208 code,1,code,27100,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area 209 code,1,code,27100,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area 214 code,1,code,33100,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area 336 code,1,code,6600,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area 713 code,1,code,5400,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 1 416,1,code,9900,keyword_tool,4,15,False,False,False,normal,42,502,False,0,code_B0,code
+area code 202,1,code,22200,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 202 location,1,code,6600,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+area code 203,1,code,14800,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 205 location,1,code,6600,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+area code 206,1,code,22200,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 210 location,1,code,8100,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+area code 212,1,code,5400,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 212 new york,1,code,14800,keyword_tool,5,22,False,False,False,normal,42,502,False,0,code_B0,code
+area code 214 location,1,code,6600,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+area code 215 location,1,code,8100,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+area code 216 location,1,code,6600,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+area code 225,1,code,8100,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 229,1,code,8100,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 239,1,code,12100,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 262,1,code,9900,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 276,1,code,6600,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 281,1,code,14800,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 302,1,code,14800,keyword_tool,3,13,False,False,False,normal,42,502,False,-1,code_B-1,code
+area code 304,1,code,9900,keyword_tool,3,13,False,False,False,normal,42,502,False,-1,code_B-1,code
+area code 309,1,code,6600,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 310,1,code,18100,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 310 location,1,code,5400,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+area code 313 location,1,code,5400,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+area code 317,1,code,12100,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 319,1,code,6600,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 321,1,code,14800,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 331,1,code,6600,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 334,1,code,9900,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 336,1,code,9900,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 337,1,code,5400,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 346,1,code,18100,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 352,1,code,12100,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 352 location,1,code,9900,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+area code 406,1,code,8100,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 408,1,code,14800,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 408 location,1,code,5400,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+area code 413 massachusetts,1,code,27100,keyword_tool,4,27,False,False,False,normal,42,502,False,0,code_B0,code
+area code 414,1,code,8100,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 415 location,1,code,8100,keyword_tool,4,22,False,False,False,normal,42,502,False,-1,code_B-1,code
+area code 417,1,code,8100,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 424,1,code,22200,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 424 location,1,code,5400,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+area code 425 location,1,code,5400,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+area code 437 location,1,code,8100,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+area code 440,1,code,8100,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 443,1,code,12100,keyword_tool,3,13,False,False,False,normal,42,502,False,-1,code_B-1,code
+area code 470,1,code,18100,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 470 location,1,code,6600,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+area code 478 georgia,1,code,8100,keyword_tool,4,21,False,False,False,normal,42,502,False,0,code_B0,code
+area code 479,1,code,8100,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 480 location,1,code,8100,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+area code 502 location,1,code,5400,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+area code 503,1,code,14800,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 503 location,1,code,5400,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+area code 505 location,1,code,5400,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+area code 508,1,code,9900,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 508 location,1,code,5400,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+area code 509,1,code,8100,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 512 location,1,code,5400,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+area code 513 location,1,code,5400,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+area code 516 location,1,code,5400,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+area code 517,1,code,6600,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 518,1,code,12100,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 551 nj,1,code,14800,keyword_tool,4,16,False,False,False,normal,42,502,False,0,code_B0,code
+area code 561 location,1,code,6600,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+area code 562,1,code,14800,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 567,1,code,5400,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 570,1,code,8100,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 570 pa,1,code,9900,keyword_tool,4,16,False,False,False,normal,42,502,False,0,code_B0,code
+area code 571,1,code,12100,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 573 missouri,1,code,5400,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+area code 601 location,1,code,8100,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+area code 601 mississippi,1,code,14800,keyword_tool,4,25,False,False,False,normal,42,502,False,0,code_B0,code
+area code 602,1,code,12100,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 606,1,code,6600,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 607,1,code,9900,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 608,1,code,8100,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 610,1,code,9900,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 616,1,code,8100,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 619 location,1,code,5400,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+area code 628 location,1,code,5400,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+area code 636,1,code,5400,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 646,1,code,40500,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 646 location,1,code,9900,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+area code 657 location,1,code,5400,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+area code 660 in missouri,1,code,12100,keyword_tool,5,25,False,False,False,normal,42,502,False,0,code_B0,code
+area code 662,1,code,6600,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 682,1,code,8100,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 702,1,code,14800,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 706 location,1,code,5400,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+area code 715,1,code,6600,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 718,1,code,8100,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 719,1,code,9900,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 719 location,1,code,5400,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+area code 724,1,code,8100,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 725,1,code,6600,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 727 location,1,code,6600,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+area code 732,1,code,9900,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 740,1,code,8100,keyword_tool,3,13,False,False,False,normal,42,502,False,-1,code_B-1,code
+area code 754,1,code,6600,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 760,1,code,12100,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 765,1,code,5400,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 773 location,1,code,8100,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+area code 774,1,code,8100,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 803,1,code,9900,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 804,1,code,9900,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 804 location,1,code,5400,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+area code 805 location,1,code,5400,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+area code 808 location,1,code,5400,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+area code 812,1,code,6600,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 815,1,code,8100,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 816,1,code,9900,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 830,1,code,5400,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 832 location,1,code,6600,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+area code 833,1,code,18100,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 833 location,1,code,6600,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+area code 844,1,code,12100,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 845,1,code,9900,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 847,1,code,8100,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 848,1,code,5400,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 855,1,code,12100,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 859,1,code,6600,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 860 connecticut,1,code,14800,keyword_tool,4,25,False,False,False,normal,42,502,False,0,code_B0,code
+area code 865,1,code,5400,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 866,1,code,6600,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 870,1,code,8100,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 903,1,code,9900,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 912,1,code,9900,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 919,1,code,12100,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 919 location,1,code,5400,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+area code 920,1,code,8100,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 920 wisconsin,1,code,9900,keyword_tool,4,23,False,False,False,normal,42,502,False,0,code_B0,code
+area code 929 location,1,code,6600,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+area code 949,1,code,18100,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 951,1,code,18100,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 951 location,1,code,6600,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+area code 954 location,1,code,6600,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+area code 959,1,code,5400,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 973,1,code,8100,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code 984,1,code,5400,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+area code is 513,1,code,8100,keyword_tool,4,16,False,False,False,normal,42,502,False,0,code_B0,code
+area code is 515,1,code,8100,keyword_tool,4,16,False,False,False,normal,42,502,False,0,code_B0,code
+area code is 703,1,code,14800,keyword_tool,4,16,False,False,False,normal,42,502,False,0,code_B0,code
+area code is 832,1,code,22200,keyword_tool,4,16,False,False,False,normal,42,502,False,0,code_B0,code
+arizona 480 area code,1,code,5400,keyword_tool,4,21,False,False,False,normal,42,502,False,0,code_B0,code
+arizona zip code,1,code,6600,keyword_tool,3,16,False,False,False,normal,42,502,False,1,code_B1,code
+arizona zip codes,1,code,8100,keyword_tool,3,17,False,False,False,normal,42,502,False,1,code_B1,code
+california 310 area code,1,code,5400,keyword_tool,4,24,False,False,False,normal,42,502,False,0,code_B0,code
+california 951 area code,1,code,5400,keyword_tool,4,24,False,False,False,normal,42,502,False,0,code_B0,code
+california area code 408,1,code,18100,keyword_tool,4,24,False,False,False,normal,42,502,False,0,code_B0,code
+code 765,1,code,12100,keyword_tool,2,8,False,False,False,normal,42,502,False,0,code_B0,code
+code 779,1,code,12100,keyword_tool,2,8,False,False,False,normal,42,502,False,0,code_B0,code
+code 865,1,code,12100,keyword_tool,2,8,False,False,False,normal,42,502,False,0,code_B0,code
+code 979,1,code,12100,keyword_tool,2,8,False,False,False,normal,42,502,False,0,code_B0,code
+code area 214,1,code,6600,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+code area 480,1,code,5400,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+code area 707,1,code,5400,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+code area 844,1,code,9900,keyword_tool,3,13,False,False,False,normal,42,502,False,0,code_B0,code
+code regional 202,1,code,12100,keyword_tool,3,17,False,False,False,normal,42,502,False,0,code_B0,code
+code regional 844,1,code,14800,keyword_tool,3,17,False,False,False,normal,42,502,False,0,code_B0,code
+country code 863,1,code,6600,keyword_tool,3,16,False,False,False,normal,42,502,False,0,code_B0,code
+dialing code 201,1,code,27100,keyword_tool,3,16,False,False,False,normal,42,502,False,0,code_B0,code
+dialing code 210,1,code,27100,keyword_tool,3,16,False,False,False,normal,42,502,False,0,code_B0,code
+dialing code 267,1,code,22200,keyword_tool,3,16,False,False,False,normal,42,502,False,0,code_B0,code
+dialing code 336,1,code,9900,keyword_tool,3,16,False,False,False,normal,42,502,False,0,code_B0,code
+dialing code 415,1,code,27100,keyword_tool,3,16,False,False,False,normal,42,502,False,-1,code_B-1,code
+florida 239 area code,1,code,5400,keyword_tool,4,21,False,False,False,normal,42,502,False,0,code_B0,code
+indiana area code 260,1,code,5400,keyword_tool,4,21,False,False,False,normal,42,502,False,-1,code_B-1,code
+location of 559 area code,1,code,14800,keyword_tool,5,25,False,False,False,normal,42,502,False,0,code_B0,code
+location of 602 area code,1,code,6600,keyword_tool,5,25,False,False,False,normal,42,502,False,0,code_B0,code
+location of 720 area code,1,code,5400,keyword_tool,5,25,False,False,False,normal,42,502,False,0,code_B0,code
+location of 937 area code,1,code,6600,keyword_tool,5,25,False,False,False,normal,42,502,False,0,code_B0,code
+location of area code 234,1,code,5400,keyword_tool,5,25,False,False,False,normal,42,502,False,0,code_B0,code
+location of area code 612,1,code,18100,keyword_tool,5,25,False,False,False,normal,42,502,False,0,code_B0,code
+location of area code 715,1,code,6600,keyword_tool,5,25,False,False,False,normal,42,502,False,0,code_B0,code
+location of area code 773,1,code,49500,keyword_tool,5,25,False,False,False,normal,42,502,False,0,code_B0,code
+location of area code 808,1,code,6600,keyword_tool,5,25,False,False,False,normal,42,502,False,0,code_B0,code
+location of area code 845,1,code,6600,keyword_tool,5,25,False,False,False,normal,42,502,False,0,code_B0,code
+location of area code 916,1,code,5400,keyword_tool,5,25,False,False,False,normal,42,502,False,0,code_B0,code
+location of area code 919,1,code,18100,keyword_tool,5,25,False,False,False,normal,42,502,False,0,code_B0,code
+louisiana area code 225,1,code,9900,keyword_tool,4,23,False,False,False,normal,42,502,False,0,code_B0,code
+louisiana area code 337,1,code,5400,keyword_tool,4,23,False,False,False,normal,42,502,False,0,code_B0,code
+minnesota area code 612,1,code,14800,keyword_tool,4,23,False,False,False,normal,42,502,False,0,code_B0,code
+missouri area code 636,1,code,6600,keyword_tool,4,22,False,False,False,normal,42,502,False,0,code_B0,code
+new york area code 212,1,code,9900,keyword_tool,5,22,False,False,False,normal,42,502,False,0,code_B0,code
+new york area code 631,1,code,5400,keyword_tool,5,22,False,False,False,normal,42,502,False,0,code_B0,code
+new york area code 845,1,code,14800,keyword_tool,5,22,False,False,False,normal,42,502,False,0,code_B0,code
+ontario 613 area code,1,code,8100,keyword_tool,4,21,False,False,False,normal,42,502,False,0,code_B0,code
+phoenix arizona zip code,1,code,5400,keyword_tool,4,24,False,False,False,normal,42,502,False,1,code_B1,code
+phoenix az area zip codes,1,code,9900,keyword_tool,5,25,False,False,False,normal,42,502,False,1,code_B1,code
+phoenix az zip code,1,code,8100,keyword_tool,4,19,False,False,False,normal,42,502,False,1,code_B1,code
+phoenix zip code,1,code,18100,keyword_tool,3,16,False,False,False,normal,42,502,False,1,code_B1,code
+phoenix zip code usa,1,code,5400,keyword_tool,4,20,False,False,False,normal,42,502,False,1,code_B1,code
+phone area code 575 location,1,code,6600,keyword_tool,5,28,False,False,False,normal,42,502,False,0,code_B0,code
+phone area code 971,1,code,9900,keyword_tool,4,19,False,False,False,normal,42,502,False,0,code_B0,code
+phone code 207,1,code,6600,keyword_tool,3,14,False,False,False,normal,42,502,False,0,code_B0,code
+south dakota area code 605,1,code,12100,keyword_tool,5,26,False,False,False,normal,42,502,False,0,code_B0,code
+tel code 919,1,code,6600,keyword_tool,3,12,False,False,False,normal,42,502,False,0,code_B0,code
+telephone area code 313,1,code,18100,keyword_tool,4,23,False,False,False,normal,42,502,False,0,code_B0,code
+telephone area code 330,1,code,22200,keyword_tool,4,23,False,False,False,normal,42,502,False,0,code_B0,code
+telephone area code 416,1,code,14800,keyword_tool,4,23,False,False,False,normal,42,502,False,0,code_B0,code
+telephone area code 585,1,code,8100,keyword_tool,4,23,False,False,False,normal,42,502,False,0,code_B0,code
+telephone area code 903,1,code,18100,keyword_tool,4,23,False,False,False,normal,42,502,False,0,code_B0,code
+telephone area code 971,1,code,14800,keyword_tool,4,23,False,False,False,normal,42,502,False,0,code_B0,code
+telephone code 202,1,code,12100,keyword_tool,3,18,False,False,False,normal,42,502,False,0,code_B0,code
+telephone code 206,1,code,9900,keyword_tool,3,18,False,False,False,normal,42,502,False,0,code_B0,code
+telephone code 214,1,code,33100,keyword_tool,3,18,False,False,False,normal,42,502,False,0,code_B0,code
+telephone code 313,1,code,22200,keyword_tool,3,18,False,False,False,normal,42,502,False,0,code_B0,code
+telephone code 408,1,code,27100,keyword_tool,3,18,False,False,False,normal,42,502,False,0,code_B0,code
+telephone code 416,1,code,12100,keyword_tool,3,18,False,False,False,normal,42,502,False,0,code_B0,code
+telephone code 480,1,code,27100,keyword_tool,3,18,False,False,False,normal,42,502,False,0,code_B0,code
+telephone code 516,1,code,5400,keyword_tool,3,18,False,False,False,normal,42,502,False,0,code_B0,code
+telephone code 613,1,code,8100,keyword_tool,3,18,False,False,False,normal,42,502,False,0,code_B0,code
+telephone code 678,1,code,6600,keyword_tool,3,18,False,False,False,normal,42,502,False,0,code_B0,code
+telephone code 844,1,code,14800,keyword_tool,3,18,False,False,False,normal,42,502,False,0,code_B0,code
+telephone code 919,1,code,6600,keyword_tool,3,18,False,False,False,normal,42,502,False,0,code_B0,code
+tennessee area code 901,1,code,9900,keyword_tool,4,23,False,False,False,normal,42,502,False,-1,code_B-1,code
+texas 210 area code,1,code,6600,keyword_tool,4,19,False,False,False,normal,42,502,False,0,code_B0,code
+toronto area code 416,1,code,8100,keyword_tool,4,21,False,False,False,normal,42,502,False,0,code_B0,code
+tucson az pima county zip code,1,code,6600,keyword_tool,6,30,False,False,False,normal,42,502,False,1,code_B1,code
+tucson az zip code,1,code,5400,keyword_tool,4,18,False,False,False,normal,42,502,False,1,code_B1,code
+tucson zip code,1,code,9900,keyword_tool,3,15,False,False,False,normal,42,502,False,1,code_B1,code
+washington 206 area code,1,code,9900,keyword_tool,4,24,False,False,False,normal,42,502,False,0,code_B0,code
+what area code is 213,1,code,12100,keyword_tool,5,21,True,False,True,question,42,502,False,0,code_B0,code
+what area code is 323,1,code,5400,keyword_tool,5,21,True,False,True,question,42,502,False,0,code_B0,code
+what area code is 347,1,code,6600,keyword_tool,5,21,True,False,True,question,42,502,False,0,code_B0,code
+what area code is 646,1,code,8100,keyword_tool,5,21,True,False,True,question,42,502,False,0,code_B0,code
+what area code is 929,1,code,6600,keyword_tool,5,21,True,False,True,question,42,502,False,0,code_B0,code
+where is 213 area code,1,code,5400,keyword_tool,5,22,True,False,True,question,42,502,False,0,code_B0,code
+where is area code 213,1,code,6600,keyword_tool,5,22,True,False,True,question,42,502,False,0,code_B0,code
+where is area code 646,1,code,5400,keyword_tool,5,22,True,False,True,question,42,502,False,0,code_B0,code
+where is area code 929,1,code,5400,keyword_tool,5,22,True,False,True,question,42,502,False,0,code_B0,code
+wisconsin area code 608,1,code,8100,keyword_tool,4,23,False,False,False,normal,42,502,False,0,code_B0,code
+wisconsin area code 920,1,code,8100,keyword_tool,4,23,False,False,False,normal,42,502,False,0,code_B0,code
+zip code to phoenix arizona,1,code,5400,keyword_tool,5,27,False,False,False,normal,42,502,False,1,code_B1,code
+32 degrees discount code,1,code,6600,keyword_tool,4,24,False,False,False,normal,39,306,False,0,best_B0,Best
+abercrombie & fitch coupons and promo codes,1,code,12100,keyword_tool,7,43,False,False,False,normal,39,306,False,0,best_B0,Best
+abercrombie and fitch discount code,1,code,5400,keyword_tool,5,35,False,False,False,normal,39,306,False,0,best_B0,Best
+abercrombie discount code,1,code,18100,keyword_tool,3,25,False,False,False,normal,39,306,False,0,best_B0,Best
+academy promo code,1,code,9900,keyword_tool,3,18,False,False,False,normal,39,306,False,0,best_B0,Best
+aliexpress promo code,1,code,40500,keyword_tool,3,21,False,False,False,normal,39,306,False,0,best_B0,Best
+aliexpress promo codes,1,code,8100,keyword_tool,3,22,False,False,False,normal,39,306,False,0,best_B0,Best
+alo coupon code,1,code,12100,keyword_tool,3,15,False,False,False,normal,39,306,False,0,best_B0,Best
+alo discount code,1,code,18100,keyword_tool,3,17,False,False,False,normal,39,306,False,0,best_B0,Best
+alo yoga coupon code,1,code,5400,keyword_tool,4,20,False,False,False,normal,39,306,False,0,best_B0,Best
+alo yoga discount code,1,code,8100,keyword_tool,4,22,False,False,False,normal,39,306,False,0,best_B0,Best
+anthropologie coupon code,1,code,12100,keyword_tool,3,25,False,False,False,normal,39,306,False,0,best_B0,Best
+anthropologie discount code,1,code,9900,keyword_tool,3,27,False,False,False,normal,39,306,False,0,best_B0,Best
+asos promo code,1,code,14800,keyword_tool,3,15,False,False,False,normal,39,306,False,0,best_B0,Best
+at home promo code,1,code,9900,keyword_tool,4,18,False,False,False,normal,39,306,False,0,best_B0,Best
+athleta discount coupon codes,1,code,8100,keyword_tool,4,29,False,False,False,normal,39,306,False,0,best_B0,Best
+azazie coupon code,1,code,8100,keyword_tool,3,18,False,False,False,normal,39,306,False,0,best_B0,Best
+baggu discount code,1,code,5400,keyword_tool,3,19,False,False,False,normal,39,306,False,0,best_B0,Best
+baublebar discount code,1,code,5400,keyword_tool,3,23,False,False,False,normal,39,306,False,0,best_B0,Best
+beis discount code,1,code,5400,keyword_tool,3,18,False,False,False,normal,39,306,False,0,best_B0,Best
+best buy coupon code,2,Best,16200,keyword_tool,4,20,False,True,False,best_list,39,306,False,0,best_B0,Best
+birdy gray discount code,1,code,9900,keyword_tool,4,24,False,False,False,normal,39,306,False,0,best_B0,Best
+birdy grey discount code,1,code,6600,keyword_tool,4,24,False,False,False,normal,39,306,False,0,best_B0,Best
+birkenstock coupon code,1,code,12100,keyword_tool,3,23,False,False,False,normal,39,306,False,0,best_B0,Best
+birkenstock discount code,1,code,6600,keyword_tool,3,25,False,False,False,normal,39,306,False,0,best_B0,Best
+birkenstock promo code,1,code,22200,keyword_tool,3,22,False,False,False,normal,39,306,False,0,best_B0,Best
+bjs promo code,1,code,5400,keyword_tool,3,14,False,False,False,normal,39,306,False,0,best_B0,Best
+bombas coupon code,1,code,8100,keyword_tool,3,18,False,False,False,normal,39,306,False,0,best_B0,Best
+boohooman promo code,1,code,12100,keyword_tool,3,20,False,False,False,normal,39,306,False,0,best_B0,Best
+boxlunch promo code,1,code,6600,keyword_tool,3,19,False,False,False,normal,39,306,False,0,best_B0,Best
+brownells coupon code,1,code,5400,keyword_tool,3,21,False,False,False,normal,39,306,False,0,best_B0,Best
+brumate discount code,1,code,6600,keyword_tool,3,21,False,False,False,normal,39,306,False,0,best_B0,Best
+brunt discount code,1,code,5400,keyword_tool,3,19,False,False,False,normal,39,306,False,0,best_B0,Best
+build a bear promo code,2,builder,16200,keyword_tool,5,23,False,False,False,normal,39,306,False,0,best_B0,Best
+burger king promo code,1,code,8100,keyword_tool,4,22,False,False,False,normal,39,306,False,0,best_B0,Best
+business casual dress code,1,code,6600,keyword_tool,4,26,False,False,False,normal,39,306,False,1,best_B1,Best
+caden lane discount code,1,code,5400,keyword_tool,4,24,False,False,False,normal,39,306,False,0,best_B0,Best
+caesars sportsbook promo code,1,code,12100,keyword_tool,4,29,False,False,False,normal,39,306,False,0,best_B0,Best
+canva coupon code,1,code,14800,keyword_tool,3,17,False,False,False,normal,39,306,False,0,best_B0,Best
+cb2 promo code,1,code,5400,keyword_tool,3,14,False,False,False,normal,39,306,False,0,best_B0,Best
+cdkeys discount code,1,code,12100,keyword_tool,3,20,False,False,False,normal,39,306,False,0,best_B0,Best
+cengage promo code,1,code,5400,keyword_tool,3,18,False,False,False,normal,39,306,False,0,best_B0,Best
+cettire discount code,1,code,6600,keyword_tool,3,21,False,False,False,normal,39,306,False,0,best_B0,Best
+chewy coupon code,1,code,14800,keyword_tool,3,17,False,False,False,normal,39,306,False,0,best_B0,Best
+cinemark coupon code,1,code,6600,keyword_tool,3,20,False,False,False,normal,39,306,False,0,best_B0,Best
+code promo princess polly,1,code,9900,keyword_tool,4,25,False,False,False,normal,39,306,False,0,best_B0,Best
+coldwater creek promo code,1,code,5400,keyword_tool,4,26,False,False,False,normal,39,306,False,0,best_B0,Best
+comfort discount code,1,code,6600,keyword_tool,3,21,False,False,False,normal,39,306,False,0,best_B0,Best
+comfrt coupon code,1,code,9900,keyword_tool,3,18,False,False,False,normal,39,306,False,0,best_B0,Best
+costco coupon code,1,code,14800,keyword_tool,3,18,False,False,False,normal,39,306,False,0,best_B0,Best
+costco promo code,1,code,40500,keyword_tool,3,17,False,False,False,normal,39,306,False,0,best_B0,Best
+coupon code big 5,1,code,6600,keyword_tool,4,17,False,False,False,normal,39,306,False,0,best_B0,Best
+crate and barrel coupon code,1,code,5400,keyword_tool,5,28,False,False,False,normal,39,306,False,0,best_B0,Best
+culture kings discount code,1,code,6600,keyword_tool,4,27,False,False,False,normal,39,306,False,0,best_B0,Best
+cupshe coupon code,1,code,5400,keyword_tool,3,18,False,False,False,normal,39,306,False,0,best_B0,Best
+dbrand coupon code,1,code,5400,keyword_tool,3,18,False,False,False,normal,39,306,False,0,best_B0,Best
+dbrand discount code,1,code,8100,keyword_tool,3,20,False,False,False,normal,39,306,False,0,best_B0,Best
+dbrand promo code,1,code,6600,keyword_tool,3,17,False,False,False,normal,39,306,False,0,best_B0,Best
+dhgate coupon code,1,code,18100,keyword_tool,3,18,False,False,False,normal,39,306,False,0,best_B0,Best
+dicksporting goods promo code,1,code,9900,keyword_tool,4,29,False,False,False,normal,39,306,False,0,best_B0,Best
+discount codes figs,1,code,5400,keyword_tool,3,19,False,False,False,normal,39,306,False,0,best_B0,Best
+doordash promo codes for existing users,1,code,18100,keyword_tool,6,39,False,False,False,normal,39,306,False,0,best_B0,Best
+double down promo codes,1,code,6600,keyword_tool,4,23,False,False,False,normal,39,306,False,0,best_B0,Best
+doubledown codes,1,code,14800,keyword_tool,2,16,False,False,False,normal,39,306,False,-1,best_B-1,Best
+draft king promo code,1,code,5400,keyword_tool,4,21,False,False,False,normal,39,306,False,0,best_B0,Best
+draftkings promo code,1,code,40500,keyword_tool,3,21,False,False,False,normal,39,306,False,0,best_B0,Best
+dress patterns,1,pattern,6600,keyword_tool,2,14,False,False,False,normal,39,306,False,1,best_B1,Best
+dress to impress code,1,code,5400,keyword_tool,4,21,False,False,False,normal,39,306,False,1,best_B1,Best
+dress with code,1,code,6600,keyword_tool,3,15,False,False,False,normal,39,306,False,1,best_B1,Best
+dyson coupon code,1,code,8100,keyword_tool,3,17,False,False,False,normal,39,306,False,0,best_B0,Best
+dyson promo code,1,code,12100,keyword_tool,3,16,False,False,False,normal,39,306,False,0,best_B0,Best
+edikted discount code,1,code,18100,keyword_tool,3,21,False,False,False,normal,39,306,False,0,best_B0,Best
+eneba discount code,1,code,6600,keyword_tool,3,19,False,False,False,normal,39,306,False,0,best_B0,Best
+etsy coupon code 2025,1,code,9900,keyword_tool,4,21,False,False,False,normal,39,306,False,0,best_B0,Best
+evite coupon code,1,code,6600,keyword_tool,3,17,False,False,False,normal,39,306,False,0,best_B0,Best
+evite promo code,1,code,9900,keyword_tool,3,16,False,False,False,normal,39,306,False,0,best_B0,Best
+evry jewels discount code,1,code,8100,keyword_tool,4,25,False,False,False,normal,39,306,False,0,best_B0,Best
+expedia coupon code promo code,1,code,6600,keyword_tool,5,30,False,False,False,normal,39,306,False,0,best_B0,Best
+eyeconic promo code,1,code,5400,keyword_tool,3,19,False,False,False,normal,39,306,False,0,best_B0,Best
+fabletics coupon code,1,code,8100,keyword_tool,3,21,False,False,False,normal,39,306,False,0,best_B0,Best
+fabletics discount code,1,code,6600,keyword_tool,3,23,False,False,False,normal,39,306,False,0,best_B0,Best
+fabletics promo code,1,code,12100,keyword_tool,3,20,False,False,False,normal,39,306,False,0,best_B0,Best
+fanatics promo code,1,code,14800,keyword_tool,3,19,False,False,False,normal,39,306,False,0,best_B0,Best
+fashion nova 30 percent discount code,1,code,6600,keyword_tool,6,37,False,False,False,normal,39,306,False,0,best_B0,Best
+fashion nova codes,1,code,5400,keyword_tool,3,18,False,False,False,normal,39,306,False,0,best_B0,Best
+fashion nova discount code,1,code,90500,keyword_tool,4,26,False,False,False,normal,39,306,False,0,best_B0,Best
+fcp euro coupon code,1,code,5400,keyword_tool,4,20,False,False,False,normal,39,306,False,0,best_B0,Best
+figs coupon code,1,code,5400,keyword_tool,3,16,False,False,False,normal,39,306,False,0,best_B0,Best
+figs discount code,1,code,27100,keyword_tool,3,18,False,False,False,normal,39,306,False,0,best_B0,Best
+five guys promo code,1,code,9900,keyword_tool,4,20,False,False,False,normal,39,306,False,0,best_B0,Best
+fiverr promo code,1,code,5400,keyword_tool,3,17,False,False,False,normal,39,306,False,0,best_B0,Best
+foot locker promo code,1,code,12100,keyword_tool,4,22,False,False,False,normal,39,306,False,0,best_B0,Best
+free people discount code,1,code,9900,keyword_tool,4,25,False,False,False,normal,39,306,False,0,best_B0,Best
+frontier airlines promo code,1,code,12100,keyword_tool,4,28,False,False,False,normal,39,306,False,0,best_B0,Best
+frost buddy discount code,1,code,5400,keyword_tool,4,25,False,False,False,normal,39,306,False,0,best_B0,Best
+ftd promo code,1,code,5400,keyword_tool,3,14,False,False,False,normal,39,306,False,0,best_B0,Best
+g2a discount code,1,code,8100,keyword_tool,3,17,False,False,False,normal,39,306,False,0,best_B0,Best
+gametime coupon code,1,code,5400,keyword_tool,3,20,False,False,False,normal,39,306,False,0,best_B0,Best
+gametime promo code,1,code,9900,keyword_tool,3,19,False,False,False,normal,39,306,False,0,best_B0,Best
+garage coupon code,1,code,5400,keyword_tool,3,18,False,False,False,normal,39,306,False,0,best_B0,Best
+garmin discount code,1,code,8100,keyword_tool,3,20,False,False,False,normal,39,306,False,0,best_B0,Best
+get your guide promo code,1,code,6600,keyword_tool,5,25,False,False,False,normal,39,306,False,0,best_B0,Best
+goldbelly promo code,1,code,8100,keyword_tool,3,20,False,False,False,normal,39,306,False,0,best_B0,Best
+google workspace promo code,1,code,5400,keyword_tool,4,27,False,False,False,normal,39,306,False,0,best_B0,Best
+gooseberry discount code,1,code,8100,keyword_tool,3,24,False,False,False,normal,39,306,False,0,best_B0,Best
+gorjana discount code,1,code,5400,keyword_tool,3,21,False,False,False,normal,39,306,False,0,best_B0,Best
+guitar center codes coupons,1,code,5400,keyword_tool,4,27,False,False,False,normal,39,306,False,0,best_B0,Best
+guitar center coupon code,1,code,12100,keyword_tool,4,25,False,False,False,normal,39,306,False,0,best_B0,Best
+guitar center discount code,1,code,8100,keyword_tool,4,27,False,False,False,normal,39,306,False,0,best_B0,Best
+h&m discount code,1,code,14800,keyword_tool,3,17,False,False,False,normal,39,306,False,0,best_B0,Best
+halara coupon code,1,code,14800,keyword_tool,3,18,False,False,False,normal,39,306,False,0,best_B0,Best
+hanna andersson promo code,1,code,8100,keyword_tool,4,26,False,False,False,normal,39,306,False,0,best_B0,Best
+happy mammoth discount code,1,code,12100,keyword_tool,4,27,False,False,False,normal,39,306,False,0,best_B0,Best
+hello molly discount code,1,code,5400,keyword_tool,4,25,False,False,False,normal,39,306,False,0,best_B0,Best
+hexclad discount code,1,code,5400,keyword_tool,3,21,False,False,False,normal,39,306,False,0,best_B0,Best
+hoka coupon code,1,code,18100,keyword_tool,3,16,False,False,False,normal,39,306,False,0,best_B0,Best
+hoka discount code,1,code,9900,keyword_tool,3,18,False,False,False,normal,39,306,False,0,best_B0,Best
+honeylove discount code,1,code,6600,keyword_tool,3,23,False,False,False,normal,39,306,False,0,best_B0,Best
+hostinger coupon code,1,code,5400,keyword_tool,3,21,False,False,False,normal,39,306,False,0,best_B0,Best
+hsn coupon code,1,code,5400,keyword_tool,3,15,False,False,False,normal,39,306,False,0,best_B0,Best
+huckberry promo code,1,code,5400,keyword_tool,3,20,False,False,False,normal,39,306,False,0,best_B0,Best
+hungry howie's promo code,1,code,5400,keyword_tool,4,25,False,False,False,normal,39,306,False,0,best_B0,Best
+iherb discount code,1,code,8100,keyword_tool,3,19,False,False,False,normal,39,306,False,0,best_B0,Best
+iin discount code,1,code,6600,keyword_tool,3,17,False,False,False,normal,39,306,False,0,best_B0,Best
+ikea coupon code,1,code,9900,keyword_tool,3,16,False,False,False,normal,39,306,False,0,best_B0,Best
+ikon pass promo code,1,code,5400,keyword_tool,4,20,False,False,False,normal,39,306,False,0,best_B0,Best
+instacart promo code,1,code,40500,keyword_tool,3,20,False,False,False,normal,39,306,False,0,best_B0,Best
+j crew coupon promo code,1,code,8100,keyword_tool,5,24,False,False,False,normal,39,306,False,0,best_B0,Best
+j crew promo code,1,code,6600,keyword_tool,4,17,False,False,False,normal,39,306,False,0,best_B0,Best
+jack in the box promo codes,1,code,8100,keyword_tool,6,27,False,False,False,normal,39,306,False,0,best_B0,Best
+janie and jack promo code,1,code,6600,keyword_tool,5,25,False,False,False,normal,39,306,False,0,best_B0,Best
+jellycat coupon code,1,code,5400,keyword_tool,3,20,False,False,False,normal,39,306,False,0,best_B0,Best
+jellycat promo code,1,code,9900,keyword_tool,3,19,False,False,False,normal,39,306,False,0,best_B0,Best
+jersey mike's coupon code,1,code,5400,keyword_tool,4,25,False,False,False,normal,39,306,False,0,best_B0,Best
+jet's pizza promo code,1,code,5400,keyword_tool,4,22,False,False,False,normal,39,306,False,0,best_B0,Best
+jimmy johns promo code,1,code,22200,keyword_tool,4,22,False,False,False,normal,39,306,False,0,best_B0,Best
+jomashop coupon codes,1,code,5400,keyword_tool,3,21,False,False,False,normal,39,306,False,0,best_B0,Best
+jomashop discount code,1,code,8100,keyword_tool,3,22,False,False,False,normal,39,306,False,0,best_B0,Best
+jostens discount code,1,code,5400,keyword_tool,3,21,False,False,False,normal,39,306,False,0,best_B0,Best
+jostens promo code,1,code,6600,keyword_tool,3,18,False,False,False,normal,39,306,False,0,best_B0,Best
+journeys discount code,1,code,5400,keyword_tool,3,22,False,False,False,normal,39,306,False,0,best_B0,Best
+journeys promo code,1,code,8100,keyword_tool,3,19,False,False,False,normal,39,306,False,0,best_B0,Best
+kendra scott coupon code,1,code,5400,keyword_tool,4,24,False,False,False,normal,39,306,False,0,best_B0,Best
+kuhl promo code,1,code,5400,keyword_tool,3,15,False,False,False,normal,39,306,False,0,best_B0,Best
+lifetouch coupon code,1,code,22200,keyword_tool,3,21,False,False,False,normal,39,306,False,0,best_B0,Best
+little sleepies coupon code,1,code,6600,keyword_tool,4,27,False,False,False,normal,39,306,False,0,best_B0,Best
+lmnt discount code,1,code,6600,keyword_tool,3,18,False,False,False,normal,39,306,False,0,best_B0,Best
+lowes promo codes,1,code,6600,keyword_tool,3,17,False,False,False,normal,39,306,False,0,best_B0,Best
+lululemon coupon code,1,code,9900,keyword_tool,3,21,False,False,False,normal,39,306,False,0,best_B0,Best
+lyft discount code,1,code,5400,keyword_tool,3,18,False,False,False,normal,39,306,False,0,best_B0,Best
+lyft promo code,1,code,27100,keyword_tool,3,15,False,False,False,normal,39,306,False,0,best_B0,Best
+madewell coupon code,1,code,8100,keyword_tool,3,20,False,False,False,normal,39,306,False,0,best_B0,Best
+madewell promo code,1,code,9900,keyword_tool,3,19,False,False,False,normal,39,306,False,0,best_B0,Best
+mandala scrubs discount code,1,code,8100,keyword_tool,4,28,False,False,False,normal,39,306,False,0,best_B0,Best
+mango discount code,1,code,5400,keyword_tool,3,19,False,False,False,normal,39,306,False,0,best_B0,Best
+mango promo code,1,code,6600,keyword_tool,3,16,False,False,False,normal,39,306,False,0,best_B0,Best
+manscaped discount code,1,code,5400,keyword_tool,3,23,False,False,False,normal,39,306,False,0,best_B0,Best
+marcos coupon code,1,code,12100,keyword_tool,3,18,False,False,False,normal,39,306,False,0,best_B0,Best
+mercari coupon code,1,code,8100,keyword_tool,3,19,False,False,False,normal,39,306,False,0,best_B0,Best
+mercari coupon codes,1,code,8100,keyword_tool,3,20,False,False,False,normal,39,306,False,0,best_B0,Best
+mercari discount code,1,code,9900,keyword_tool,3,21,False,False,False,normal,39,306,False,0,best_B0,Best
+mercari promo code,1,code,6600,keyword_tool,3,18,False,False,False,normal,39,306,False,0,best_B0,Best
+meshki discount code,1,code,6600,keyword_tool,3,20,False,False,False,normal,39,306,False,0,best_B0,Best
+michael kors coupon code,1,code,5400,keyword_tool,4,24,False,False,False,normal,39,306,False,0,best_B0,Best
+mint mobile promo code,1,code,9900,keyword_tool,4,22,False,False,False,normal,39,306,False,0,best_B0,Best
+minted promo code,1,code,8100,keyword_tool,3,17,False,False,False,normal,39,306,False,0,best_B0,Best
+mixtiles coupon code,1,code,5400,keyword_tool,3,20,False,False,False,normal,39,306,False,0,best_B0,Best
+mixtiles promo code,1,code,9900,keyword_tool,3,19,False,False,False,normal,39,306,False,0,best_B0,Best
+mypillow promo code,1,code,6600,keyword_tool,3,19,False,False,False,normal,39,306,False,0,best_B0,Best
+neiman marcus coupon code,1,code,6600,keyword_tool,4,25,False,False,False,normal,39,306,False,0,best_B0,Best
+nespresso coupon code,1,code,22200,keyword_tool,3,21,False,False,False,normal,39,306,False,0,best_B0,Best
+nespresso discount code,1,code,6600,keyword_tool,3,23,False,False,False,normal,39,306,False,0,best_B0,Best
+netflix promo code,1,code,6600,keyword_tool,3,18,False,False,False,normal,39,306,False,0,best_B0,Best
+new balance coupon code,1,code,8100,keyword_tool,4,23,False,False,False,normal,39,306,False,0,best_B0,Best
+new dress to impress codes,1,code,12100,keyword_tool,5,26,False,False,False,normal,39,306,False,1,best_B1,Best
+new era discount code,1,code,8100,keyword_tool,4,21,False,False,False,normal,39,306,False,0,best_B0,Best
+nordstrom rack coupon code,1,code,8100,keyword_tool,4,26,False,False,False,normal,39,306,False,0,best_B0,Best
+northern tool promo code,2,code,13200,keyword_tool,4,24,False,False,False,normal,39,306,False,0,best_B0,Best
+nutrafol discount code,1,code,8100,keyword_tool,3,22,False,False,False,normal,39,306,False,0,best_B0,Best
+nuuly promo code,1,code,14800,keyword_tool,3,16,False,False,False,normal,39,306,False,0,best_B0,Best
+oh polly discount code,1,code,18100,keyword_tool,4,22,False,False,False,normal,39,306,False,0,best_B0,Best
+oh polly voucher code,1,code,5400,keyword_tool,4,21,False,False,False,normal,39,306,False,0,best_B0,Best
+on cloud discount code,1,code,12100,keyword_tool,4,22,False,False,False,normal,39,306,False,0,best_B0,Best
+on cloud promo code,1,code,8100,keyword_tool,4,19,False,False,False,normal,39,306,False,0,best_B0,Best
+ortho feet discount code,1,code,9900,keyword_tool,4,24,False,False,False,normal,39,306,False,0,best_B0,Best
+orthofeet discount code,1,code,12100,keyword_tool,3,23,False,False,False,normal,39,306,False,0,best_B0,Best
+owala coupon code,1,code,5400,keyword_tool,3,17,False,False,False,normal,39,306,False,0,best_B0,Best
+owala discount code,1,code,14800,keyword_tool,3,19,False,False,False,normal,39,306,False,0,best_B0,Best
+pacsun coupon code,1,code,9900,keyword_tool,3,18,False,False,False,normal,39,306,False,0,best_B0,Best
+panda express coupon code,1,code,18100,keyword_tool,4,25,False,False,False,normal,39,306,False,0,best_B0,Best
+panda express online promo code,1,code,6600,keyword_tool,5,31,False,False,False,normal,39,306,False,0,best_B0,Best
+panda express promo code,1,code,12100,keyword_tool,4,24,False,False,False,normal,39,306,False,0,best_B0,Best
+pandora discount code,1,code,5400,keyword_tool,3,21,False,False,False,normal,39,306,False,0,best_B0,Best
+paramount plus coupon code,1,code,5400,keyword_tool,4,26,False,False,False,normal,39,306,False,0,best_B0,Best
+parkwhiz discount code,1,code,5400,keyword_tool,3,22,False,False,False,normal,39,306,False,0,best_B0,Best
+parkwhiz promo code,1,code,5400,keyword_tool,3,19,False,False,False,normal,39,306,False,0,best_B0,Best
+parts geek coupon code,1,code,6600,keyword_tool,4,22,False,False,False,normal,39,306,False,0,best_B0,Best
+pepboy promo code,1,code,6600,keyword_tool,3,17,False,False,False,normal,39,306,False,0,best_B0,Best
+peppermayo discount code,1,code,5400,keyword_tool,3,24,False,False,False,normal,39,306,False,0,best_B0,Best
+personalization mall coupon code,1,code,9900,keyword_tool,4,32,False,False,False,normal,39,306,False,0,best_B0,Best
+postmates promo code,1,code,18100,keyword_tool,3,20,False,False,False,normal,39,306,False,0,best_B0,Best
+pottery barn coupon code,1,code,9900,keyword_tool,4,24,False,False,False,normal,39,306,False,0,best_B0,Best
+priceline coupon code,1,code,5400,keyword_tool,3,21,False,False,False,normal,39,306,False,0,best_B0,Best
+primally pure discount code,1,code,6600,keyword_tool,4,27,False,False,False,normal,39,306,False,0,best_B0,Best
+princess polly discount code,1,code,6600,keyword_tool,4,28,False,False,False,normal,39,306,False,0,best_B0,Best
+princess polly promo code,1,code,6600,keyword_tool,4,25,False,False,False,normal,39,306,False,0,best_B0,Best
+promo code for zazzle invitations,1,code,9900,keyword_tool,5,33,False,False,False,normal,39,306,False,0,best_B0,Best
+ps code discount,1,code,5400,keyword_tool,3,16,False,False,False,normal,39,306,False,0,best_B0,Best
+puma discount code,1,code,8100,keyword_tool,3,18,False,False,False,normal,39,306,False,0,best_B0,Best
+qatar airways promo code,1,code,5400,keyword_tool,4,24,False,False,False,normal,39,306,False,0,best_B0,Best
+quince discount code,1,code,33100,keyword_tool,3,20,False,False,False,normal,39,306,False,0,best_B0,Best
+rally house promo code,1,code,6600,keyword_tool,4,22,False,False,False,normal,39,306,False,0,best_B0,Best
+redbubble coupon codes,1,code,5400,keyword_tool,3,22,False,False,False,normal,39,306,False,0,best_B0,Best
+reformation coupon code,1,code,5400,keyword_tool,3,23,False,False,False,normal,39,306,False,0,best_B0,Best
+reformation promo code,1,code,6600,keyword_tool,3,22,False,False,False,normal,39,306,False,0,best_B0,Best
+regal coupon code,1,code,5400,keyword_tool,3,17,False,False,False,normal,39,306,False,0,best_B0,Best
+regal discount code,1,code,5400,keyword_tool,3,19,False,False,False,normal,39,306,False,0,best_B0,Best
+regal promo code,1,code,8100,keyword_tool,3,16,False,False,False,normal,39,306,False,0,best_B0,Best
+retro style dress to impress,1,style,5400,keyword_tool,5,28,False,False,False,normal,39,306,False,1,best_B1,Best
+revival rugs discount code,1,code,5400,keyword_tool,4,26,False,False,False,normal,39,306,False,0,best_B0,Best
+revolve coupon code,1,code,12100,keyword_tool,3,19,False,False,False,normal,39,306,False,0,best_B0,Best
+revolve discount code,1,code,12100,keyword_tool,3,21,False,False,False,normal,39,306,False,0,best_B0,Best
+rhoback discount code,1,code,8100,keyword_tool,3,21,False,False,False,normal,39,306,False,0,best_B0,Best
+rock auto discount code,1,code,5400,keyword_tool,4,23,False,False,False,normal,39,306,False,0,best_B0,Best
+rockauto discount code,1,code,33100,keyword_tool,3,22,False,False,False,normal,39,306,False,0,best_B0,Best
+rover promo code,1,code,6600,keyword_tool,3,16,False,False,False,normal,39,306,False,0,best_B0,Best
+rtic promo code,1,code,8100,keyword_tool,3,15,False,False,False,normal,39,306,False,0,best_B0,Best
+safelite promo code,1,code,22200,keyword_tool,3,19,False,False,False,normal,39,306,False,0,best_B0,Best
+sally beauty promo code,1,code,5400,keyword_tool,4,23,False,False,False,normal,39,306,False,0,best_B0,Best
+scheels discount code,1,code,5400,keyword_tool,3,21,False,False,False,normal,39,306,False,0,best_B0,Best
+seat geek promo code,1,code,8100,keyword_tool,4,20,False,False,False,normal,39,306,False,0,best_B0,Best
+seatgeek promo code,1,code,60500,keyword_tool,3,19,False,False,False,normal,39,306,False,0,best_B0,Best
+seatgeek promo codes,1,code,8100,keyword_tool,3,20,False,False,False,normal,39,306,False,0,best_B0,Best
+semi formal dress code,1,code,5400,keyword_tool,4,22,False,False,False,normal,39,306,False,1,best_B1,Best
+shein coupon code,1,code,165000,keyword_tool,3,17,False,False,False,normal,39,306,False,0,best_B0,Best
+skims coupon code,1,code,8100,keyword_tool,3,17,False,False,False,normal,39,306,False,0,best_B0,Best
+skims discount code,1,code,33100,keyword_tool,3,19,False,False,False,normal,39,306,False,0,best_B0,Best
+skims promo code,1,code,8100,keyword_tool,3,16,False,False,False,normal,39,306,False,0,best_B0,Best
+sling promo code,1,code,8100,keyword_tool,3,16,False,False,False,normal,39,306,False,0,best_B0,Best
+smart casual dress code,1,code,27100,keyword_tool,4,23,False,False,False,normal,39,306,False,1,best_B1,Best
+snipes promo code,1,code,6600,keyword_tool,3,17,False,False,False,normal,39,306,False,0,best_B0,Best
+soma coupon code,1,code,5400,keyword_tool,3,16,False,False,False,normal,39,306,False,0,best_B0,Best
+spoonful of comfort coupon code,1,code,5400,keyword_tool,5,31,False,False,False,normal,39,306,False,0,best_B0,Best
+spoonful of comfort promo code,1,code,5400,keyword_tool,5,30,False,False,False,normal,39,306,False,0,best_B0,Best
+spot hero promo code,1,code,5400,keyword_tool,4,20,False,False,False,normal,39,306,False,0,best_B0,Best
+stanley coupon code,1,code,6600,keyword_tool,3,19,False,False,False,normal,39,306,False,0,best_B0,Best
+stanley discount code,1,code,9900,keyword_tool,3,21,False,False,False,normal,39,306,False,0,best_B0,Best
+stitch fix promo code,1,code,6600,keyword_tool,4,21,False,False,False,normal,39,306,False,0,best_B0,Best
+stockx promo code,1,code,5400,keyword_tool,3,17,False,False,False,normal,39,306,False,0,best_B0,Best
+stubhub promo code,1,code,9900,keyword_tool,3,18,False,False,False,normal,39,306,False,0,best_B0,Best
+subway footlong promo code,1,code,9900,keyword_tool,4,26,False,False,False,normal,39,306,False,0,best_B0,Best
+taco bell coupon code,1,code,5400,keyword_tool,4,21,False,False,False,normal,39,306,False,0,best_B0,Best
+target coupon code,1,code,14800,keyword_tool,3,18,False,False,False,normal,39,306,False,0,best_B0,Best
+taskrabbit promo code,1,code,5400,keyword_tool,3,21,False,False,False,normal,39,306,False,0,best_B0,Best
+taxslayer promo code,1,code,6600,keyword_tool,3,20,False,False,False,normal,39,306,False,0,best_B0,Best
+teepublic coupon code,1,code,8100,keyword_tool,3,21,False,False,False,normal,39,306,False,0,best_B0,Best
+texas roadhouse coupon code,1,code,12100,keyword_tool,4,27,False,False,False,normal,39,306,False,0,best_B0,Best
+the ordinary promo code,1,code,8100,keyword_tool,4,23,False,False,False,normal,39,306,False,0,best_B0,Best
+the real real promo code,1,code,5400,keyword_tool,5,24,False,False,False,normal,39,306,False,0,best_B0,Best
+thriftbooks promo code,1,code,8100,keyword_tool,3,22,False,False,False,normal,39,306,False,0,best_B0,Best
+tickpick promo code,1,code,8100,keyword_tool,3,19,False,False,False,normal,39,306,False,0,best_B0,Best
+tik tok promo code,1,code,5400,keyword_tool,4,18,False,False,False,normal,39,306,False,0,best_B0,Best
+tiktok promo code,1,code,18100,keyword_tool,3,17,False,False,False,normal,39,306,False,0,best_B0,Best
+tiktok promo codes,1,code,6600,keyword_tool,3,18,False,False,False,normal,39,306,False,0,best_B0,Best
+tiktok shop promo code,1,code,40500,keyword_tool,4,22,False,False,False,normal,39,306,False,0,best_B0,Best
+tiktok shop promo codes,1,code,8100,keyword_tool,4,23,False,False,False,normal,39,306,False,0,best_B0,Best
+timberland promo code,1,code,8100,keyword_tool,3,21,False,False,False,normal,39,306,False,0,best_B0,Best
+topstep promo code,1,code,5400,keyword_tool,3,18,False,False,False,normal,39,306,False,0,best_B0,Best
+tory burch promo code,1,code,6600,keyword_tool,4,21,False,False,False,normal,39,306,False,0,best_B0,Best
+tropical smoothie promo code,1,code,6600,keyword_tool,4,28,False,False,False,normal,39,306,False,0,best_B0,Best
+true classic discount code,1,code,5400,keyword_tool,4,26,False,False,False,normal,39,306,False,0,best_B0,Best
+tuckernuck promo code,1,code,5400,keyword_tool,3,21,False,False,False,normal,39,306,False,0,best_B0,Best
+turo coupon code,1,code,6600,keyword_tool,3,16,False,False,False,normal,39,306,False,0,best_B0,Best
+uber eats promo code for existing users,1,code,5400,keyword_tool,7,39,False,False,False,normal,39,306,False,0,best_B0,Best
+uber eats promo codes for existing users,1,code,12100,keyword_tool,7,40,False,False,False,normal,39,306,False,0,best_B0,Best
+uhaul discount code,1,code,27100,keyword_tool,3,19,False,False,False,normal,39,306,False,0,best_B0,Best
+under armour coupon code,1,code,6600,keyword_tool,4,24,False,False,False,normal,39,306,False,0,best_B0,Best
+underdog promo code,1,code,6600,keyword_tool,3,19,False,False,False,normal,39,306,False,0,best_B0,Best
+ups coupon code,1,code,5400,keyword_tool,3,15,False,False,False,normal,39,306,False,0,best_B0,Best
+upside promo code,1,code,5400,keyword_tool,3,17,False,False,False,normal,39,306,False,0,best_B0,Best
+urban air promo code,1,code,8100,keyword_tool,4,20,False,False,False,normal,39,306,False,0,best_B0,Best
+usps coupon code,1,code,6600,keyword_tool,3,16,False,False,False,normal,39,306,False,0,best_B0,Best
+uworld discount code,1,code,5400,keyword_tool,3,20,False,False,False,normal,39,306,False,0,best_B0,Best
+viator coupon code,1,code,12100,keyword_tool,3,18,False,False,False,normal,39,306,False,0,best_B0,Best
+victoria secret coupons promo codes,1,code,6600,keyword_tool,5,35,False,False,False,normal,39,306,False,0,best_B0,Best
+vivid seats coupon code,1,code,6600,keyword_tool,4,23,False,False,False,normal,39,306,False,0,best_B0,Best
+vivid seats promo code,1,code,22200,keyword_tool,4,22,False,False,False,normal,39,306,False,0,best_B0,Best
+vivid seats promotion code,1,code,6600,keyword_tool,4,26,False,False,False,normal,39,306,False,0,best_B0,Best
+vuori coupon code,1,code,9900,keyword_tool,3,17,False,False,False,normal,39,306,False,0,best_B0,Best
+vuori discount code,1,code,18100,keyword_tool,3,19,False,False,False,normal,39,306,False,0,best_B0,Best
+wayfair promo codes,1,code,5400,keyword_tool,3,19,False,False,False,normal,39,306,False,0,best_B0,Best
+wedding dress code for mens,1,code,6600,keyword_tool,5,27,False,False,False,normal,39,306,False,1,best_B1,Best
+wedding dress codes,1,code,6600,keyword_tool,3,19,False,False,False,normal,39,306,False,1,best_B1,Best
+west elm coupon code,1,code,12100,keyword_tool,4,20,False,False,False,normal,39,306,False,0,best_B0,Best
+white fox discount code,1,code,8100,keyword_tool,4,23,False,False,False,normal,39,306,False,0,best_B0,Best
+wingstop discount code,1,code,12100,keyword_tool,3,22,False,False,False,normal,39,306,False,0,best_B0,Best
+wix promo code,1,code,5400,keyword_tool,3,14,False,False,False,normal,39,306,False,0,best_B0,Best
+yoox promo code,1,code,5400,keyword_tool,3,15,False,False,False,normal,39,306,False,0,best_B0,Best
+youtooz discount code,1,code,8100,keyword_tool,3,21,False,False,False,normal,39,306,False,0,best_B0,Best
+youtube tv promo code,1,code,27100,keyword_tool,4,21,False,False,False,normal,39,306,False,0,best_B0,Best
+zappos coupon code,1,code,14800,keyword_tool,3,18,False,False,False,normal,39,306,False,0,best_B0,Best
+zara promo code,1,code,5400,keyword_tool,3,15,False,False,False,normal,39,306,False,0,best_B0,Best
+zazzle coupon code,1,code,12100,keyword_tool,3,18,False,False,False,normal,39,306,False,0,best_B0,Best
+zola promo code,1,code,5400,keyword_tool,3,15,False,False,False,normal,39,306,False,0,best_B0,Best
+zoro coupon code,1,code,5400,keyword_tool,3,16,False,False,False,normal,39,306,False,0,best_B0,Best
+zoro promo code,1,code,5400,keyword_tool,3,15,False,False,False,normal,39,306,False,0,best_B0,Best
+beef cuts best,1,Best,9900,keyword_tool,3,14,False,True,False,best_list,35,92,False,-1,best_B-1,Best
+best egg laying chickens,1,Best,6600,keyword_tool,4,24,False,True,False,best_list,35,92,False,-1,best_B-1,Best
+best egg loan,1,Best,33100,keyword_tool,3,13,False,True,False,best_list,35,92,False,-1,best_B-1,Best
+best steak cuts,1,Best,6600,keyword_tool,3,15,False,True,False,best_list,35,92,False,-1,best_B-1,Best
+best steak seasoning,1,Best,8100,keyword_tool,3,20,False,True,False,best_list,35,92,False,-1,best_B-1,Best
+best way to reheat steak,1,Best,14800,keyword_tool,5,24,False,True,False,best_list,35,92,False,-1,best_B-1,Best
+country style ribs recipe,1,style,6600,keyword_tool,4,25,False,False,False,normal,35,92,False,-1,best_B-1,Best
+egg cooking styles,1,style,6600,keyword_tool,3,18,False,False,False,normal,35,92,False,-1,best_B-1,Best
+eggland's best eggs,1,Best,5400,keyword_tool,3,19,False,True,False,best_list,35,92,False,-1,best_B-1,Best
+how long do potatoes take to boil,1,How-to,8100,keyword_tool,7,33,True,False,True,question,35,92,False,2,best_B2,Best
+how long does it take to boil chicken,1,How-to,9900,keyword_tool,8,37,True,False,True,question,35,92,False,0,best_B0,Best
+how long does it take to boil eggs,1,How-to,18100,keyword_tool,8,34,True,False,True,question,35,92,False,0,best_B0,Best
+how long does it take to smoke a turkey,1,How-to,5400,keyword_tool,9,39,True,False,True,question,35,92,False,-1,best_B-1,Best
+how long to air fry chicken thighs,1,How-to,8100,keyword_tool,7,34,True,False,True,question,35,92,False,0,best_B0,Best
+how long to bake chicken drumsticks,1,How-to,5400,keyword_tool,6,35,True,False,True,question,35,92,False,0,best_B0,Best
+how long to bake chicken legs,1,How-to,9900,keyword_tool,6,29,True,False,True,question,35,92,False,0,best_B0,Best
+how long to bake chicken tenderloins,1,How-to,5400,keyword_tool,6,36,True,False,True,question,35,92,False,0,best_B0,Best
+how long to bake ribs in oven,1,How-to,5400,keyword_tool,7,29,True,False,True,question,35,92,False,1,best_B1,Best
+how long to boil an egg,1,How-to,12100,keyword_tool,6,23,True,False,True,question,35,92,False,0,best_B0,Best
+how long to boil broccoli,1,How-to,12100,keyword_tool,5,25,True,False,True,question,35,92,False,0,best_B0,Best
+how long to boil chicken,1,How-to,14800,keyword_tool,5,24,True,False,True,question,35,92,False,0,best_B0,Best
+how long to boil chicken breast,1,How-to,33100,keyword_tool,6,31,True,False,True,question,35,92,False,0,best_B0,Best
+how long to boil chicken thighs,1,How-to,8100,keyword_tool,6,31,True,False,True,question,35,92,False,0,best_B0,Best
+how long to boil shrimp,1,How-to,12100,keyword_tool,5,23,True,False,True,question,35,92,False,0,best_B0,Best
+how long to boil sweet potatoes,1,How-to,8100,keyword_tool,6,31,True,False,True,question,35,92,False,2,best_B2,Best
+how long to cook a baked potato,1,How-to,5400,keyword_tool,7,31,True,False,True,question,35,92,False,2,best_B2,Best
+how long to cook chicken drumsticks in oven,1,How-to,6600,keyword_tool,8,43,True,False,True,question,35,92,False,0,best_B0,Best
+how long to cook chicken legs in oven,1,How-to,8100,keyword_tool,8,37,True,False,True,question,35,92,False,0,best_B0,Best
+how long to cook chicken thighs,1,How-to,8100,keyword_tool,6,31,True,False,True,question,35,92,False,0,best_B0,Best
+how long to cook chicken wings in oven,1,How-to,12100,keyword_tool,8,38,True,False,True,question,35,92,False,0,best_B0,Best
+how long to cook hard boiled eggs on stove,1,How-to,9900,keyword_tool,9,42,True,False,True,question,35,92,False,0,best_B0,Best
+how long to cook ribs in oven,1,How-to,14800,keyword_tool,7,29,True,False,True,question,35,92,False,1,best_B1,Best
+how long to cook steak in oven,1,How-to,6600,keyword_tool,7,30,True,False,True,question,35,92,False,4,best_B4,Best
+how long to deep fry chicken wings,1,How-to,5400,keyword_tool,7,34,True,False,True,question,35,92,False,0,best_B0,Best
+how long to smoke a brisket,1,How-to,9900,keyword_tool,6,27,True,False,True,question,35,92,False,-1,best_B-1,Best
+how long to smoke chicken wings,1,How-to,5400,keyword_tool,6,31,True,False,True,question,35,92,False,0,best_B0,Best
+how long to smoke ribs,1,How-to,9900,keyword_tool,5,22,True,False,True,question,35,92,False,1,best_B1,Best
+how long to thaw a turkey,1,How-to,9900,keyword_tool,6,25,True,False,True,question,35,92,False,-1,best_B-1,Best
+how to bake chicken wings,1,How-to,6600,keyword_tool,5,25,True,False,True,question,35,92,False,0,best_B0,Best
+how to boil chicken breast,1,How-to,5400,keyword_tool,5,26,True,False,True,question,35,92,False,0,best_B0,Best
+how to boil potatoes,1,How-to,14800,keyword_tool,4,20,True,False,True,question,35,92,False,2,best_B2,Best
+how to boil shrimp,1,How-to,5400,keyword_tool,4,18,True,False,True,question,35,92,False,0,best_B0,Best
+how to boil sweet potatoes,1,How-to,5400,keyword_tool,5,26,True,False,True,question,35,92,False,2,best_B2,Best
+how to cook a pork loin,1,How-to,5400,keyword_tool,6,23,True,False,True,question,35,92,False,-1,best_B-1,Best
+how to cook a steak in the oven,1,How-to,6600,keyword_tool,8,31,True,False,True,question,35,92,False,4,best_B4,Best
+how to cook a steak on the stove,1,How-to,6600,keyword_tool,8,32,True,False,True,question,35,92,False,4,best_B4,Best
+how to cook baked potatoes in the oven,1,How-to,8100,keyword_tool,8,38,True,False,True,question,35,92,False,2,best_B2,Best
+how to cook brisket in oven,1,How-to,8100,keyword_tool,6,27,True,False,True,question,35,92,False,-1,best_B-1,Best
+how to cook chicken wings,1,How-to,5400,keyword_tool,5,25,True,False,True,question,35,92,False,0,best_B0,Best
+how to cook chicken wings in the oven,1,How-to,6600,keyword_tool,8,37,True,False,True,question,35,92,False,0,best_B0,Best
+how to cook flank steak,1,How-to,9900,keyword_tool,5,23,True,False,True,question,35,92,False,4,best_B4,Best
+how to cook frozen shrimp,1,How-to,6600,keyword_tool,5,25,True,False,True,question,35,92,False,-1,best_B-1,Best
+how to cook new york strip steak,1,How-to,6600,keyword_tool,7,32,True,False,True,question,35,92,False,-1,best_B-1,Best
+how to cook pork chops in the oven,1,How-to,9900,keyword_tool,8,34,True,False,True,question,35,92,False,-1,best_B-1,Best
+how to cook pork loin,1,How-to,8100,keyword_tool,5,21,True,False,True,question,35,92,False,-1,best_B-1,Best
+how to cook ribs in the oven,1,How-to,18100,keyword_tool,7,28,True,False,True,question,35,92,False,1,best_B1,Best
+how to cook ribs on the grill,1,How-to,5400,keyword_tool,7,29,True,False,True,question,35,92,False,1,best_B1,Best
+how to cook rice in microwave,1,How-to,5400,keyword_tool,6,29,True,False,True,question,35,92,False,-1,best_B-1,Best
+how to cook steak in air fryer,1,How-to,5400,keyword_tool,7,30,True,False,True,question,35,92,False,4,best_B4,Best
+how to cook steak in oven,1,How-to,9900,keyword_tool,6,25,True,False,True,question,35,92,False,4,best_B4,Best
+how to cook steak on stove,1,How-to,14800,keyword_tool,6,26,True,False,True,question,35,92,False,4,best_B4,Best
+how to cook the ribs in the oven,1,How-to,12100,keyword_tool,8,32,True,False,True,question,35,92,False,1,best_B1,Best
+how to cook top sirloin steak,2,How-to,10800,keyword_tool,6,29,True,True,True,question,35,92,False,3,best_B3,Best
+how to cook wild rice,1,How-to,5400,keyword_tool,5,21,True,False,True,question,35,92,False,-1,best_B-1,Best
+how to defrost chicken,1,How-to,9900,keyword_tool,4,22,True,False,True,question,35,92,False,-1,best_B-1,Best
+how to defrost chicken fast,1,How-to,14800,keyword_tool,5,27,True,False,True,question,35,92,False,-1,best_B-1,Best
+how to grill pork chops,1,How-to,5400,keyword_tool,5,23,True,False,True,question,35,92,False,-1,best_B-1,Best
+how to grill steak,1,How-to,9900,keyword_tool,4,18,True,False,True,question,35,92,False,4,best_B4,Best
+how to grow sweet potatoes,1,How-to,8100,keyword_tool,5,26,True,False,True,question,35,92,False,-1,best_B-1,Best
+how to make a soft boiled egg,2,How-to,13200,keyword_tool,7,29,True,False,True,question,35,92,False,0,best_B0,Best
+how to make baked potatoes in oven,1,How-to,6600,keyword_tool,7,34,True,False,True,question,35,92,False,2,best_B2,Best
+how to make eggnog,1,maker,9900,keyword_tool,4,18,True,False,True,question,35,92,False,0,best_B0,Best
+how to make over easy eggs,2,How-to,13200,keyword_tool,6,26,True,False,True,question,35,92,False,0,best_B0,Best
+how to make ribs in the oven,2,How-to,16200,keyword_tool,7,28,True,False,True,question,35,92,False,1,best_B1,Best
+how to make soft boiled eggs,1,maker,14800,keyword_tool,6,28,True,False,True,question,35,92,False,0,best_B0,Best
+how to make white rice,1,How-to,18100,keyword_tool,5,22,True,False,True,question,35,92,False,-1,best_B-1,Best
+how to reheat steak,1,How-to,12100,keyword_tool,4,19,True,False,True,question,35,92,False,-1,best_B-1,Best
+how to smoke a brisket,1,How-to,14800,keyword_tool,5,22,True,False,True,question,35,92,False,-1,best_B-1,Best
+how to smoke a pork butt,1,How-to,8100,keyword_tool,6,24,True,False,True,question,35,92,False,-1,best_B-1,Best
+how to smoke brisket,1,How-to,5400,keyword_tool,4,20,True,False,True,question,35,92,False,-1,best_B-1,Best
+how to smoke ribs,1,How-to,8100,keyword_tool,4,17,True,False,True,question,35,92,False,1,best_B1,Best
+how to steam broccoli in microwave,1,How-to,5400,keyword_tool,6,34,True,False,True,question,35,92,False,-1,best_B-1,Best
+how to tenderize steak,1,How-to,8100,keyword_tool,4,22,True,False,True,question,35,92,False,-1,best_B-1,Best
+how to thaw chicken,1,How-to,6600,keyword_tool,4,19,True,False,True,question,35,92,False,-1,best_B-1,Best
+how to thaw chicken fast,1,How-to,12100,keyword_tool,5,24,True,False,True,question,35,92,False,-1,best_B-1,Best
+how to wash rice,1,How-to,6600,keyword_tool,4,16,True,False,True,question,35,92,False,-1,best_B-1,Best
+sirloin top sirloin,1,top,9900,keyword_tool,3,19,False,True,False,best_list,35,92,False,3,best_B3,Best
+top blade steak,1,top,6600,keyword_tool,3,15,False,True,False,best_list,35,92,False,-1,best_B-1,Best
+top round steak,1,top,14800,keyword_tool,3,15,False,True,False,best_list,35,92,False,-1,best_B-1,Best
+top sirloin,1,top,14800,keyword_tool,2,11,False,True,False,best_list,35,92,False,3,best_B3,Best
+top sirloin recipes,1,top,5400,keyword_tool,3,19,False,True,False,best_list,35,92,False,3,best_B3,Best
+top sirloin steak recipe,1,top,8100,keyword_tool,4,24,False,True,False,best_list,35,92,False,3,best_B3,Best
+50 best restaurants in the world,1,Best,5400,keyword_tool,6,32,False,True,False,best_list,56,79,False,-1,best_B-1,Best
+best accommodation hawaii,1,Best,5400,keyword_tool,3,25,False,True,False,best_list,56,79,False,4,best_B4,Best
+best beaches in california,1,Best,8100,keyword_tool,4,26,False,True,False,best_list,56,79,False,2,best_B2,Best
+best beaches in costa rica,1,Best,5400,keyword_tool,5,26,False,True,False,best_list,56,79,False,2,best_B2,Best
+best beaches in florida,1,Best,33100,keyword_tool,4,23,False,True,False,best_list,56,79,False,2,best_B2,Best
+best beaches in mexico,1,Best,5400,keyword_tool,4,22,False,True,False,best_list,56,79,False,2,best_B2,Best
+best beaches in north carolina,1,Best,5400,keyword_tool,5,30,False,True,False,best_list,56,79,False,-1,best_B-1,Best
+best beaches in portugal,1,Best,6600,keyword_tool,4,24,False,True,False,best_list,56,79,False,-1,best_B-1,Best
+best beaches in puerto rico,1,Best,9900,keyword_tool,5,27,False,True,False,best_list,56,79,False,2,best_B2,Best
+best beaches in san diego,1,Best,5400,keyword_tool,5,25,False,True,False,best_list,56,79,False,2,best_B2,Best
+best beaches in texas,1,Best,6600,keyword_tool,4,21,False,True,False,best_list,56,79,False,2,best_B2,Best
+best beaches in thailand,1,Best,6600,keyword_tool,4,24,False,True,False,best_list,56,79,False,-1,best_B-1,Best
+best beaches in the world,1,Best,12100,keyword_tool,5,25,False,True,False,best_list,56,79,False,2,best_B2,Best
+best breakfast,1,Best,22200,keyword_tool,2,14,False,True,False,best_list,56,79,False,1,best_B1,Best
+best breakfast in las vegas,1,Best,9900,keyword_tool,5,27,False,True,False,best_list,56,79,False,3,best_B3,Best
+best breakfast sandwich near me,1,Best,6600,keyword_tool,5,31,False,True,False,best_list,56,79,False,1,best_B1,Best
+best burger near me,1,Best,40500,keyword_tool,4,19,False,True,False,best_list,56,79,False,-1,best_B-1,Best
+best cheesesteaks in philadelphia,1,Best,5400,keyword_tool,4,33,False,True,False,best_list,56,79,False,3,best_B3,Best
+best food in town,1,Best,6600,keyword_tool,4,17,False,True,False,best_list,56,79,False,-1,best_B-1,Best
+best hawaiian island to visit,1,Best,6600,keyword_tool,5,29,False,True,False,best_list,56,79,False,4,best_B4,Best
+best hotels in costa rica,1,Best,5400,keyword_tool,5,25,False,True,False,best_list,56,79,False,2,best_B2,Best
+best hotels in hawaii,1,Best,5400,keyword_tool,4,21,False,True,False,best_list,56,79,False,4,best_B4,Best
+best hotels in mexico city,1,Best,5400,keyword_tool,5,26,False,True,False,best_list,56,79,False,-1,best_B-1,Best
+best island to visit in hawaii,1,Best,8100,keyword_tool,6,30,False,True,False,best_list,56,79,False,4,best_B4,Best
+best las vegas restaurants,1,Best,5400,keyword_tool,4,26,False,True,False,best_list,56,79,False,3,best_B3,Best
+best lunch places near me,1,Best,5400,keyword_tool,5,25,False,True,False,best_list,56,79,False,-1,best_B-1,Best
+best mexican restaurants near me,1,Best,22200,keyword_tool,5,32,False,True,False,best_list,56,79,False,-1,best_B-1,Best
+best philly cheesesteak in philly,1,Best,9900,keyword_tool,5,33,False,True,False,best_list,56,79,False,-1,best_B-1,Best
+best places lunch,1,Best,8100,keyword_tool,3,17,False,True,False,best_list,56,79,False,-1,best_B-1,Best
+best places to eat,1,Best,8100,keyword_tool,4,18,False,True,False,best_list,56,79,False,-1,best_B-1,Best
+best places to stay in costa rica,1,Best,5400,keyword_tool,7,33,False,True,False,best_list,56,79,False,2,best_B2,Best
+best places to stay on maui hawaii,1,Best,12100,keyword_tool,7,34,False,True,False,best_list,56,79,False,4,best_B4,Best
+best places to visit in greece,1,Best,5400,keyword_tool,6,30,False,True,False,best_list,56,79,False,-1,best_B-1,Best
+best places to visit in mexico,1,Best,5400,keyword_tool,6,30,False,True,False,best_list,56,79,False,2,best_B2,Best
+best restaurants,1,Best,49500,keyword_tool,2,16,False,True,False,best_list,56,79,False,3,best_B3,Best
+best restaurants charlotte nc,1,Best,8100,keyword_tool,4,29,False,True,False,best_list,56,79,False,-1,best_B-1,Best
+best restaurants in charleston sc,1,Best,14800,keyword_tool,5,33,False,True,False,best_list,56,79,False,-1,best_B-1,Best
+best restaurants in charlotte,1,Best,5400,keyword_tool,4,29,False,True,False,best_list,56,79,False,-1,best_B-1,Best
+best restaurants in key west,1,Best,5400,keyword_tool,5,28,False,True,False,best_list,56,79,False,3,best_B3,Best
+best restaurants in maui,1,Best,5400,keyword_tool,4,24,False,True,False,best_list,56,79,False,3,best_B3,Best
+best restaurants in philadelphia,1,Best,9900,keyword_tool,4,32,False,True,False,best_list,56,79,False,3,best_B3,Best
+best restaurants in phoenix,1,Best,5400,keyword_tool,4,27,False,True,False,best_list,56,79,False,3,best_B3,Best
+best restaurants in rome,1,Best,5400,keyword_tool,4,24,False,True,False,best_list,56,79,False,-1,best_B-1,Best
+best restaurants in salt lake city,1,Best,5400,keyword_tool,6,34,False,True,False,best_list,56,79,False,-1,best_B-1,Best
+best restaurants in sedona,1,Best,5400,keyword_tool,4,26,False,True,False,best_list,56,79,False,-1,best_B-1,Best
+best restaurants in vegas,1,Best,8100,keyword_tool,4,25,False,True,False,best_list,56,79,False,3,best_B3,Best
+best restaurants philadelphia,1,Best,9900,keyword_tool,3,29,False,True,False,best_list,56,79,False,3,best_B3,Best
+best restaurants phoenix,1,Best,5400,keyword_tool,3,24,False,True,False,best_list,56,79,False,3,best_B3,Best
+best restaurants vegas,1,Best,5400,keyword_tool,3,22,False,True,False,best_list,56,79,False,3,best_B3,Best
+best sandwiches near me,1,Best,18100,keyword_tool,4,23,False,True,False,best_list,56,79,False,1,best_B1,Best
+best seafood restaurants near me,1,Best,14800,keyword_tool,5,32,False,True,False,best_list,56,79,False,-1,best_B-1,Best
+best spanish beach resorts,1,Best,6600,keyword_tool,4,26,False,True,False,best_list,56,79,False,2,best_B2,Best
+best spanish coastal resorts,1,Best,6600,keyword_tool,4,28,False,True,False,best_list,56,79,False,-1,best_B-1,Best
+best time to go to iceland,1,Best,5400,keyword_tool,6,26,False,True,False,best_list,56,79,False,0,best_B0,Best
+best time to go to switzerland,1,Best,5400,keyword_tool,6,30,False,True,False,best_list,56,79,False,0,best_B0,Best
+best time to travel to costa rica,1,Best,5400,keyword_tool,7,33,False,True,False,best_list,56,79,False,2,best_B2,Best
+best time to visit costa rica,1,Best,14800,keyword_tool,6,29,False,True,False,best_list,56,79,False,2,best_B2,Best
+best time to visit greece,1,Best,9900,keyword_tool,5,25,False,True,False,best_list,56,79,False,0,best_B0,Best
+best time to visit iceland,1,Best,14800,keyword_tool,5,26,False,True,False,best_list,56,79,False,0,best_B0,Best
+best time to visit puerto rico,1,Best,9900,keyword_tool,6,30,False,True,False,best_list,56,79,False,-1,best_B-1,Best
+best time to visit switzerland,1,Best,8100,keyword_tool,5,30,False,True,False,best_list,56,79,False,0,best_B0,Best
+best time to visit thailand,1,Best,12100,keyword_tool,5,27,False,True,False,best_list,56,79,False,0,best_B0,Best
+best western grant park hotel,1,Best,8100,keyword_tool,5,29,False,True,False,best_list,56,79,False,3,best_B3,Best
+best western premier empire state hotel,1,Best,6600,keyword_tool,6,39,False,True,False,best_list,56,79,False,-1,best_B-1,Best
+cold lunch ideas,1,ideas,5400,keyword_tool,3,16,False,False,False,normal,56,79,False,1,best_B1,Best
+easy lunch ideas,1,ideas,27100,keyword_tool,3,16,False,False,False,normal,56,79,False,1,best_B1,Best
+easy lunch ideas for work,1,ideas,9900,keyword_tool,5,25,False,False,False,normal,56,79,False,1,best_B1,Best
+high protein dinner ideas,1,ideas,9900,keyword_tool,4,25,False,False,False,normal,56,79,False,-1,best_B-1,Best
+high protein lunch ideas,1,ideas,9900,keyword_tool,4,24,False,False,False,normal,56,79,False,1,best_B1,Best
+hotel orlando best western,1,Best,6600,keyword_tool,4,26,False,True,False,best_list,56,79,False,3,best_B3,Best
+ideas for lunch for kindergarteners,1,ideas,6600,keyword_tool,5,35,False,False,False,normal,56,79,False,1,best_B1,Best
+keto lunch ideas,1,ideas,6600,keyword_tool,3,16,False,False,False,normal,56,79,False,1,best_B1,Best
+key west best hotels,1,Best,6600,keyword_tool,4,20,False,True,False,best_list,56,79,False,3,best_B3,Best
+low carb lunch ideas,1,ideas,5400,keyword_tool,4,20,False,False,False,normal,56,79,False,1,best_B1,Best
+lunch ideas for work,1,ideas,9900,keyword_tool,4,20,False,False,False,normal,56,79,False,1,best_B1,Best
+lunch meal prep ideas,1,ideas,6600,keyword_tool,4,21,False,False,False,normal,56,79,False,1,best_B1,Best
+meal prep lunch ideas,1,ideas,5400,keyword_tool,4,21,False,False,False,normal,56,79,False,1,best_B1,Best
+savory breakfast ideas,1,ideas,5400,keyword_tool,3,22,False,False,False,normal,56,79,False,1,best_B1,Best
+work lunch ideas,1,ideas,6600,keyword_tool,3,16,False,False,False,normal,56,79,False,1,best_B1,Best
+beard beard styles,1,style,8100,keyword_tool,3,18,False,False,False,normal,54,77,False,3,best_B3,Best
+beard styles men,1,style,5400,keyword_tool,3,16,False,False,False,normal,54,77,False,3,best_B3,Best
+best beard trimmers for men,1,Best,5400,keyword_tool,5,27,False,True,False,best_list,54,77,False,-1,best_B-1,Best
+best clarifying shampoo,1,Best,14800,keyword_tool,3,23,False,True,False,best_list,54,77,False,-1,best_B-1,Best
+best concealer for mature skin,1,Best,6600,keyword_tool,5,30,False,True,False,best_list,54,77,False,0,best_B0,Best
+best conditioner,1,Best,5400,keyword_tool,2,16,False,True,False,best_list,54,77,False,4,best_B4,Best
+best conditioner for curly hair,1,Best,5400,keyword_tool,5,31,False,True,False,best_list,54,77,False,4,best_B4,Best
+best curly hair products,1,Best,18100,keyword_tool,4,24,False,True,False,best_list,54,77,False,4,best_B4,Best
+best diffuser for curly hair,1,Best,5400,keyword_tool,5,28,False,True,False,best_list,54,77,False,-1,best_B-1,Best
+best drugstore shampoo,1,Best,12100,keyword_tool,3,22,False,True,False,best_list,54,77,False,2,best_B2,Best
+best dry shampoo,1,Best,27100,keyword_tool,3,16,False,True,False,best_list,54,77,False,2,best_B2,Best
+best guy hair products,1,Best,5400,keyword_tool,4,22,False,True,False,best_list,54,77,False,-1,best_B-1,Best
+best hair color for gray hair,1,Best,5400,keyword_tool,6,29,False,True,False,best_list,54,77,False,-1,best_B-1,Best
+best hair conditioner,1,Best,5400,keyword_tool,3,21,False,True,False,best_list,54,77,False,4,best_B4,Best
+best hair dye to color gray,1,Best,5400,keyword_tool,6,27,False,True,False,best_list,54,77,False,-1,best_B-1,Best
+best hair pomades for guys,1,Best,5400,keyword_tool,5,26,False,True,False,best_list,54,77,False,-1,best_B-1,Best
+best hair products for curly hair,1,Best,6600,keyword_tool,6,33,False,True,False,best_list,54,77,False,4,best_B4,Best
+best hairstyles for round faces,1,face,5400,keyword_tool,5,31,False,True,False,best_list,54,77,False,1,best_B1,Best
+best head shaver,1,Best,6600,keyword_tool,3,16,False,True,False,best_list,54,77,False,-1,best_B-1,Best
+best head shaver for men,1,Best,6600,keyword_tool,5,24,False,True,False,best_list,54,77,False,-1,best_B-1,Best
+best leave in conditioner for curly hair,1,Best,6600,keyword_tool,7,40,False,True,False,best_list,54,77,False,4,best_B4,Best
+best makeup for mature skin,1,Best,6600,keyword_tool,5,27,False,True,False,best_list,54,77,False,0,best_B0,Best
+best men's shampoo,1,Best,5400,keyword_tool,3,18,False,True,False,best_list,54,77,False,2,best_B2,Best
+best moisturizing shampoo,1,Best,5400,keyword_tool,3,25,False,True,False,best_list,54,77,False,2,best_B2,Best
+best primer for mature skin,1,Best,6600,keyword_tool,5,27,False,True,False,best_list,54,77,False,0,best_B0,Best
+best products for curly hair,1,Best,5400,keyword_tool,5,28,False,True,False,best_list,54,77,False,4,best_B4,Best
+best purple shampoo,1,Best,9900,keyword_tool,3,19,False,True,False,best_list,54,77,False,-1,best_B-1,Best
+best razor for men,1,Best,8100,keyword_tool,4,18,False,True,False,best_list,54,77,False,-1,best_B-1,Best
+best shampoo and conditioner for curly hair,1,Best,8100,keyword_tool,7,43,False,True,False,best_list,54,77,False,4,best_B4,Best
+best shampoo for color treated hair,1,Best,6600,keyword_tool,6,35,False,True,False,best_list,54,77,False,-1,best_B-1,Best
+best shampoo for colored hair,1,Best,9900,keyword_tool,5,29,False,True,False,best_list,54,77,False,-1,best_B-1,Best
+best shampoo for curly hair,1,Best,8100,keyword_tool,5,27,False,True,False,best_list,54,77,False,4,best_B4,Best
+best shampoo for dry hair,1,Best,8100,keyword_tool,5,25,False,True,False,best_list,54,77,False,2,best_B2,Best
+best shampoo for dry scalp,1,Best,9900,keyword_tool,5,26,False,True,False,best_list,54,77,False,2,best_B2,Best
+best shampoo for fine hair,1,Best,6600,keyword_tool,5,26,False,True,False,best_list,54,77,False,2,best_B2,Best
+best shampoo for itchy scalp,1,Best,5400,keyword_tool,5,28,False,True,False,best_list,54,77,False,-1,best_B-1,Best
+best shampoo for men,1,Best,9900,keyword_tool,4,20,False,True,False,best_list,54,77,False,-1,best_B-1,Best
+best shampoo for oily hair,1,Best,18100,keyword_tool,5,26,False,True,False,best_list,54,77,False,-1,best_B-1,Best
+best tinted moisturizer,1,Best,18100,keyword_tool,3,23,False,True,False,best_list,54,77,False,0,best_B0,Best
+best tinted moisturizer for mature skin,1,Best,5400,keyword_tool,6,39,False,True,False,best_list,54,77,False,0,best_B0,Best
+best volumizing shampoo,1,Best,5400,keyword_tool,3,23,False,True,False,best_list,54,77,False,-1,best_B-1,Best
+black hair styles,1,style,6600,keyword_tool,3,17,False,False,False,normal,54,77,False,-1,best_B-1,Best
+blonde hair ideas,1,ideas,6600,keyword_tool,3,17,False,False,False,normal,54,77,False,-1,best_B-1,Best
+boyish style haircuts,1,style,8100,keyword_tool,3,21,False,False,False,normal,54,77,False,3,best_B3,Best
+braids styles,1,style,6600,keyword_tool,2,13,False,False,False,normal,54,77,False,-1,best_B-1,Best
+cornrow braid styles,1,style,5400,keyword_tool,3,20,False,False,False,normal,54,77,False,-1,best_B-1,Best
+curly hair styles,1,style,14800,keyword_tool,3,17,False,False,False,normal,54,77,False,4,best_B4,Best
+facial hair styles,1,style,5400,keyword_tool,3,18,False,False,False,normal,54,77,False,3,best_B3,Best
+hair braid styles for black hair,1,style,6600,keyword_tool,6,32,False,False,False,normal,54,77,False,-1,best_B-1,Best
+hair color ideas,1,ideas,33100,keyword_tool,3,16,False,False,False,normal,54,77,False,-1,best_B-1,Best
+hair ideas,1,ideas,9900,keyword_tool,2,10,False,False,False,normal,54,77,False,-1,best_B-1,Best
+hair style boyish,1,style,5400,keyword_tool,3,17,False,False,False,normal,54,77,False,-1,best_B-1,Best
+hair style for man curly,1,style,14800,keyword_tool,5,24,False,False,False,normal,54,77,False,3,best_B3,Best
+hair styles for over 60s ladies,1,style,14800,keyword_tool,6,31,False,False,False,normal,54,77,False,-1,best_B-1,Best
+hair styles men,1,style,6600,keyword_tool,3,15,False,False,False,normal,54,77,False,3,best_B3,Best
+haircut styles for men,1,style,6600,keyword_tool,4,22,False,False,False,normal,54,77,False,3,best_B3,Best
+haircut styles women's medium,1,style,8100,keyword_tool,4,29,False,False,False,normal,54,77,False,3,best_B3,Best
+haircuts for oval faces,1,face,6600,keyword_tool,4,23,False,False,False,normal,54,77,False,1,best_B1,Best
+hairdressing ideas,1,ideas,8100,keyword_tool,2,18,False,False,False,normal,54,77,False,-1,best_B-1,Best
+hairstyle cut for round face,1,face,8100,keyword_tool,5,28,False,False,False,normal,54,77,False,1,best_B1,Best
+hairstyle for round shaped face,1,face,6600,keyword_tool,5,31,False,False,False,normal,54,77,False,1,best_B1,Best
+how to braid,1,How-to,8100,keyword_tool,3,12,True,False,True,question,54,77,False,-1,best_B-1,Best
+how to use dry shampoo,1,How-to,8100,keyword_tool,5,22,True,False,True,question,54,77,False,-1,best_B-1,Best
+long beard styles,1,style,5400,keyword_tool,3,17,False,False,False,normal,54,77,False,3,best_B3,Best
+long hair styles for men,1,style,12100,keyword_tool,5,24,False,False,False,normal,54,77,False,3,best_B3,Best
+men braid styles,1,style,9900,keyword_tool,3,16,False,False,False,normal,54,77,False,-1,best_B-1,Best
+men's haircut styles long hair,1,style,6600,keyword_tool,5,30,False,False,False,normal,54,77,False,3,best_B3,Best
+mens haircut styles,1,style,8100,keyword_tool,3,19,False,False,False,normal,54,77,False,3,best_B3,Best
+natural hair styles,1,style,5400,keyword_tool,3,19,False,False,False,normal,54,77,False,-1,best_B-1,Best
+old men haircut styles,1,style,6600,keyword_tool,4,22,False,False,False,normal,54,77,False,3,best_B3,Best
+oval face shape hairstyles,1,face,5400,keyword_tool,4,26,False,False,False,normal,54,77,False,1,best_B1,Best
+short beard styles,1,style,9900,keyword_tool,3,18,False,False,False,normal,54,77,False,3,best_B3,Best
+short cut style for women,1,style,22200,keyword_tool,5,25,False,False,False,normal,54,77,False,-1,best_B-1,Best
+short hair styles for men,1,style,6600,keyword_tool,5,25,False,False,False,normal,54,77,False,3,best_B3,Best
+short hair styles over 50 woman,1,style,6600,keyword_tool,6,31,False,False,False,normal,54,77,False,-1,best_B-1,Best
+top 10 hairstyles for men,1,top,6600,keyword_tool,5,25,False,True,False,best_list,54,77,False,-1,best_B-1,Best
+wedding hair styles,1,style,5400,keyword_tool,3,19,False,False,False,normal,54,77,False,-1,best_B-1,Best
