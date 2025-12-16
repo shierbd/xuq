@@ -13,8 +13,8 @@ import sys
 from pathlib import Path
 
 # 导入配置和工具
-from config import A3_CONFIG, GENERAL_CONFIG
-from utils import (
+from lib.config import A3_CONFIG, GENERAL_CONFIG
+from lib.utils import (
     setup_logging,
     load_csv,
     save_csv,

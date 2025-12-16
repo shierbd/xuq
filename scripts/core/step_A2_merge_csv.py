@@ -13,8 +13,8 @@ import tkinter as tk
 from tkinter import filedialog, messagebox
 
 # 导入配置和工具
-from config import A2_CONFIG, DATA_DIR, RAW_DATA_DIR
-from utils import setup_logging, save_csv, print_section, print_subsection, print_stats
+from lib.config import A2_CONFIG, DATA_DIR, EXTERNAL_RAW_DATA_DIR as RAW_DATA_DIR
+from lib.utils import setup_logging, save_csv, print_section, print_subsection, print_stats
 
 
 def select_folder_gui(default_path=None):

@@ -28,8 +28,8 @@ import sys
 import argparse
 
 # 导入配置和工具
-from config import A3_CONFIG, OUTPUT_DIR
-from utils import setup_logging, load_csv, print_section
+from lib.config import A3_CONFIG, OUTPUT_DIR
+from lib.utils import setup_logging, load_csv, print_section
 
 
 def generate_embeddings_for_viz(phrases: list, model_name: str = "all-MiniLM-L6-v2") -> np.ndarray:

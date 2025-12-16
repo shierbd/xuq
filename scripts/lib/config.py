@@ -10,28 +10,33 @@ from pathlib import Path
 
 # 项目根目录
 PROJECT_ROOT = Path(__file__).parent.parent
-FUNC_DIR = PROJECT_ROOT / "功能实现"
 DATA_DIR = PROJECT_ROOT / "data"
 OUTPUT_DIR = PROJECT_ROOT / "output"
 
-# 输入数据路径
-RAW_DATA_DIR = r"C:\Users\32941\Downloads\合并"
+# Data子目录
+DATA_RAW_DIR = DATA_DIR / "raw"
+DATA_PROCESSED_DIR = DATA_DIR / "processed"
+DATA_RESULTS_DIR = DATA_DIR / "results"
+DATA_BASELINE_DIR = DATA_DIR / "baseline"
 
-# 输出文件路径
-MERGED_FILE = DATA_DIR / "merged_keywords_all.csv"  # A2输出
-CLUSTERS_FILE = DATA_DIR / "stageA_clusters.csv"  # A3输出
-CLUSTER_SUMMARY_FILE = DATA_DIR / "clusters_summary_stageA.csv"  # A3输出
-CLUSTER_INSIGHTS_FILE = DATA_DIR / "cluster_insights_stageA.csv"  # A4输出
-DIRECTION_KEYWORDS_FILE = DATA_DIR / "direction_keywords.csv"  # A5输出
+# 输入数据路径（外部原始数据）
+EXTERNAL_RAW_DATA_DIR = r"C:\Users\32941\Downloads\合并"
+
+# 输出文件路径 - 更新为新的目录结构
+MERGED_FILE = DATA_RAW_DIR / "merged_keywords_all.csv"  # A2输出
+CLUSTERS_FILE = DATA_PROCESSED_DIR / "stageA_clusters.csv"  # A3输出
+CLUSTER_SUMMARY_FILE = DATA_RESULTS_DIR / "clusters_summary_stageA.csv"  # A3输出
+CLUSTER_INSIGHTS_FILE = DATA_RESULTS_DIR / "cluster_insights_stageA.csv"  # A4输出
+DIRECTION_KEYWORDS_FILE = DATA_RESULTS_DIR / "direction_keywords.csv"  # A5输出
 
 # 创建必要的目录
-for dir_path in [DATA_DIR, OUTPUT_DIR]:
+for dir_path in [DATA_RAW_DIR, DATA_PROCESSED_DIR, DATA_RESULTS_DIR, DATA_BASELINE_DIR, OUTPUT_DIR]:
     dir_path.mkdir(parents=True, exist_ok=True)
 
 # ==================== 步骤A2：合并配置 ====================
 
 A2_CONFIG = {
-    "input_folder": RAW_DATA_DIR,
+    "input_folder": EXTERNAL_RAW_DATA_DIR,
     "output_file": "merged_keywords_all.csv",
     "file_pattern": "*_broad-match_*.csv",  # 匹配所有broad-match文件
     "encoding": "utf-8",

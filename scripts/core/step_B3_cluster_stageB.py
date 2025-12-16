@@ -24,8 +24,8 @@ import sys
 from typing import Tuple
 
 # 导入配置和工具
-from config import A3_CONFIG, GENERAL_CONFIG
-from utils import (
+from lib.config import A3_CONFIG, GENERAL_CONFIG
+from lib.utils import (
     setup_logging,
     load_csv,
     save_csv,
@@ -311,7 +311,7 @@ def main():
         # 5.5 自动生成HTML查看器
         print_subsection("5.5 生成HTML查看器")
         try:
-            from generate_html_viewer import generate_html_for_file
+            from tools.generate_html_viewer import generate_html_for_file
 
             output_dir = output_summary.parent.parent / 'output'
             output_dir.mkdir(exist_ok=True)

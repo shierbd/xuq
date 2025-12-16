@@ -8,8 +8,8 @@ import sys
 from pathlib import Path
 
 # 导入配置和工具
-from config import A3_CONFIG
-from utils import load_csv, save_csv, print_section
+from lib.config import A3_CONFIG
+from lib.utils import load_csv, save_csv, print_section
 
 def auto_select_directions(n=5):
     """

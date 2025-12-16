@@ -1,0 +1,10 @@
+direction_keyword,cluster_id_B,cluster_size,total_frequency,avg_frequency,seed_words_in_cluster,total_search_volume,example_phrases,avg_word_count,question_ratio,is_noise
+Best,best_B0,334,339,1.0149700598802396,"Best,How-to,builder,code,maker",3493200,best buy coupon code; build a bear promo code; northern tool promo code; how to make a soft boiled egg; how to make over easy eggs,3.754491017964072,0.08383233532934131,False
+Best,best_B-1,96,96,1.0,"Best,How-to,code,ideas,style,top",887100,doubledown codes; beef cuts best; best egg laying chickens; best egg loan; best steak cuts,4.46875,0.28125,True
+Best,best_B1,38,39,1.0263157894736843,"Best,How-to,code,face,ideas,pattern,style",362200,how to make ribs in the oven; business casual dress code; dress patterns; dress to impress code; dress with code,4.473684210526316,0.21052631578947367,False
+Best,best_B3,35,36,1.0285714285714285,"Best,How-to,style,top",313800,how to cook top sirloin steak; sirloin top sirloin; top sirloin; top sirloin recipes; top sirloin steak recipe,3.7714285714285714,0.02857142857142857,False
+Best,best_B2,28,28,1.0,"Best,How-to",260100,how long do potatoes take to boil; how long to boil sweet potatoes; how long to cook a baked potato; how to boil potatoes; how to boil sweet potatoes,5.071428571428571,0.25,False
+Best,best_B4,23,23,1.0,"Best,How-to,style",191200,how long to cook steak in oven; how to cook a steak in the oven; how to cook a steak on the stove; how to cook flank steak; how to cook steak in air fryer,5.3478260869565215,0.34782608695652173,False
+code,code_B0,480,480,1.0,code,16807500,00989 area code; 202 telephone code; 203 area code; 205 area code; 206 telephone code,3.402083333333333,0.025,False
+code,code_B-1,11,11,1.0,code,360800,415 area code; 415 code area; 443 area code; area code 302; area code 304,3.272727272727273,0.0,True
+code,code_B1,11,11,1.0,code,88900,arizona zip code; arizona zip codes; phoenix arizona zip code; phoenix az area zip codes; phoenix az zip code,4.0,0.0,False
