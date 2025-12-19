@@ -5,6 +5,10 @@ MVP版本数据库模型
 2. Demand - 需求卡片
 3. Token - 需求框架词库
 4. ClusterMeta - 聚类元数据
+
+注意：兼容MySQL和SQLite
+- MySQL使用ENUM类型
+- SQLite使用String + CheckConstraint
 """
 from datetime import datetime
 from sqlalchemy import (
@@ -18,12 +22,44 @@ from sqlalchemy import (
     Boolean,
     TIMESTAMP,
     Index,
+    CheckConstraint,
 )
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-from config.settings import DATABASE_URL
+from config.settings import DATABASE_URL, DATABASE_CONFIG
 
 Base = declarative_base()
+
+# 判断数据库类型
+IS_SQLITE = DATABASE_CONFIG["type"] == "sqlite"
+
+
+def enum_column(name, values, **kwargs):
+    """
+    创建兼容MySQL和SQLite的枚举列
+
+    Args:
+        name: 列名
+        values: 枚举值列表
+        **kwargs: 其他列参数
+
+    Returns:
+        Column对象
+    """
+    if IS_SQLITE:
+        # SQLite使用String + CheckConstraint
+        check_name = f"check_{name}"
+        check_constraint = CheckConstraint(
+            f"{name} IN ({', '.join(repr(v) for v in values)})",
+            name=check_name
+        )
+        return Column(String(50), CheckConstraint(
+            f"{name} IN ({', '.join(repr(v) for v in values)})"
+        ), **kwargs)
+    else:
+        # MySQL使用原生ENUM
+        enum_name = kwargs.pop('enum_name', f"{name}_enum")
+        return Column(SQLEnum(*values, name=enum_name), **kwargs)
 
 
 # ==================== 1. Phrase 短语总库 ====================
@@ -38,8 +74,10 @@ class Phrase(Base):
 
     # 来源信息
     seed_word = Column(String(100))
-    source_type = Column(
-        SQLEnum("semrush", "dropdown", "related_search", name="source_type_enum"),
+    source_type = enum_column(
+        "source_type",
+        ["semrush", "dropdown", "related_search"],
+        enum_name="source_type_enum",
         index=True
     )
     first_seen_round = Column(Integer, nullable=False, index=True)
@@ -56,8 +94,10 @@ class Phrase(Base):
     mapped_demand_id = Column(Integer, index=True)
 
     # 处理状态
-    processed_status = Column(
-        SQLEnum("unseen", "reviewed", "assigned", "archived", name="processed_status_enum"),
+    processed_status = enum_column(
+        "processed_status",
+        ["unseen", "reviewed", "assigned", "archived"],
+        enum_name="processed_status_enum",
         default="unseen",
         index=True
     )
@@ -89,8 +129,10 @@ class Demand(Base):
     user_scenario = Column(Text)
 
     # 分类
-    demand_type = Column(
-        SQLEnum("tool", "content", "service", "education", "other", name="demand_type_enum"),
+    demand_type = enum_column(
+        "demand_type",
+        ["tool", "content", "service", "education", "other"],
+        enum_name="demand_type_enum",
         index=True
     )
 
@@ -100,15 +142,19 @@ class Demand(Base):
     related_phrases_count = Column(Integer, default=0)
 
     # 商业评估（简化）
-    business_value = Column(
-        SQLEnum("high", "medium", "low", "unknown", name="business_value_enum"),
+    business_value = enum_column(
+        "business_value",
+        ["high", "medium", "low", "unknown"],
+        enum_name="business_value_enum",
         default="unknown",
         index=True
     )
 
     # 状态追踪
-    status = Column(
-        SQLEnum("idea", "validated", "in_progress", "archived", name="demand_status_enum"),
+    status = enum_column(
+        "status",
+        ["idea", "validated", "in_progress", "archived"],
+        enum_name="demand_status_enum",
         default="idea",
         index=True
     )
@@ -136,11 +182,10 @@ class Token(Base):
     token_text = Column(String(100), unique=True, nullable=False, index=True)
 
     # 分类（核心）
-    token_type = Column(
-        SQLEnum(
-            "intent", "action", "object", "attribute", "condition", "other",
-            name="token_type_enum"
-        ),
+    token_type = enum_column(
+        "token_type",
+        ["intent", "action", "object", "attribute", "condition", "other"],
+        enum_name="token_type_enum",
         nullable=False,
         index=True
     )
@@ -170,8 +215,10 @@ class ClusterMeta(Base):
 
     # 主键（使用复合主键：cluster_id + cluster_level）
     cluster_id = Column(Integer, primary_key=True)
-    cluster_level = Column(
-        SQLEnum("A", "B", name="cluster_level_enum"),
+    cluster_level = enum_column(
+        "cluster_level",
+        ["A", "B"],
+        enum_name="cluster_level_enum",
         primary_key=True
     )
 
