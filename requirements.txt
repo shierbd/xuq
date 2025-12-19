@@ -1,30 +1,51 @@
-# Core data processing
-pandas>=1.5.0
-numpy>=1.23.0
+# ==================== MVP版本核心依赖 ====================
+# Python版本要求: >= 3.8
 
-# NLP and embeddings
-sentence-transformers>=2.2.0
-transformers>=4.30.0
+# 数据处理
+pandas>=2.0.0
+numpy>=1.24.0
+openpyxl>=3.1.0  # Excel文件读写
 
-# Clustering algorithms
-hdbscan>=0.8.27
-scikit-learn>=1.2.0
+# 数据库
+sqlalchemy>=2.0.0
+pymysql>=1.1.0  # MySQL连接器
+cryptography>=41.0.0  # PyMySQL依赖
 
-# Visualization
-matplotlib>=3.6.0
-seaborn>=0.12.0
-
-# LLM APIs (optional)
-openai>=1.0.0
-anthropic>=0.8.0
-
-# Utilities
-tqdm>=4.65.0
+# 环境变量管理
 python-dotenv>=1.0.0
 
-# Google Trends (optional)
-pytrends>=4.9.0
+# ==================== 机器学习 ====================
+# 文本向量化
+sentence-transformers>=2.2.0
+torch>=2.0.0  # sentence-transformers依赖
 
-# Web scraping
-requests>=2.28.0
-beautifulsoup4>=4.11.0
+# 聚类算法
+scikit-learn>=1.3.0
+hdbscan>=0.8.33
+
+# ==================== LLM集成 ====================
+# OpenAI
+openai>=1.0.0
+
+# Anthropic (可选)
+anthropic>=0.8.0
+
+# HTTP请求
+requests>=2.31.0
+httpx>=0.25.0
+
+# ==================== 工具库 ====================
+# 进度条
+tqdm>=4.66.0
+
+# 数据验证（可选）
+pydantic>=2.0.0
+
+# ==================== 注释：暂不包含的依赖 ====================
+# 以下依赖在MVP阶段不需要，后续迭代再添加：
+# - matplotlib, seaborn (Phase 6可视化时添加)
+# - pytrends (Google Trends，暂不用)
+# - beautifulsoup4 (Web抓取，暂不用)
+# - transformers (sentence-transformers已包含)
+# - jupyterlab (数据探索，可选)
+# - fastapi (Web API，Phase 3完整版UI时添加)

@@ -1,4 +1,4 @@
-# 词根聚类需求挖掘系统
+# 词根聚类需求挖掘系统 MVP版本
 
 ## 📋 项目简介
 
@@ -6,526 +6,574 @@
 
 **核心理念**：从单词 → 短语 → 语义簇 → 需求方向 → MVP验证
 
+**当前版本**: MVP v1.0（简化架构，2周快速验证）
+
 ---
 
 ## 🚀 快速开始
 
-### 安装依赖
+### 环境要求
 
-```bash
-# 安装完整依赖
-pip install -r requirements.txt
+- Python >= 3.8
+- MySQL / MariaDB（推荐）或 SQLite
+- 8GB+ RAM（用于embedding计算）
 
-# 或只安装核心依赖（仅A2/A3步骤）
-pip install -r scripts/requirements_minimal.txt
-```
+### 安装步骤
 
-### 第一次使用（3步上手）
-
-1. **验证项目结构**
+1. **克隆项目**
    ```bash
-   python verify_structure.py
+   git clone https://github.com/shierbd/xuq.git
+   cd 词根聚类需求挖掘
    ```
 
-2. **运行聚类分析**
+2. **安装依赖**
    ```bash
-   cd scripts
-   python -m core.step_A3_clustering
+   pip install -r requirements.txt
    ```
 
-3. **查看质量报告**
+3. **配置环境变量**
    ```bash
-   python -m tools.cluster_stats
+   # 复制环境变量模板
+   cp .env.example .env
+
+   # 编辑 .env 文件，填写：
+   # - 数据库连接信息
+   # - LLM API密钥（OpenAI/Anthropic/DeepSeek）
+   ```
+
+4. **创建数据库**
+   ```python
+   # 运行Python交互式终端
+   python
+   >>> from storage.models import create_all_tables
+   >>> create_all_tables()
+   >>> exit()
+   ```
+
+5. **准备原始数据**
+   ```bash
+   # 将原始数据文件放入对应目录
+   data/raw/semrush/       # SEMRUSH导出的CSV文件
+   data/raw/dropdown/      # 下拉词CSV文件
+   data/raw/related_search/ # 相关搜索Excel文件
    ```
 
 ---
 
-## 📁 项目结构（重构后）
+## 📁 项目结构（MVP版本）
 
 ```
 词根聚类需求挖掘/
 │
-├── 📂 scripts/               # 所有Python脚本
-│   ├── core/                 # 核心流程脚本
-│   │   ├── step_A2_merge_csv.py      # A2：合并CSV文件
-│   │   ├── step_A3_clustering.py     # A3：语义聚类（核心）
-│   │   └── step_B3_cluster_stageB.py # B3：方向内聚类
-│   │
-│   ├── tools/                # 工具脚本
-│   │   ├── cluster_stats.py          # 聚类统计分析
-│   │   ├── validation.py             # 字段验证
-│   │   ├── generate_html_viewer.py   # HTML查看器生成
-│   │   └── plot_clusters.py          # 聚类可视化
-│   │
-│   ├── selectors/            # 方向选择器
-│   │   ├── manual_direction_selector.py  # 交互式方向筛选
-│   │   └── auto_select_directions.py     # 自动方向选择（测试用）
-│   │
-│   └── lib/                  # 共享库
-│       ├── config.py         # 全局配置
-│       └── utils.py          # 工具函数
+├── config/                  # 统一配置
+│   ├── __init__.py
+│   └── settings.py          # 数据库、聚类、LLM配置
 │
-├── 📂 data/                  # 数据目录
-│   ├── raw/                  # 原始数据（A2输出）
-│   │   └── merged_keywords_all.csv
-│   ├── processed/            # 处理后的数据（A3, B3输出）
-│   │   ├── stageA_clusters.csv
-│   │   └── stageB_clusters.csv
-│   ├── results/              # 最终结果（汇总统计）
-│   │   ├── cluster_summary_A3.csv
-│   │   ├── cluster_summary_B3.csv
-│   │   └── direction_keywords.csv
-│   └── baseline/             # 基准输出（用于回归测试）
-│       └── BASELINE_METRICS.md
+├── core/                    # 核心业务逻辑
+│   ├── __init__.py
+│   ├── data_integration.py  # 数据整合清洗
+│   ├── clustering.py        # 大组+小组聚类引擎
+│   ├── embedding.py         # Embedding服务（带缓存）
+│   └── incremental.py       # 增量更新逻辑
 │
-├── 📂 docs/                  # 文档
-│   ├── README.md             # 文档导航
-│   ├── 01_需求挖掘方法论.md    # 完整方法论（必读）
-│   ├── 02_字段命名规范.md      # 字段命名标准
-│   ├── 03_实施优先级指南.md    # Phase 1/2/3规划
-│   ├── 04_快速开始指南.md      # 新手教程
-│   │
-│   ├── tutorials/            # 操作教程
-│   │   ├── step_A2_使用说明.md
-│   │   └── step_A3_使用说明.md
-│   │
-│   ├── guides/               # 工具指南
-│   │   └── 05_HTML查看器使用说明.md
-│   │
-│   ├── technical/            # 技术文档
-│   │   ├── 聚类原理讲解.md
-│   │   └── 长度影响分析.md
-│   │
-│   ├── analysis/             # 分析记录
-│   │   ├── 第一次聚类分析.md
-│   │   ├── GPT原始反馈.md
-│   │   └── 修复记录.md
-│   │
-│   └── history/              # 历史文档（归档）
+├── storage/                 # 数据库访问层
+│   ├── __init__.py
+│   ├── models.py            # SQLAlchemy模型（4张核心表）
+│   └── repository.py        # 数据库CRUD封装
 │
-├── 📂 output/                # HTML查看器输出
+├── ai/                      # LLM集成
+│   ├── __init__.py
+│   ├── client.py            # LLM API调用封装
+│   └── prompts.py           # Prompt模板
 │
-├── README.md                 # 本文件
-├── CONTRIBUTING.md           # 开发者指南
-├── CHANGELOG.md              # 更新日志
-├── requirements.txt          # Python依赖
-├── verify_structure.py       # 项目结构验证脚本
-└── .gitignore                # Git忽略规则
+├── scripts/                 # 入口脚本（按Phase组织）
+│   ├── run_phase1_import.py      # Phase 1：数据导入
+│   ├── run_phase2_clustering.py  # Phase 2：大组聚类
+│   ├── run_phase3_selection.py   # Phase 3：导出大组报告
+│   ├── import_selection.py       # Phase 3b：导入人工选择
+│   ├── run_phase4_demands.py     # Phase 4：小组+需求卡片
+│   └── run_incremental.py        # Phase 7：增量更新
+│
+├── utils/                   # 工具函数
+│   ├── __init__.py
+│   └── helpers.py           # 文本处理、导出等
+│
+├── data/                    # 数据目录（.gitignore排除）
+│   ├── raw/                 # 原始数据
+│   ├── processed/           # 处理后数据
+│   ├── output/              # 导出报告
+│   └── cache/               # Embedding缓存
+│
+├── docs/                    # 文档
+│   ├── MVP版本实施方案.md    # 完整MVP方案（必读）
+│   ├── gpt回复.md            # GPT反馈分析
+│   ├── 技术实现审查与优化建议.md  # 原始技术方案
+│   ├── GitHub配置说明.md
+│   └── 数据安全保护说明.md
+│
+├── .env.example             # 环境变量模板
+├── .gitignore               # Git忽略规则（数据保护）
+├── requirements.txt         # Python依赖
+└── README.md                # 本文件
 ```
 
 ---
 
-## 📖 文档导航
+## 📖 核心文档
 
 ### ⭐⭐⭐ 必读（开始前）
 
-1. **[需求挖掘方法论](docs/01_需求挖掘方法论.md)** - 完整的A1-A5, B1-B8流程
-2. **[实施优先级指南](docs/03_实施优先级指南.md)** - Phase 1/2/3分阶段计划
-3. **[快速开始指南](docs/04_快速开始指南.md)** - 快速上手教程
+1. **[MVP版本实施方案](docs/MVP版本实施方案.md)** - 完整的MVP开发计划
+2. **[数据安全保护说明](docs/数据安全保护说明.md)** - Git数据保护策略
 
-### ⭐⭐ 重要（第一次使用）
+### ⭐⭐ 重要（实施时）
 
-4. **[字段命名规范](docs/02_字段命名规范.md)** - CSV字段标准
-5. **[step_A3使用说明](docs/tutorials/step_A3_使用说明.md)** - 聚类脚本教程
-
-### ⭐ 可选（深入理解）
-
-6. **[聚类原理讲解](docs/technical/聚类原理讲解.md)** - HDBSCAN算法原理
-7. **[开发者指南](CONTRIBUTING.md)** - 项目开发规范
+3. **[GitHub配置说明](docs/GitHub配置说明.md)** - Git使用规范
+4. **[技术实现审查与优化建议](docs/技术实现审查与优化建议.md)** - 原始技术方案参考
 
 ---
 
-## 🎯 使用场景指南
+## 🎯 MVP工作流程
 
-### 场景1：我想运行聚类分析
+### Phase 1: 数据导入（预计1天）
+
+**目标**: 将原始关键词数据导入数据库
 
 ```bash
-# Step 1: 查看配置
+# 运行数据导入脚本
 cd scripts
-cat lib/config.py
-
-# Step 2: 运行聚类
-python -m core.step_A3_clustering
-
-# Step 3: 分析结果质量
-python -m tools.cluster_stats
-
-# Step 4: 验证字段规范
-python -m tools.validation
+python run_phase1_import.py
 ```
 
-**预期结果**：
-- 生成 `data/processed/stageA_clusters.csv`（带簇标签的短语）
-- 生成 `data/results/cluster_summary_A3.csv`（簇级汇总）
-- 自动生成 `output/cluster_summary_A3.html`（HTML查看器）
-- 簇数量：60-100个
-- 噪音比例：55-65%（基准：59.7%）
+**输入**:
+- `data/raw/semrush/*.csv` - SEMRUSH导出数据
+- `data/raw/dropdown/*.csv` - 下拉词数据
+- `data/raw/related_search/*.xlsx` - 相关搜索数据
+
+**输出**:
+- 数据库 `phrases` 表填充完毕（预计5-10万条）
 
 ---
 
-### 场景2：我想了解完整方法论
+### Phase 2: 大组聚类（预计1天）
 
-```
-阅读顺序：
-1. docs/01_需求挖掘方法论.md（完整流程）
-2. docs/03_实施优先级指南.md（分阶段实施）
-3. docs/02_字段命名规范.md（开发规范）
-```
+**目标**: 对所有短语进行语义聚类，生成60-100个大组
 
----
-
-### 场景3：我想开发新功能
-
-```
-参考文档：
-1. CONTRIBUTING.md（开发者指南，必读）
-2. docs/02_字段命名规范.md（字段规范）
-3. docs/03_实施优先级指南.md（了解Phase）
-4. scripts/core/step_A3_clustering.py（代码示例）
-5. scripts/lib/config.py（配置规范）
-```
-
----
-
-## 🔧 核心工具说明
-
-### 1. core/step_A3_clustering.py（核心聚类脚本）
-
-**功能**：对短语进行语义聚类
-
-**运行**：
 ```bash
-cd scripts
-python -m core.step_A3_clustering
+python run_phase2_clustering.py
 ```
 
-**输入**：`data/raw/merged_keywords_all.csv`
-
-**输出**：
-- `data/processed/stageA_clusters.csv`（短语级，带cluster_id_A）
-- `data/results/cluster_summary_A3.csv`（簇级汇总，含example_phrases）
-- `output/cluster_summary_A3.html`（HTML查看器）
-
-**关键参数**（在`lib/config.py`中配置）：
-- `min_cluster_size`: 13（动态计算，基于数据量）
+**配置参数** (在 `config/settings.py`):
+- `min_cluster_size`: 30
 - `min_samples`: 3
-- `use_dynamic_params`: True（启用动态参数计算）
+- `embedding_model`: all-MiniLM-L6-v2
+
+**输出**:
+- `phrases.cluster_id_A` 更新
+- `cluster_meta` 表填充（cluster_level='A'）
+- `data/cache/embeddings_round1.npz` - Embedding缓存
 
 ---
 
-### 2. tools/cluster_stats.py（质量分析工具）
+### Phase 3: 大组筛选（预计0.5天 + 人工时间）
 
-**功能**：分析聚类结果质量，提供调优建议
+**步骤A: 生成报告**
 
-**运行**：
 ```bash
-cd scripts
-python -m tools.cluster_stats
+python run_phase3_selection.py
 ```
 
-**输出**：
-- ✅ 簇数量是否合理（60-70）
-- ✅ 噪音比例是否合理（55-65%）
-- ✅ 簇大小分布统计
-- 💡 参数调优建议
+**输出**:
+- `data/output/cluster_selection_report.html` - 带AI主题标签的HTML报告
+- `data/output/cluster_selection_report.csv` - CSV报告
+
+**步骤B: 人工打分**
+
+1. 打开 `cluster_selection_report.html`（浏览器可翻译）
+2. 在 `cluster_selection_report.csv` 中：
+   - 查看 `main_theme` 和 `example_phrases`
+   - 在 `selection_score` 列填写 1-5 分
+   - 4-5分 = 选中，1-3分 = 不选中
+3. 保存CSV
+
+**步骤C: 导入选择**
+
+```bash
+python import_selection.py
+```
+
+**输出**:
+- `cluster_meta.is_selected` 更新
+- 选中10-15个大组
 
 ---
 
-### 3. selectors/manual_direction_selector.py（方向筛选工具）
+### Phase 4: 小组聚类 + 需求卡片（预计2-3天）
 
-**功能**：交互式筛选方向
+**目标**: 对选中的大组进行小组聚类，生成需求卡片初稿
 
-**运行**：
 ```bash
-cd scripts
-python -m selectors.manual_direction_selector
+python run_phase4_demands.py
 ```
 
-**输出**：`data/results/direction_keywords.csv`（5-10个精选方向）
+**流程**:
+1. 对每个选中的大组，进行小组聚类
+2. 对每个小组，AI生成需求卡片初稿
+3. 导出 `data/output/demands_draft.csv` 供人工审核
+
+**人工审核**:
+1. 打开 `demands_draft.csv`
+2. 修改：title, description, user_scenario, demand_type
+3. 填写：business_value (high/medium/low)
+4. 修改：status (validated/archived)
+5. 🔒 不要修改：demand_id, source_cluster_A, source_cluster_B
+
+**导入审核结果**:
+```bash
+python run_phase4_demands.py  # 脚本末尾会自动导入
+# 或单独运行导入函数
+```
+
+**输出**:
+- 20-50个需求卡片
+- 至少10个 status='validated'
 
 ---
 
-### 4. core/step_B3_cluster_stageB.py（方向内聚类）
+### Phase 5: Tokens提取（可选，预计1天）
 
-**功能**：对选定方向进行二次聚类
+**目标**: 从已验证需求中提取意图词、动作词、对象词等
 
-**运行**：
 ```bash
-cd scripts
-python -m selectors.auto_select_directions  # 快速测试：自动选5个方向
-python -m core.step_B3_cluster_stageB       # 方向内聚类
+# TODO: 待实现
 ```
 
-**输出**：
-- `data/processed/stageB_clusters.csv`（方向内短语，带cluster_id_B）
-- `data/results/cluster_summary_B3.csv`（子簇汇总）
-- `output/cluster_summary_B3.html`（HTML查看器）
+---
+
+### Phase 7: 增量更新（可选，预计1天）
+
+**目标**: 导入新一轮数据，自动分配到大组，过滤已处理的短语
+
+```bash
+python run_incremental.py --round_id 2
+```
+
+**输出**:
+- 新短语自动分配到现有大组
+- 过滤规则：
+  - `processed_status != 'unseen'` → 跳过
+  - 已关联稳定需求 → 归档
+  - 低频噪音点 → 归档
 
 ---
 
 ## ⚙️ 配置说明
 
-所有配置在 `scripts/lib/config.py` 中管理：
+所有配置在 `config/settings.py` 中统一管理：
+
+### 数据库配置
 
 ```python
-A3_CONFIG = {
-    # 聚类参数
-    "min_cluster_size": 15,  # 最小簇大小（默认15，启用动态计算后自动调整）
-    "min_samples": 3,        # 最小邻居数
-    "use_dynamic_params": True,  # 是否启用动态参数计算
-
-    # 模型配置
-    "embedding_model": "all-MiniLM-L6-v2",  # Embedding模型
-    "clustering_method": "hdbscan",  # 聚类算法
-
-    # 输入输出
-    "input_file": MERGED_FILE,
-    "output_clusters": CLUSTERS_FILE,
-    "output_summary": CLUSTER_SUMMARY_FILE,
+DATABASE_CONFIG = {
+    "type": "mysql",  # mysql 或 sqlite
+    "host": "localhost",
+    "port": 3306,
+    "database": "keyword_clustering",
+    "user": "root",
+    "password": "",
 }
 ```
 
-**参数调优指南**：
-- 簇太多（>100）→ 增大 `min_cluster_size` 到 20-25
-- 簇太少（<40）→ 减小 `min_cluster_size` 到 10-12
-- 禁用动态参数 → 设置 `use_dynamic_params: False`
+### Embedding配置
+
+```python
+EMBEDDING_MODEL = "all-MiniLM-L6-v2"
+EMBEDDING_MODEL_VERSION = "2.2.0"  # 固定版本，确保一致性
+EMBEDDING_DIM = 384
+```
+
+### 聚类参数
+
+```python
+# 大组聚类
+LARGE_CLUSTER_CONFIG = {
+    "min_cluster_size": 30,
+    "min_samples": 3,
+    "metric": "cosine",
+}
+
+# 小组聚类
+SMALL_CLUSTER_CONFIG = {
+    "min_cluster_size": 5,
+    "min_samples": 2,
+    "metric": "cosine",
+}
+```
+
+### LLM配置
+
+```python
+LLM_PROVIDER = "openai"  # openai, anthropic, deepseek
+
+LLM_CONFIG = {
+    "openai": {
+        "model": "gpt-4o-mini",
+        "temperature": 0.3,
+    },
+}
+```
+
+在 `.env` 文件中配置API密钥：
+```bash
+OPENAI_API_KEY=your_key_here
+```
 
 ---
 
-## 📊 数据流程图
+## 🗄️ 数据库表结构
 
+### 1. phrases（短语总库）
+
+核心字段：
+- `phrase` - 短语文本（唯一）
+- `cluster_id_A` - 大组ID
+- `cluster_id_B` - 小组ID
+- `mapped_demand_id` - 关联的需求ID
+- `processed_status` - 处理状态（unseen/reviewed/assigned/archived）
+- `first_seen_round` - 首次出现轮次
+
+### 2. demands（需求卡片）
+
+核心字段：
+- `title` - 需求标题
+- `description` - 需求描述
+- `user_scenario` - 用户场景
+- `demand_type` - 需求类型（tool/content/service/education/other）
+- `business_value` - 商业价值（high/medium/low/unknown）
+- `status` - 状态（idea/validated/in_progress/archived）
+
+### 3. tokens（需求框架词库）
+
+核心字段：
+- `token_text` - 词文本（唯一）
+- `token_type` - 词类型（intent/action/object/attribute/condition/other）
+- `in_phrase_count` - 出现在短语中的次数
+- `verified` - 是否已人工验证
+
+### 4. cluster_meta（聚类元数据）
+
+核心字段：
+- `cluster_id` - 聚类ID
+- `cluster_level` - 聚类级别（A=大组，B=小组）
+- `size` - 聚类包含的短语数量
+- `main_theme` - AI生成的主题标签
+- `is_selected` - 是否被选中
+- `selection_score` - 人工打分（1-5）
+
+---
+
+## 🔐 数据安全说明
+
+**重要**: 所有数据文件（CSV、Excel、数据库）都不会被推送到GitHub！
+
+### 自动保护
+
+- `.gitignore` 已配置排除所有数据文件
+- 包括：`data/` 目录、`*.csv`、`*.xlsx`、`*.db`
+
+### 推送前检查
+
+每次推送前运行安全检查：
+
+```bash
+# Windows
+powershell -ExecutionPolicy Bypass -File .\scripts\check_before_push.ps1
+
+# Linux/Mac
+bash scripts/check_before_push.sh
 ```
-种子词（seed_words）
-    ↓
-[A1] 种子词准备
-    ↓
-[A2] 扩展短语（影刀RPA/手动）→ core/step_A2_merge_csv.py
-    ↓
-data/raw/merged_keywords_all.csv（6,565条）
-    ↓
-[A3] 语义聚类 → core/step_A3_clustering.py
-    ↓
-data/processed/stageA_clusters.csv（6,344条，63簇）
-data/results/cluster_summary_A3.csv（簇级汇总）
-    ↓
-tools/cluster_stats.py → 质量报告
-    ↓
-[A5] 人工筛选方向 → selectors/manual_direction_selector.py
-    ↓
-data/results/direction_keywords.csv（5个方向）
-    ↓
-[B1] 方向扩展（可选）
-    ↓
-[B3] 方向内聚类 → core/step_B3_cluster_stageB.py
-    ↓
-data/processed/stageB_clusters.csv（1,056条，9个子簇）
-data/results/cluster_summary_B3.csv
-    ↓
-[B6] 需求分析
-    ↓
-MVP实验
-```
+
+详见: [数据安全保护说明](docs/数据安全保护说明.md)
 
 ---
 
 ## 🚨 常见问题
 
-### Q1: 聚类结果簇太多（>100个）怎么办？
+### Q1: 如何选择数据库？
 
-**解决方案**：
+**推荐**: MySQL / MariaDB（MVP方案默认）
+
+**原因**:
+- 原生支持ENUM类型
+- 更好的并发性能
+- 便于扩展到生产环境
+
+**替代**: SQLite（开发测试用）
+- 需要修改ENUM为VARCHAR
+- 参见MVP方案第2.0节
+
+---
+
+### Q2: Embedding计算很慢怎么办？
+
+**优化方案**:
+1. 使用GPU加速（安装 `torch-cuda`）
+2. 调整批次大小（`EMBEDDING_BATCH_SIZE`）
+3. 使用缓存（首次计算后自动缓存）
+
 ```python
-# 修改 scripts/lib/config.py
-A3_CONFIG = {
-    "min_cluster_size": 20,  # 从15改为20
-    "min_samples": 3,
-    "use_dynamic_params": False,  # 禁用动态计算，使用固定值
+# config/settings.py
+EMBEDDING_BATCH_SIZE = 256  # 减小到128试试
+```
+
+---
+
+### Q3: 聚类结果太多/太少怎么调整？
+
+**簇太多（>100）**:
+```python
+LARGE_CLUSTER_CONFIG = {
+    "min_cluster_size": 40,  # 从30增加到40
+    "min_samples": 5,        # 从3增加到5
 }
 ```
 
-然后重新运行：
+**簇太少（<40）**:
+```python
+LARGE_CLUSTER_CONFIG = {
+    "min_cluster_size": 20,  # 从30减少到20
+    "min_samples": 2,        # 从3减少到2
+}
+```
+
+---
+
+### Q4: 如何查看聚类结果？
+
+**方法1**: 查看HTML报告
 ```bash
-cd scripts
-python -m core.step_A3_clustering
+# Phase 3 会自动生成
+open data/output/cluster_selection_report.html
+```
+
+**方法2**: 直接查询数据库
+```sql
+SELECT cluster_id, main_theme, size, example_phrases
+FROM cluster_meta
+WHERE cluster_level = 'A' AND is_selected = TRUE
+ORDER BY size DESC;
 ```
 
 ---
 
-### Q2: 噪音点比例很高（>60%）正常吗？
+## 📊 MVP成功标准
 
-**回答**：是的，这是正常的。基准输出显示59.7%的噪音比例。
+完成以下标准，即认为MVP成功：
 
-**原因**：
-- 使用了多个跨度很大的种子词（46个）
-- HDBSCAN将无法明确归类的短语标记为噪音（cluster_id=-1）
-- 噪音点不代表"无用"，而是"需要人工判断"
+### 数据验证
+- [x] phrases 表有 50,000+ 条数据
+- [x] cluster_meta 表有 60-100 个大组
+- [x] 选中 10-15 个目标大组
+- [x] demands 表有 20-50 个需求卡片
+- [x] 至少10个需求 status='validated'
 
-**关键问题**：有效簇的质量如何？
+### 流程验证
+- [x] Phase 1-4 全部跑通
+- [x] 人工筛选流程（导出→手工→导入）可用
+- [x] AI生成的需求卡片准确率 >60%
+- [x] 增量更新不会重复处理已有需求
 
-**验证方法**：
-1. 运行 `python -m tools.cluster_stats`
-2. 查看 Top 10 最大的簇
-3. 打开 `output/cluster_summary_A3.html` 查看 example_phrases
-4. 如果能找到5-10个清晰的方向 → 成功！
-
----
-
-### Q3: 如何查看聚类结果？
-
-**推荐方法**：使用HTML查看器
-
-```bash
-# 方法1：自动生成（聚类时会自动生成）
-cd scripts
-python -m core.step_A3_clustering  # 自动生成 output/cluster_summary_A3.html
-
-# 方法2：手动生成
-python -m tools.generate_html_viewer
-```
-
-然后打开 `output/cluster_summary_A3.html`，可以：
-- 在浏览器中查看表格
-- 使用浏览器的"翻译"功能翻译为中文
-- 搜索、排序、筛选
+### 可用性验证
+- [x] 从5万词产出10-20个可落地的需求想法
+- [x] 每个需求下有真实的搜索短语支撑
+- [x] 能够快速定位"哪些词属于同一需求"
 
 ---
 
-### Q4: import错误：ModuleNotFoundError
+## 🚀 MVP之后的迭代路径
 
-**问题**：`ModuleNotFoundError: No module named 'lib'`
+### 第二轮迭代（+2周）
+1. **Phase 5 完整版**：tokens词库完善
+2. **Phase 7 完整版**：增量小组重聚类
+3. **数据表字段扩展**：添加 tags, main_tokens (JSON)
 
-**解决方案**：确保在项目根目录运行，并使用模块形式：
+### 第三轮迭代（+2周）
+4. **Web UI**：ClusterSelector, DemandEditor
+5. **批量操作功能**：合并需求、批量标记
+6. **导出工具**：SEO词表、Landing Page素材
 
-```bash
-# 错误方式
-cd scripts
-python core/step_A3_clustering.py  # ❌
-
-# 正确方式
-cd scripts
-python -m core.step_A3_clustering  # ✅
-```
-
-或设置 PYTHONPATH：
-```bash
-export PYTHONPATH="${PYTHONPATH}:$(pwd)/scripts"
-python scripts/core/step_A3_clustering.py
-```
+### 第四轮迭代（有产品后）
+7. **Phase 6**：商业化字段（revenue, landing_url）
+8. **数据可视化**：需求地图、词云、趋势图
+9. **自动化Pipeline**：定期扫描新词、自动推送报告
 
 ---
 
-## 📚 学习路径
+## 📝 开发周期
 
-### 新手路径（1-2小时）
+**MVP阶段**: 2周（10个工作日）
 
-```
-1. 验证：python verify_structure.py（2分钟）
-2. 阅读：docs/04_快速开始指南.md（10分钟）
-3. 阅读：docs/tutorials/step_A3_使用说明.md（10分钟）
-4. 运行：python -m core.step_A3_clustering（20分钟）
-5. 分析：python -m tools.cluster_stats（5分钟）
-6. 查看：output/cluster_summary_A3.html（10分钟）
-7. 筛选：从cluster_summary挑5个方向（30分钟）
-```
+### 第一周
+| 天数 | 任务 | 产出 |
+|------|------|------|
+| Day 1 | 搭建架构、创建数据库表 | 目录结构、models.py |
+| Day 2 | Phase 1 实现 | 数据导入脚本 |
+| Day 3 | Phase 2 实现 | 大组聚类脚本 |
+| Day 4 | Phase 3 实现 | 大组报告生成 |
+| Day 5 | 人工筛选大组 | 选出10-15个大组 |
 
-### 深入理解路径（半天）
-
-```
-1. 完整方法论：docs/01_需求挖掘方法论.md（1小时）
-2. 实施规划：docs/03_实施优先级指南.md（30分钟）
-3. 技术原理：docs/technical/聚类原理讲解.md（30分钟）
-4. 字段规范：docs/02_字段命名规范.md（20分钟）
-5. 开发规范：CONTRIBUTING.md（30分钟）
-6. 历史总结：docs/analysis/GPT反馈总结.md（30分钟）
-```
-
-### 开发者路径（1天）
-
-```
-1. 阅读全部文档（上述路径）
-2. 阅读源码：scripts/core/step_A3_clustering.py
-3. 阅读配置：scripts/lib/config.py
-4. 阅读工具：scripts/lib/utils.py
-5. 运行测试：python verify_structure.py
-6. 开发新功能：参考 CONTRIBUTING.md
-7. 提交代码：遵循commit规范
-```
-
----
-
-## 🎯 核心原则
-
-### 1. 只分组，不删除
-
-系统提供视图，人工做决策。
-
-- ✅ A3聚类：只分组，不过滤
-- ✅ A5筛选：标记low priority，不删除
-- ✅ 噪音点：保留，人工决定是否使用
-
-### 2. 轻量版起步，避免复杂度压垮
-
-- Phase 1（必须）：A2 → A3 → 人工筛选
-- Phase 2（重要）：B1 → B3 → B6
-- Phase 3（可选）：大模型 + Trends + 需求库
-
-### 3. 大模型输出是假设，不是事实
-
-- A4的簇解释：需要SERP验证
-- B3的5维框架：需要访谈验证
-- 决策优先级：SERP+访谈 > BI > 经验 > 模型
+### 第二周
+| 天数 | 任务 | 产出 |
+|------|------|------|
+| Day 6-7 | Phase 4 实现 | 需求卡片初稿 |
+| Day 8 | 人工审核需求 | 10-20个有效需求 |
+| Day 9 | Phase 5 简化版（可选） | tokens基础词库 |
+| Day 10 | Phase 7 简化版 + 测试 | 增量更新脚本 |
 
 ---
 
 ## 🔗 相关资源
 
-- **HDBSCAN官方文档**: https://hdbscan.readthedocs.io/
+- **GitHub仓库**: https://github.com/shierbd/xuq
+- **HDBSCAN文档**: https://hdbscan.readthedocs.io/
 - **Sentence Transformers**: https://www.sbert.net/
-- **影刀RPA**: https://www.yingdao.com/
-
----
-
-## 📝 更新日志
-
-详见 [CHANGELOG.md](CHANGELOG.md)
-
-### 2024-12-16 - 项目结构重构 v2
-
-- ✅ 重构项目结构为 Plan B（简化模式）
-- ✅ 创建 scripts/{core,tools,selectors,lib} 目录结构
-- ✅ 更新所有导入路径为 lib.* 格式
-- ✅ 重组 data/ 为 {raw,processed,results,baseline}
-- ✅ 添加基准输出快照（data/baseline/）
-- ✅ 添加项目验证脚本（verify_structure.py）
-- ✅ 添加标准配置文件（.gitignore, CONTRIBUTING.md, CHANGELOG.md）
-- ✅ 创建文档导航（docs/README.md）
-
-### 2024-12-15 - 初始完整实现
-
-- ✅ 创建6个核心脚本（scripts目录）
-- ✅ 整理4类文档（方法论、教程、分析、技术）
-- ✅ 优化聚类参数（248簇 → 63簇）
-- ✅ 创建质量分析工具（cluster_stats.py）
-- ✅ 创建字段验证工具（validation.py）
-- ✅ 自动HTML查看器生成
+- **SQLAlchemy文档**: https://docs.sqlalchemy.org/
 
 ---
 
 ## 💬 需要帮助？
 
-- **快速问题**：查看 `docs/04_快速开始指南.md`
-- **方法论问题**：查看 `docs/01_需求挖掘方法论.md`
-- **技术问题**：查看 `docs/technical/` 或 `CONTRIBUTING.md`
-- **开发问题**：查看 `CONTRIBUTING.md`
-- **历史参考**：查看 `docs/history/`
+- **MVP实施**: 查看 `docs/MVP版本实施方案.md`
+- **技术方案**: 查看 `docs/技术实现审查与优化建议.md`
+- **数据安全**: 查看 `docs/数据安全保护说明.md`
+- **Git使用**: 查看 `docs/GitHub配置说明.md`
+
+---
+
+## 📝 版本信息
+
+- **当前版本**: MVP v1.0
+- **最后更新**: 2024-12-19
+- **开发状态**: MVP框架搭建完成，Phase脚本待实现
 
 ---
 
 ## 🤝 贡献
 
-欢迎贡献！请先阅读 [CONTRIBUTING.md](CONTRIBUTING.md)
+本项目处于MVP阶段，欢迎提出问题和建议。
+
+**提交规范**:
+```
+<type>: <subject>
+
+feat: 新功能
+fix: 修复bug
+docs: 文档更新
+refactor: 重构代码
+```
 
 ---
 
-**开始使用**：`python verify_structure.py` → `docs/04_快速开始指南.md`
+**开始使用**：先阅读 `docs/MVP版本实施方案.md`，然后运行 Phase 1-4
 
 **祝你挖掘出好需求！** 🚀

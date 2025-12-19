@@ -77,6 +77,26 @@
 
 ## 🗄️ 二、MVP版数据表设计
 
+### 2.0 数据库选型说明
+
+**MVP阶段推荐数据库**: **MySQL / MariaDB**
+
+- **原因**:
+  - 原生支持 `ENUM` 类型（SQLite需要模拟）
+  - 自增主键 `AUTO_INCREMENT` 语法标准
+  - 更好的并发性能和事务支持
+  - 便于后续扩展到生产环境
+
+- **替代方案**:
+  - 如果使用 **SQLite**，需要：
+    - 将所有 `ENUM` 类型改为 `VARCHAR` + CHECK约束
+    - 将 `AUTO_INCREMENT` 改为 `AUTOINCREMENT`
+    - 在应用层增加ENUM值验证
+
+**本文档SQL示例均基于MySQL语法**。
+
+---
+
 ### 2.1 phrases表（短语总库）
 
 **保留字段**（从17个缩减到13个）：
@@ -458,6 +478,8 @@ def main():
         'description': d.description,
         'user_scenario': d.user_scenario,
         'demand_type': d.demand_type,
+        'source_cluster_A': d.source_cluster_A,  # ⚠️ 必须包含，用于回写
+        'source_cluster_B': d.source_cluster_B,  # ⚠️ 必须包含，用于关联phrases
         'related_phrases_count': d.related_phrases_count,
         'business_value': '',  # 供人工填写
         'status': 'idea',      # 供人工修改
@@ -471,14 +493,21 @@ def main():
 **步骤B：人工审核**
 
 1. 打开 `data/output/demands_draft.csv`
-2. 对每个需求：
-   - 阅读 title, description, user_scenario
-   - 修改不准确的描述
-   - 填写 business_value (high/medium/low)
-   - 修改 status：
-     - `validated` = 确认有效
-     - `archived` = 删除/无效
-3. 保存CSV
+2. **只修改以下列**（其他列保持不变）：
+   - ✏️ `title` - 修改标题使其更准确
+   - ✏️ `description` - 修改描述使其更清晰
+   - ✏️ `user_scenario` - 补充或修改用户场景
+   - ✏️ `demand_type` - 修改需求类型（tool/content/service/education/other）
+   - ✏️ `business_value` - **必填**，填写 high/medium/low
+   - ✏️ `status` - **必填**，修改为：
+     - `validated` = 确认有效的需求
+     - `archived` = 删除/无效的需求
+3. **不要修改以下列**（用于回写数据库）：
+   - 🔒 `demand_id` - 主键，必须保留
+   - 🔒 `source_cluster_A` - 聚类关联，必须保留
+   - 🔒 `source_cluster_B` - 聚类关联，必须保留
+   - 🔒 `related_phrases_count` - 自动统计，不要手工改
+4. 保存CSV
 
 **步骤C：导入审核结果**
 
