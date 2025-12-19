@@ -9,7 +9,9 @@ from pathlib import Path
 # ==================== 路径配置 ====================
 
 # 项目根目录
-PROJECT_ROOT = Path(__file__).parent.parent
+# Path(__file__).parent.parent = scripts/lib -> scripts -> PROJECT_ROOT
+# 但因为scripts是在项目根目录下，所以需要再向上一级
+PROJECT_ROOT = Path(__file__).parent.parent.parent
 DATA_DIR = PROJECT_ROOT / "data"
 OUTPUT_DIR = PROJECT_ROOT / "output"
 
@@ -64,18 +66,19 @@ A3_CONFIG = {
 
     # 聚类参数
     "clustering_method": "hdbscan",  # hdbscan 或 kmeans
-    "min_cluster_size": 15,  # HDBSCAN: 每个簇最小样本数（从5改为15，避免簇过多）
+    "min_cluster_size": 30,  # HDBSCAN: 每个簇最小样本数（针对55K数据优化）
     "min_samples": 3,  # HDBSCAN: 核心点需要的最小邻居数（从2改为3）
     "n_clusters": 50,  # KMeans: 簇数量（仅在method=kmeans时使用）
     # 📝 参数调优说明：
-    #   - 对于 6,565 条短语，min_cluster_size=15 预期生成 60-100 个簇
-    #   - 如果簇还是太多（>100），继续增大到 20-25
-    #   - 如果簇太少（<40），减小到 10-12
+    #   - 对于 55,278 条短语，min_cluster_size=30 预期生成 60-100 个簇
+    #   - 如果簇还是太多（>100），继续增大到 40-50
+    #   - 如果簇太少（<40），减小到 20-25
+    #   - 之前用动态计算得到111太大，导致只有2个簇
 
     # 动态参数配置（A3.3新增）
-    "use_dynamic_params": True,  # 是否根据数据量自动计算min_cluster_size
-    # 说明：启用后，如果config中的min_cluster_size为默认值15，
-    #       将根据公式 max(10, round(N/500)) 自动计算
+    "use_dynamic_params": False,  # 禁用动态计算，使用固定值30
+    # 说明：对于大数据集（>50K），动态公式N/500会导致参数过大
+    #       固定使用30可以获得更合理的簇粒度
 
     # 数据预处理
     "min_volume": 0,  # 最小搜索量（0=不过滤）

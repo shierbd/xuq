@@ -41,8 +41,29 @@ venv.bak/
 output/*.html
 output/*.png
 output/*.jpg
-data/external/
 *.log
+
+# ==================== 数据文件 (绝对不能推送) ====================
+# 原始数据目录
+data/raw/
+原始词/
+
+# 处理后的数据
+data/processed/
+data/results/
+data/output/
+data/baseline/
+data/external/
+
+# 所有CSV和Excel文件（包含关键词数据）
+*.csv
+*.xlsx
+*.xls
+
+# 数据库文件（如果使用SQLite）
+*.db
+*.sqlite
+*.sqlite3
 
 # Temporary files
 *.tmp
@@ -56,6 +77,11 @@ Thumbs.db
 # Model cache (sentence-transformers)
 .cache/
 models/
+
+# Environment variables and secrets
+.env
+.env.local
+*.key
 
 # Large data files (optional, uncomment if needed)
 # data/raw/*.csv
