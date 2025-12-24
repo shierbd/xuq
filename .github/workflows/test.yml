@@ -1,0 +1,120 @@
+name: Tests and Quality Checks
+
+on:
+  push:
+    branches: [ main, develop, refactor/project-structure-v2 ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: ['3.8', '3.9', '3.10', '3.11']
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Cache dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pytest pytest-cov flake8 black bandit
+
+    - name: Lint with flake8
+      run: |
+        # 停止构建如果有Python语法错误或未定义名称
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        # 复杂度警告（不中断构建）
+        flake8 . --count --max-complexity=10 --max-line-length=100 --statistics || true
+
+    - name: Check code formatting with black
+      run: |
+        black --check core ai storage utils || true
+
+    - name: Run unit tests
+      run: |
+        pytest -m "unit or not unit" -v --cov=core --cov=storage --cov=ai --cov=utils
+      env:
+        DB_TYPE: sqlite  # 使用SQLite进行CI测试
+
+    - name: Run integration tests
+      run: |
+        pytest -m integration -v
+      env:
+        DB_TYPE: sqlite  # 使用SQLite进行CI测试
+
+    - name: Generate coverage report
+      run: |
+        pytest --cov=core --cov=storage --cov=ai --cov=utils --cov-report=xml --cov-report=term
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage.xml
+        flags: unittests
+        name: codecov-umbrella
+        fail_ci_if_error: false
+
+  security-check:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+
+    - name: Install bandit
+      run: |
+        pip install bandit[toml]
+
+    - name: Run Bandit security scan
+      run: |
+        bandit -r core ai storage -f json -o bandit-report.json || true
+
+    - name: Upload security report
+      uses: actions/upload-artifact@v3
+      with:
+        name: bandit-report
+        path: bandit-report.json
+
+  code-quality:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+
+    - name: Install dependencies
+      run: |
+        pip install flake8 black
+
+    - name: Check code style
+      run: |
+        flake8 core ai storage utils --count --statistics
+
+    - name: Check formatting
+      run: |
+        black --check --diff core ai storage utils

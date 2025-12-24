@@ -86,3 +86,4 @@ models/
 # Large data files (optional, uncomment if needed)
 # data/raw/*.csv
 # data/processed/*.csv
+nul

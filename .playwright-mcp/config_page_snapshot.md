@@ -1,0 +1,631 @@
+### Page state
+- Page URL: http://localhost:8501/
+- Page Title: 词根聚类需求挖掘系统
+- Page Snapshot:
+```yaml
+- generic [ref=e2]:
+  - generic [ref=e11]:
+    - heading "🔍 系统导航" [level=2] [ref=e16]
+    - generic [ref=e18]:
+      - paragraph [ref=e21]: 选择页面
+      - radiogroup "选择页面" [ref=e22] [cursor=pointer]:
+        - generic [ref=e23]:
+          - radio "🏠 首页概览"
+          - paragraph [ref=e28]: 🏠 首页概览
+        - generic [ref=e29]:
+          - 'radio "📥 Phase 1: 数据导入"'
+          - paragraph [ref=e34]: "📥 Phase 1: 数据导入"
+        - generic [ref=e35]:
+          - 'radio "🔄 Phase 2: 大组聚类"'
+          - paragraph [ref=e40]: "🔄 Phase 2: 大组聚类"
+        - generic [ref=e41]:
+          - 'radio "✅ Phase 3: 聚类筛选"'
+          - paragraph [ref=e46]: "✅ Phase 3: 聚类筛选"
+        - generic [ref=e47]:
+          - 'radio "📊 Phase 4: 需求生成"'
+          - paragraph [ref=e52]: "📊 Phase 4: 需求生成"
+        - generic [ref=e53]:
+          - 'radio "🏷️ Phase 5: Token提取"'
+          - paragraph [ref=e58]: "🏷️ Phase 5: Token提取"
+        - generic [ref=e59]:
+          - radio "📋 数据查看与管理"
+          - paragraph [ref=e64]: 📋 数据查看与管理
+        - generic [ref=e65]:
+          - radio "⚙️ 配置管理" [checked]
+          - paragraph [ref=e70]: ⚙️ 配置管理
+        - generic [ref=e71]:
+          - radio "📖 使用说明"
+          - paragraph [ref=e76]: 📖 使用说明
+    - separator [ref=e81]
+    - heading "📊 快速统计" [level=3] [ref=e86]
+    - generic [ref=e89]:
+      - paragraph [ref=e93]: 短语总数
+      - generic [ref=e95]: 55,275
+    - generic [ref=e98]:
+      - paragraph [ref=e102]: 大组数量
+      - generic [ref=e104]: "307"
+    - generic [ref=e107]:
+      - paragraph [ref=e111]: 选中大组
+      - generic [ref=e113]: "41"
+    - generic [ref=e116]:
+      - paragraph [ref=e120]: 需求卡片
+      - generic [ref=e122]: "0"
+    - generic [ref=e125]:
+      - paragraph [ref=e129]: Token数量
+      - generic [ref=e131]: "79"
+    - separator [ref=e136]
+    - heading "ℹ️ 系统信息" [level=3] [ref=e141]
+    - generic [ref=e144]: "LLM: openai"
+    - generic [ref=e147]: "数据库: keyword_clustering"
+    - separator [ref=e152]
+    - paragraph [ref=e157]:
+      - strong [ref=e158]: 版本
+      - text: ": MVP v1.0"
+    - paragraph [ref=e163]:
+      - strong [ref=e164]: 更新
+      - text: ": 2024-12-19"
+  - generic [ref=e3]:
+    - banner [ref=e167]:
+      - generic [ref=e170]:
+        - button "Deploy" [ref=e2032] [cursor=pointer]:
+          - generic [ref=e2034]: Deploy
+        - button [ref=e176] [cursor=pointer]:
+          - img [ref=e177]
+    - generic [ref=e180]:
+      - generic [ref=e185]: ⚙️ 配置管理
+      - generic [ref=e189]:
+        - heading "系统配置" [level=3] [ref=e1157]: 系统配置
+        - paragraph [ref=e193]: 快速配置LLM提供商和API密钥，或编辑详细配置文件。
+      - separator [ref=e451]
+      - heading "🚀 快速配置LLM" [level=2] [ref=e2035]:
+        - text: 🚀 快速配置LLM
+        - link [ref=e2975] [cursor=pointer]:
+          - /url: "#4d3e846e"
+          - img [ref=e2976]
+      - alert [ref=e2038]:
+        - paragraph [ref=e2043]:
+          - text: 💡 在这里配置DeepSeek大模型，配置后会自动保存到
+          - code [ref=e2044]: .env
+          - text: 文件
+      - generic [ref=e2047]:
+        - generic [ref=e2049]:
+          - generic [ref=e2051]:
+            - generic [ref=e2053]:
+              - generic [ref=e2054]:
+                - paragraph [ref=e2056]: 选择LLM提供商
+                - img [ref=e2060]
+              - generic [ref=e2064]:
+                - generic [ref=e2065]:
+                  - generic [ref=e2066]: deepseek
+                  - combobox "Selected deepseek. 选择LLM提供商" [ref=e2068]
+                - img "open" [ref=e2070]
+            - generic [ref=e2073]:
+              - generic [ref=e2074]:
+                - paragraph [ref=e2076]: 选择模型
+                - img [ref=e2080]
+              - generic [ref=e2084]:
+                - generic [ref=e2085]:
+                  - generic [ref=e2086]: deepseek-chat
+                  - combobox "Selected deepseek-chat. 选择模型" [ref=e2088]
+                - img "open" [ref=e2090]
+            - generic [ref=e2093]:
+              - generic [ref=e2094]:
+                - paragraph [ref=e2096]: API Base URL
+                - img [ref=e2100]
+              - textbox "API Base URL" [ref=e2105]:
+                - /placeholder: ""
+                - text: https://api.deepseek.com/v1
+          - generic [ref=e2107]:
+            - generic [ref=e2109]:
+              - generic [ref=e2110]:
+                - paragraph [ref=e2112]: API密钥
+                - img [ref=e2116]
+              - generic [ref=e2120]:
+                - textbox "API密钥" [ref=e2121]:
+                  - /placeholder: 请输入您的DEEPSEEK API Key
+                - button "Show password text" [ref=e2122] [cursor=pointer]:
+                  - img "Show password text" [ref=e2123]
+            - generic [ref=e2127]:
+              - generic [ref=e2128]:
+                - paragraph [ref=e2130]: Temperature（创造性）
+                - img [ref=e2134]
+              - generic [ref=e2137]:
+                - slider "Temperature（创造性）" [ref=e2141]:
+                  - generic: "0.30"
+                - generic:
+                  - generic: "0.00"
+                  - generic: "1.00"
+            - generic [ref=e2144]:
+              - generic [ref=e2145]:
+                - paragraph [ref=e2147]: 最大Token数
+                - img [ref=e2151]
+              - generic [ref=e2154]:
+                - spinbutton "最大Token数" [ref=e2157]: "2000"
+                - generic [ref=e2158]:
+                  - button [ref=e2159] [cursor=pointer]:
+                    - img [ref=e2160]
+                  - button [ref=e2162] [cursor=pointer]:
+                    - img [ref=e2163]
+        - generic [ref=e2166]:
+          - button "💾 保存配置" [ref=e2172] [cursor=pointer]:
+            - paragraph [ref=e2176]: 💾 保存配置
+          - button "🧪 测试连接" [ref=e2182] [cursor=pointer]:
+            - paragraph [ref=e2186]: 🧪 测试连接
+      - separator [ref=e2189]
+      - heading "🗄️ 数据库配置" [level=2] [ref=e2195]: 🗄️ 数据库配置
+      - generic [ref=e2198]:
+        - generic [ref=e2200]:
+          - heading "当前配置" [level=3] [ref=e2206]: 当前配置
+          - generic [ref=e2213]:
+            - generic [ref=e2215] [cursor=pointer]:
+              - img [ref=e2218]
+              - generic [ref=e2220]: "{"
+            - generic [ref=e2222]:
+              - generic [ref=e2223]:
+                - generic [ref=e2224]:
+                  - generic [ref=e2225]:
+                    - text: "\""
+                    - generic [ref=e2226]: type
+                    - text: "\""
+                  - generic [ref=e2227]: ":"
+                - generic [ref=e2230]: "\"mysql\""
+              - generic [ref=e2231]:
+                - generic [ref=e2232]:
+                  - generic [ref=e2233]:
+                    - text: "\""
+                    - generic [ref=e2234]: host
+                    - text: "\""
+                  - generic [ref=e2235]: ":"
+                - generic [ref=e2238]: "\"localhost\""
+              - generic [ref=e2239]:
+                - generic [ref=e2240]:
+                  - generic [ref=e2241]:
+                    - text: "\""
+                    - generic [ref=e2242]: port
+                    - text: "\""
+                  - generic [ref=e2243]: ":"
+                - generic [ref=e2245]: "3306"
+              - generic [ref=e2246]:
+                - generic [ref=e2247]:
+                  - generic [ref=e2248]:
+                    - text: "\""
+                    - generic [ref=e2249]: database
+                    - text: "\""
+                  - generic [ref=e2250]: ":"
+                - generic [ref=e2253]: "\"keyword_clustering\""
+              - generic [ref=e2254]:
+                - generic [ref=e2255]:
+                  - generic [ref=e2256]:
+                    - text: "\""
+                    - generic [ref=e2257]: user
+                    - text: "\""
+                  - generic [ref=e2258]: ":"
+                - generic [ref=e2261]: "\"root\""
+              - generic [ref=e2262]:
+                - generic [ref=e2263]:
+                  - generic [ref=e2264]:
+                    - text: "\""
+                    - generic [ref=e2265]: password
+                    - text: "\""
+                  - generic [ref=e2266]: ":"
+                - generic [ref=e2269]: "\"123456\""
+              - generic [ref=e2270]:
+                - generic [ref=e2271]:
+                  - generic [ref=e2272]:
+                    - text: "\""
+                    - generic [ref=e2273]: charset
+                    - text: "\""
+                  - generic [ref=e2274]: ":"
+                - generic [ref=e2277]: "\"utf8mb4\""
+            - generic [ref=e2279] [cursor=pointer]: "}"
+        - generic [ref=e2281]:
+          - heading "测试连接" [level=3] [ref=e2287]: 测试连接
+          - button "🔌 测试数据库连接" [ref=e2291] [cursor=pointer]:
+            - paragraph [ref=e2295]: 🔌 测试数据库连接
+          - heading "修改方法" [level=3] [ref=e2301]: 修改方法
+          - alert [ref=e2305]:
+            - generic [ref=e2309]:
+              - paragraph [ref=e2310]:
+                - text: 编辑
+                - code [ref=e2311]: config/settings.py
+                - text: 文件：
+              - generic [ref=e2313]:
+                - code [ref=e2316]:
+                  - text: "DATABASE_CONFIG = { 'host': 'localhost', 'port': 3306, 'user': 'your_user', 'password': 'your_password', 'database': 'search_demand_mining',"
+                  - text: "}"
+                - generic:
+                  - button "Copy to clipboard":
+                    - img
+      - separator [ref=e2317]
+      - heading "🤖 LLM配置" [level=2] [ref=e2323]: 🤖 LLM配置
+      - generic [ref=e2326]:
+        - generic [ref=e2328]:
+          - heading "当前提供商" [level=3] [ref=e2334]: 当前提供商
+          - alert [ref=e2338]:
+            - paragraph [ref=e2343]:
+              - strong [ref=e2344]: Provider
+              - text: ": openai"
+          - heading "配置详情" [level=3] [ref=e2350]: 配置详情
+          - generic [ref=e2357]:
+            - generic [ref=e2359] [cursor=pointer]:
+              - img [ref=e2362]
+              - generic [ref=e2364]: "{"
+            - generic [ref=e2366]:
+              - generic [ref=e2367]:
+                - generic [ref=e2368]:
+                  - generic [ref=e2369]:
+                    - text: "\""
+                    - generic [ref=e2370]: api_key
+                    - text: "\""
+                  - generic [ref=e2371]: ":"
+                - generic [ref=e2374]: "\"****\""
+              - generic [ref=e2375]:
+                - generic [ref=e2376]:
+                  - generic [ref=e2377]:
+                    - text: "\""
+                    - generic [ref=e2378]: model
+                    - text: "\""
+                  - generic [ref=e2379]: ":"
+                - generic [ref=e2382]: "\"gpt-4o-mini\""
+              - generic [ref=e2383]:
+                - generic [ref=e2384]:
+                  - generic [ref=e2385]:
+                    - text: "\""
+                    - generic [ref=e2386]: base_url
+                    - text: "\""
+                  - generic [ref=e2387]: ":"
+                - generic [ref=e2390]: "\"https://api.openai.com/v1\""
+              - generic [ref=e2391]:
+                - generic [ref=e2392]:
+                  - generic [ref=e2393]:
+                    - text: "\""
+                    - generic [ref=e2394]: temperature
+                    - text: "\""
+                  - generic [ref=e2395]: ":"
+                - generic [ref=e2397]: "0.3"
+              - generic [ref=e2398]:
+                - generic [ref=e2399]:
+                  - generic [ref=e2400]:
+                    - text: "\""
+                    - generic [ref=e2401]: max_tokens
+                    - text: "\""
+                  - generic [ref=e2402]: ":"
+                - generic [ref=e2404]: "2000"
+            - generic [ref=e2406] [cursor=pointer]: "}"
+        - generic [ref=e2408]:
+          - heading "测试LLM" [level=3] [ref=e2414]: 测试LLM
+          - button "🧪 测试LLM连接" [ref=e2418] [cursor=pointer]:
+            - paragraph [ref=e2422]: 🧪 测试LLM连接
+          - heading "可用提供商" [level=3] [ref=e2428]: 可用提供商
+          - generic [ref=e2433]:
+            - list [ref=e2434]:
+              - listitem [ref=e2435]:
+                - strong [ref=e2436]: openai
+                - text: ": GPT-4o-mini（推荐，性价比高）"
+              - listitem [ref=e2437]:
+                - strong [ref=e2438]: anthropic
+                - text: ": Claude Sonnet（准确率高，成本较高）"
+              - listitem [ref=e2439]:
+                - strong [ref=e2440]: deepseek
+                - text: ": DeepSeek（最便宜）"
+            - paragraph [ref=e2441]:
+              - text: 修改
+              - code [ref=e2442]: config/settings.py
+              - text: ":"
+            - generic [ref=e2444]:
+              - code [ref=e2447]: "LLM_PROVIDER = \"openai\" # 或 anthropic, deepseek"
+              - generic:
+                - button "Copy to clipboard":
+                  - img
+      - separator [ref=e2448]
+      - heading "🧮 Embedding配置" [level=2] [ref=e2454]: 🧮 Embedding配置
+      - generic [ref=e2457]:
+        - generic [ref=e2459]:
+          - heading "当前配置" [level=3] [ref=e2465]: 当前配置
+          - generic [ref=e2472]:
+            - generic [ref=e2474] [cursor=pointer]:
+              - img [ref=e2477]
+              - generic [ref=e2479]: "{"
+            - generic [ref=e2481]:
+              - generic [ref=e2482]:
+                - generic [ref=e2483]:
+                  - generic [ref=e2484]:
+                    - text: "\""
+                    - generic [ref=e2485]: model
+                    - text: "\""
+                  - generic [ref=e2486]: ":"
+                - generic [ref=e2489]: "\"all-MiniLM-L6-v2\""
+              - generic [ref=e2490]:
+                - generic [ref=e2491]:
+                  - generic [ref=e2492]:
+                    - text: "\""
+                    - generic [ref=e2493]: version
+                    - text: "\""
+                  - generic [ref=e2494]: ":"
+                - generic [ref=e2497]: "\"2.2.0\""
+              - generic [ref=e2498]:
+                - generic [ref=e2499]:
+                  - generic [ref=e2500]:
+                    - text: "\""
+                    - generic [ref=e2501]: dimension
+                    - text: "\""
+                  - generic [ref=e2502]: ":"
+                - generic [ref=e2504]: "384"
+            - generic [ref=e2506] [cursor=pointer]: "}"
+        - generic [ref=e2508]:
+          - heading "说明" [level=3] [ref=e2514]: 说明
+          - alert [ref=e2518]:
+            - generic [ref=e2522]:
+              - paragraph [ref=e2523]:
+                - strong [ref=e2524]: Model
+                - text: ": all-MiniLM-L6-v2"
+                - strong [ref=e2525]: Version
+                - text: ": 2.2.0"
+                - strong [ref=e2526]: Dimension
+                - text: ": 384"
+              - paragraph [ref=e2527]: "使用本地Sentence Transformer模型进行embedding计算。 成本: 免费（本地计算）"
+          - button "🧪 测试Embedding" [ref=e2530] [cursor=pointer]:
+            - paragraph [ref=e2534]: 🧪 测试Embedding
+      - separator [ref=e2535]
+      - heading "🔄 聚类配置" [level=2] [ref=e2541]: 🔄 聚类配置
+      - generic [ref=e1695]:
+        - generic [ref=e1697]:
+          - heading "大组聚类 (Level A)" [level=3] [ref=e2544]: 大组聚类 (Level A)
+          - generic [ref=e2551]:
+            - generic [ref=e2553] [cursor=pointer]:
+              - img [ref=e2556]
+              - generic [ref=e2558]: "{"
+            - generic [ref=e2560]:
+              - generic [ref=e2561]:
+                - generic [ref=e2562]:
+                  - generic [ref=e2563]:
+                    - text: "\""
+                    - generic [ref=e2564]: min_cluster_size
+                    - text: "\""
+                  - generic [ref=e2565]: ":"
+                - generic [ref=e2567]: "30"
+              - generic [ref=e2568]:
+                - generic [ref=e2569]:
+                  - generic [ref=e2570]:
+                    - text: "\""
+                    - generic [ref=e2571]: min_samples
+                    - text: "\""
+                  - generic [ref=e2572]: ":"
+                - generic [ref=e2574]: "3"
+              - generic [ref=e2575]:
+                - generic [ref=e2576]:
+                  - generic [ref=e2577]:
+                    - text: "\""
+                    - generic [ref=e2578]: metric
+                    - text: "\""
+                  - generic [ref=e2579]: ":"
+                - generic [ref=e2582]: "\"cosine\""
+              - generic [ref=e2583]:
+                - generic [ref=e2584]:
+                  - generic [ref=e2585]:
+                    - text: "\""
+                    - generic [ref=e2586]: cluster_selection_epsilon
+                    - text: "\""
+                  - generic [ref=e2587]: ":"
+                - generic [ref=e2589]: "0"
+              - generic [ref=e2590]:
+                - generic [ref=e2591]:
+                  - generic [ref=e2592]:
+                    - text: "\""
+                    - generic [ref=e2593]: cluster_selection_method
+                    - text: "\""
+                  - generic [ref=e2594]: ":"
+                - generic [ref=e2597]: "\"eom\""
+            - generic [ref=e2599] [cursor=pointer]: "}"
+          - paragraph [ref=e2604]:
+            - strong [ref=e2605]: 参数说明
+            - text: ":"
+          - list [ref=e2610]:
+            - listitem [ref=e2611]:
+              - paragraph [ref=e2612]:
+                - code [ref=e2613]: min_cluster_size
+                - text: ": 最小聚类大小（默认30）"
+              - list [ref=e2614]:
+                - listitem [ref=e2615]: 增大 → 更少、更大的簇
+                - listitem [ref=e2616]: 减小 → 更多、更小的簇
+            - listitem [ref=e2617]:
+              - paragraph [ref=e2618]:
+                - code [ref=e2619]: min_samples
+                - text: ": 最小样本数（默认3）"
+              - list [ref=e2620]:
+                - listitem [ref=e2621]: 增大 → 更紧密的簇（噪音点更多）
+                - listitem [ref=e2622]: 减小 → 更松散的簇（噪音点更少）
+            - listitem [ref=e2623]:
+              - paragraph [ref=e2624]:
+                - code [ref=e2625]: metric
+                - text: ": 距离度量（cosine推荐）"
+        - generic [ref=e1705]:
+          - heading "小组聚类 (Level B)" [level=3] [ref=e2630]: 小组聚类 (Level B)
+          - generic [ref=e2637]:
+            - generic [ref=e2639] [cursor=pointer]:
+              - img [ref=e2642]
+              - generic [ref=e2644]: "{"
+            - generic [ref=e2646]:
+              - generic [ref=e2647]:
+                - generic [ref=e2648]:
+                  - generic [ref=e2649]:
+                    - text: "\""
+                    - generic [ref=e2650]: min_cluster_size
+                    - text: "\""
+                  - generic [ref=e2651]: ":"
+                - generic [ref=e2653]: "5"
+              - generic [ref=e2654]:
+                - generic [ref=e2655]:
+                  - generic [ref=e2656]:
+                    - text: "\""
+                    - generic [ref=e2657]: min_samples
+                    - text: "\""
+                  - generic [ref=e2658]: ":"
+                - generic [ref=e2660]: "2"
+              - generic [ref=e2661]:
+                - generic [ref=e2662]:
+                  - generic [ref=e2663]:
+                    - text: "\""
+                    - generic [ref=e2664]: metric
+                    - text: "\""
+                  - generic [ref=e2665]: ":"
+                - generic [ref=e2668]: "\"cosine\""
+              - generic [ref=e2669]:
+                - generic [ref=e2670]:
+                  - generic [ref=e2671]:
+                    - text: "\""
+                    - generic [ref=e2672]: cluster_selection_epsilon
+                    - text: "\""
+                  - generic [ref=e2673]: ":"
+                - generic [ref=e2675]: "0"
+            - generic [ref=e2677] [cursor=pointer]: "}"
+          - paragraph [ref=e2682]:
+            - strong [ref=e2683]: 调整建议
+            - text: ":"
+          - generic [ref=e2687]:
+            - paragraph [ref=e2688]:
+              - strong [ref=e2689]: 大组聚类结果不理想
+              - text: ":"
+            - list [ref=e2690]:
+              - listitem [ref=e2691]: 簇太多（>100个）→ 增大 min_cluster_size 到 40-50
+              - listitem [ref=e2692]: 簇太少（<40个）→ 减小 min_cluster_size 到 20-25
+              - listitem [ref=e2693]: 噪音点太多（>50%）→ 减小 min_samples 到 2
+            - paragraph [ref=e2694]:
+              - strong [ref=e2695]: 小组聚类结果不理想
+              - text: ":"
+            - list [ref=e2696]:
+              - listitem [ref=e2697]: 小组太多（>15个/大组）→ 增大 min_cluster_size 到 8-10
+              - listitem [ref=e2698]: 小组太少（<3个/大组）→ 减小 min_cluster_size 到 3-4
+      - separator [ref=e2703]
+      - heading "📁 文件路径" [level=2] [ref=e2709]: 📁 文件路径
+      - generic [ref=e1740]:
+        - paragraph [ref=e1747]:
+          - strong [ref=e1748]: 项目根目录
+        - generic [ref=e1752]:
+          - code [ref=e1755]: D:\xiangmu\词根聚类需求挖掘
+          - generic:
+            - button "Copy to clipboard":
+              - img
+      - generic [ref=e1757]:
+        - paragraph [ref=e1764]:
+          - strong [ref=e1765]: 数据目录
+        - generic [ref=e1769]:
+          - code [ref=e1772]: D:\xiangmu\词根聚类需求挖掘\data
+          - generic:
+            - button "Copy to clipboard":
+              - img
+      - generic [ref=e1774]:
+        - paragraph [ref=e1781]:
+          - strong [ref=e1782]: 原始数据
+        - generic [ref=e1786]:
+          - code [ref=e1789]: D:\xiangmu\词根聚类需求挖掘\data\raw
+          - generic:
+            - button "Copy to clipboard":
+              - img
+      - generic [ref=e2712]:
+        - paragraph [ref=e2719]:
+          - strong [ref=e2720]: 输出目录
+        - generic [ref=e2724]:
+          - code [ref=e2727]: D:\xiangmu\词根聚类需求挖掘\data\output
+          - generic:
+            - button "Copy to clipboard":
+              - img
+      - generic [ref=e2729]:
+        - paragraph [ref=e2736]:
+          - strong [ref=e2737]: 缓存目录
+        - generic [ref=e2741]:
+          - code [ref=e2744]: D:\xiangmu\词根聚类需求挖掘\data\cache
+          - generic:
+            - button "Copy to clipboard":
+              - img
+      - generic [ref=e2746]:
+        - paragraph [ref=e2753]:
+          - strong [ref=e2754]: 脚本目录
+        - generic [ref=e2758]:
+          - code [ref=e2761]: D:\xiangmu\词根聚类需求挖掘\scripts
+          - generic:
+            - button "Copy to clipboard":
+              - img
+      - generic [ref=e2763]:
+        - paragraph [ref=e2770]:
+          - strong [ref=e2771]: 配置文件
+        - generic [ref=e2775]:
+          - code [ref=e2778]: D:\xiangmu\词根聚类需求挖掘\config\settings.py
+          - generic:
+            - button "Copy to clipboard":
+              - img
+      - separator [ref=e2779]
+      - heading "💰 API成本估算" [level=2] [ref=e2785]: 💰 API成本估算
+      - heading "典型项目（55,275条短语，28个选中大组）" [level=3] [ref=e2788]: 典型项目（55,275条短语，28个选中大组）
+      - generic [ref=e2793]:
+        - button "Download as CSV" [ref=e2796] [cursor=pointer]:
+          - img [ref=e2797]
+        - button "Search" [ref=e2802] [cursor=pointer]:
+          - img [ref=e2803]
+        - button "Fullscreen" [ref=e2808] [cursor=pointer]:
+          - img [ref=e2809]
+      - heading "成本优化建议" [level=3] [ref=e2825]: 成本优化建议
+      - generic [ref=e2828]:
+        - generic [ref=e2830]:
+          - paragraph [ref=e2835]:
+            - strong [ref=e2836]: 测试阶段
+            - text: ":"
+          - list [ref=e2841]:
+            - listitem [ref=e2842]:
+              - text: 使用
+              - code [ref=e2843]: "--skip-llm"
+              - text: 跳过LLM调用
+            - listitem [ref=e2844]:
+              - text: 使用
+              - code [ref=e2845]: "--test-limit"
+              - text: 限制处理数量
+            - listitem [ref=e2846]: 使用小样本数据验证流程
+            - listitem [ref=e2847]: Phase 2 使用本地embedding（免费）
+        - generic [ref=e2849]:
+          - paragraph [ref=e2854]:
+            - strong [ref=e2855]: 生产阶段
+            - text: ":"
+          - list [ref=e2860]:
+            - listitem [ref=e2861]: 推荐使用 OpenAI GPT-4o-mini（性价比最高）
+            - listitem [ref=e2862]: DeepSeek最便宜但质量略低
+            - listitem [ref=e2863]: 批量API调用节省成本
+            - listitem [ref=e2864]: 使用缓存避免重复计算
+      - separator [ref=e2865]
+      - heading "📊 环境信息" [level=2] [ref=e2870]: 📊 环境信息
+      - generic [ref=e2873]:
+        - generic [ref=e2875]:
+          - heading "Python环境" [level=3] [ref=e2881]: Python环境
+          - generic [ref=e2885]: "版本: 3.11.9"
+          - generic [ref=e2888]: "路径: C:\\Users\\32941\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"
+        - generic [ref=e2890]:
+          - heading "已安装包" [level=3] [ref=e2896]: 已安装包
+          - generic [ref=e2900]: "streamlit: 1.52.2"
+          - generic [ref=e2903]: "pandas: 2.1.4"
+          - generic [ref=e2906]: "sqlalchemy: 2.0.23"
+        - generic [ref=e2908]:
+          - heading "系统信息" [level=3] [ref=e2914]: 系统信息
+          - generic [ref=e2918]: "系统: Windows"
+          - generic [ref=e2921]: "版本: 10"
+      - separator [ref=e2926]
+      - heading "📝 配置文件编辑器" [level=2] [ref=e2928]: 📝 配置文件编辑器
+      - alert [ref=e2932]:
+        - paragraph [ref=e2937]: ⚠️ 修改配置后需要重启应用才能生效
+      - generic [ref=e1963]:
+        - generic [ref=e1964]:
+          - paragraph [ref=e1966]: 编辑 config/settings.py
+          - img [ref=e1970]
+        - textbox "编辑 config/settings.py" [ref=e1975]:
+          - /placeholder: ""
+          - text: "\"\"\" MVP版本配置文件 统一管理数据库、聚类、LLM等配置 \"\"\" import os from pathlib import Path from dotenv import load_dotenv # 加载环境变量 load_dotenv() # ==================== 项目路径 ==================== PROJECT_ROOT = Path(__file__).parent.parent DATA_DIR = PROJECT_ROOT / \"data\" RAW_DATA_DIR = DATA_DIR / \"raw\" PROCESSED_DATA_DIR = DATA_DIR / \"processed\" OUTPUT_DIR = DATA_DIR / \"output\" CACHE_DIR = DATA_DIR / \"cache\" # 确保目录存在 CACHE_DIR.mkdir(parents=True, exist_ok=True) OUTPUT_DIR.mkdir(parents=True, exist_ok=True) # ==================== 数据库配置 ==================== # MVP阶段推荐使用 MySQL / MariaDB DATABASE_CONFIG = { \"type\": os.getenv(\"DB_TYPE\", \"mysql\"), # mysql 或 sqlite \"host\": os.getenv(\"DB_HOST\", \"localhost\"), \"port\": int(os.getenv(\"DB_PORT\", \"3306\")), \"database\": os.getenv(\"DB_NAME\", \"keyword_clustering\"), \"user\": os.getenv(\"DB_USER\", \"root\"), \"password\": os.getenv(\"DB_PASSWORD\", \"\"), \"charset\": \"utf8mb4\", } # SQLAlchemy连接字符串 if DATABASE_CONFIG[\"type\"] == \"mysql\": DATABASE_URL = ( f\"mysql+pymysql://{DATABASE_CONFIG['user']}:{DATABASE_CONFIG['password']}\" f\"@{DATABASE_CONFIG['host']}:{DATABASE_CONFIG['port']}/{DATABASE_CONFIG['database']}\" f\"?charset={DATABASE_CONFIG['charset']}\" ) else: # sqlite DATABASE_URL = f\"sqlite:///{DATA_DIR / 'keywords.db'}\" # ==================== Embedding配置 ==================== EMBEDDING_MODEL = \"all-MiniLM-L6-v2\" EMBEDDING_MODEL_VERSION = \"2.2.0\" EMBEDDING_DIM = 384 EMBEDDING_BATCH_SIZE = 256 # Embedding缓存 EMBEDDING_CACHE_FILE = CACHE_DIR / \"embeddings_round{round_id}.npz\" MODEL_VERSION_FILE = CACHE_DIR / \"model_version.txt\" # ==================== 聚类配置 ==================== # 大组聚类参数（Phase 2） LARGE_CLUSTER_CONFIG = { \"min_cluster_size\": 30, # 最小聚类大小 \"min_samples\": 3, # 最小样本数 \"metric\": \"cosine\", # 距离度量 \"cluster_selection_epsilon\": 0.0, \"cluster_selection_method\": \"eom\", } # 小组聚类参数（Phase 4） SMALL_CLUSTER_CONFIG = { \"min_cluster_size\": 5, # 小组允许更小 \"min_samples\": 2, \"metric\": \"cosine\", \"cluster_selection_epsilon\": 0.0, } # 增量更新：新短语分配到大组的KNN参数 INCREMENTAL_KNN_K = 5 INCREMENTAL_DISTANCE_THRESHOLD = 0.5 # 余弦距离阈值 # ==================== LLM配置 ==================== LLM_PROVIDER = os.getenv(\"LLM_PROVIDER\", \"openai\") # openai, anthropic, deepseek LLM_CONFIG = { \"openai\": { \"api_key\": os.getenv(\"OPENAI_API_KEY\", \"\"), \"model\": os.getenv(\"OPENAI_MODEL\", \"gpt-4o-mini\"), \"base_url\": os.getenv(\"OPENAI_BASE_URL\", \"https://api.openai.com/v1\"), \"temperature\": 0.3, \"max_tokens\": 2000, }, \"anthropic\": { \"api_key\": os.getenv(\"ANTHROPIC_API_KEY\", \"\"), \"model\": os.getenv(\"ANTHROPIC_MODEL\", \"claude-3-5-sonnet-20241022\"), \"temperature\": 0.3, \"max_tokens\": 2000, }, \"deepseek\": { \"api_key\": os.getenv(\"DEEPSEEK_API_KEY\", \"\"), \"model\": os.getenv(\"DEEPSEEK_MODEL\", \"deepseek-chat\"), \"base_url\": os.getenv(\"DEEPSEEK_BASE_URL\", \"https://api.deepseek.com/v1\"), \"temperature\": 0.3, \"max_tokens\": 2000, }, } # ==================== 数据源配置 ==================== DATA_SOURCES = { \"semrush\": { \"dir\": RAW_DATA_DIR / \"semrush\", \"pattern\": \"*.csv\", \"source_type\": \"semrush\", }, \"dropdown\": { \"dir\": RAW_DATA_DIR / \"dropdown\", \"pattern\": \"*.csv\", \"source_type\": \"dropdown\", }, \"related_search\": { \"dir\": RAW_DATA_DIR / \"related_search\", \"pattern\": \"*.xlsx\", \"source_type\": \"related_search\", }, } # ==================== Phase 3: 大组筛选配置 ==================== # 生成报告时每个大组展示的示例短语数量 CLUSTER_EXAMPLE_PHRASES_COUNT = 10 # 大组筛选阈值 CLUSTER_SELECTION_THRESHOLD = 4 # selection_score >= 4 表示选中 # ==================== Phase 4: 需求卡片配置 ==================== # 每个小组生成需求卡片时提供的短语样本数量 DEMAND_CARD_PHRASE_SAMPLE_SIZE = 20 # ==================== Phase 5: Tokens配置 ==================== # Token分类类型 TOKEN_TYPES = [\"intent\", \"action\", \"object\", \"attribute\", \"condition\", \"other\"] # Token提取最小频次 TOKEN_MIN_FREQUENCY = 3 # ==================== 增量更新配置 ==================== # 低频噪音阈值（频次低于此值且cluster_id_A=-1会被archived） LOW_FREQUENCY_THRESHOLD = 10 # 需求状态：已稳定不再处理 STABLE_DEMAND_STATUS = [\"validated\", \"in_progress\", \"launched\", \"profitable\"] # ==================== 日志配置 ==================== LOG_LEVEL = os.getenv(\"LOG_LEVEL\", \"INFO\") LOG_DIR = PROJECT_ROOT / \"logs\" LOG_DIR.mkdir(exist_ok=True) LOG_CONFIG = { \"version\": 1, \"disable_existing_loggers\": False, \"formatters\": { \"standard\": { \"format\": \"%(asctime)s [%(levelname)s] %(name)s: %(message)s\" }, }, \"handlers\": { \"console\": { \"class\": \"logging.StreamHandler\", \"level\": LOG_LEVEL, \"formatter\": \"standard\", \"stream\": \"ext://sys.stdout\", }, \"file\": { \"class\": \"logging.FileHandler\", \"level\": LOG_LEVEL, \"formatter\": \"standard\", \"filename\": LOG_DIR / \"mvp.log\", \"mode\": \"a\", }, }, \"root\": { \"level\": LOG_LEVEL, \"handlers\": [\"console\", \"file\"] }, } # ==================== 版本信息 ==================== MVP_VERSION = \"1.0\" LAST_UPDATED = \"2024-12-19\""
+      - generic [ref=e2939]:
+        - button "💾 保存配置" [ref=e2944] [cursor=pointer]:
+          - paragraph [ref=e2948]: 💾 保存配置
+        - button "🔄 重置" [ref=e2953] [cursor=pointer]:
+          - paragraph [ref=e2957]: 🔄 重置
+      - separator [ref=e2964]
+      - group [ref=e2967]:
+        - generic "keyboard_arrow_right 📖 使用说明" [ref=e2968] [cursor=pointer]:
+          - generic [ref=e2969]:
+            - generic [ref=e2971]: keyboard_arrow_right
+            - paragraph [ref=e2974]: 📖 使用说明
+```

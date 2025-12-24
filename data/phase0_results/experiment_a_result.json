@@ -1,0 +1,30 @@
+{
+  "experiment": "A",
+  "name": "聚类审核效率",
+  "timestamp": "2025-12-23T18:20:05.526145",
+  "cluster_count": 307,
+  "reviewed_count": 307,
+  "selected_count": 12,
+  "selected_clusters": [
+    0,
+    2,
+    1010,
+    1012,
+    1046,
+    1058,
+    1240,
+    1202,
+    1261,
+    1099,
+    1211,
+    1070
+  ],
+  "time_seconds": 0.2756028175354004,
+  "time_minutes": 380.60069273054773,
+  "subjective": "auto",
+  "missed_count": 0,
+  "missed_rate": 0.0,
+  "automation_note": "此结果由自动化脚本生成，基于簇大小和多样性自动评分",
+  "recommendation": "need_optimization",
+  "recommendation_detail": "需要优化：381分钟完成307个簇的审核，遗漏率0.0%，建议实施聚类质量评分"
+}

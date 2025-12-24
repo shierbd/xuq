@@ -35,10 +35,10 @@ class DataIntegration:
         """
         file_path = self.source_files['semrush']
         if not file_path.exists():
-            print(f"⚠️  SEMRUSH文件不存在: {file_path}")
+            logger.warning(f"⚠️  SEMRUSH文件不存在: {file_path}")
             return pd.DataFrame()
 
-        print(f"📂 加载SEMRUSH数据: {file_path.name}")
+        logger.info(f"📂 加载SEMRUSH数据: {file_path.name}")
         df = pd.read_csv(file_path, encoding='utf-8-sig')
 
         # 选择需要的列
@@ -53,7 +53,7 @@ class DataIntegration:
         # 确保source_type正确
         df['source_type'] = 'semrush'
 
-        print(f"✓ 加载 {len(df)} 条SEMRUSH记录")
+        logger.info(f"✓ 加载 {len(df)} 条SEMRUSH记录")
         return df
 
     def load_dropdown_data(self) -> pd.DataFrame:
@@ -65,10 +65,10 @@ class DataIntegration:
         """
         file_path = self.source_files['dropdown']
         if not file_path.exists():
-            print(f"⚠️  下拉词文件不存在: {file_path}")
+            logger.warning(f"⚠️  下拉词文件不存在: {file_path}")
             return pd.DataFrame()
 
-        print(f"📂 加载下拉词数据: {file_path.name}")
+        logger.info(f"📂 加载下拉词数据: {file_path.name}")
         df = pd.read_csv(file_path, encoding='utf-8-sig')
 
         # 选择需要的列
@@ -82,7 +82,7 @@ class DataIntegration:
         # 确保source_type正确
         df['source_type'] = 'dropdown'
 
-        print(f"✓ 加载 {len(df)} 条下拉词记录")
+        logger.info(f"✓ 加载 {len(df)} 条下拉词记录")
         return df
 
     def load_related_search_data(self) -> pd.DataFrame:
@@ -94,10 +94,10 @@ class DataIntegration:
         """
         file_path = self.source_files['related_search']
         if not file_path.exists():
-            print(f"⚠️  相关搜索文件不存在: {file_path}")
+            logger.warning(f"⚠️  相关搜索文件不存在: {file_path}")
             return pd.DataFrame()
 
-        print(f"📂 加载相关搜索数据: {file_path.name}")
+        logger.info(f"📂 加载相关搜索数据: {file_path.name}")
         df = pd.read_csv(file_path, encoding='utf-8-sig')
 
         # 选择需要的列
@@ -111,7 +111,7 @@ class DataIntegration:
         # 确保source_type正确
         df['source_type'] = 'related_search'
 
-        print(f"✓ 加载 {len(df)} 条相关搜索记录")
+        logger.info(f"✓ 加载 {len(df)} 条相关搜索记录")
         return df
 
     def clean_phrase(self, phrase: str) -> Optional[str]:
@@ -183,17 +183,15 @@ class DataIntegration:
             - volume: 搜索量
             - first_seen_round: 首次出现轮次
         """
-        print("\n" + "="*60)
-        print("开始数据整合与清洗")
-        print("="*60)
-
-        # 1. 加载所有数据源
+        logger.info("\n" + "="*60)
+        logger.info("开始数据整合与清洗")
+        logger.info("="*60)
         semrush_df = self.load_semrush_data()
         dropdown_df = self.load_dropdown_data()
         related_df = self.load_related_search_data()
 
         # 2. 合并数据
-        print("\n🔗 合并数据源...")
+        logger.info("\n🔗 合并数据源...")
         all_data = []
         if not semrush_df.empty:
             all_data.append(semrush_df)
@@ -203,25 +201,19 @@ class DataIntegration:
             all_data.append(related_df)
 
         if not all_data:
-            print("❌ 没有可用的数据源！")
+            logger.error("❌ 没有可用的数据源！")
             return pd.DataFrame()
 
         df = pd.concat(all_data, ignore_index=True)
-        print(f"✓ 合并后总记录数: {len(df)}")
-
-        # 3. 清洗数据
-        print("\n🧹 清洗数据...")
-
-        # 清洗phrase
-        print("  - 清洗短语...")
+        logger.info(f"✓ 合并后总记录数: {len(df)}")
+        logger.info("\n🧹 清洗数据...")
+        logger.info("  - 清洗短语...")
         df['phrase_cleaned'] = df['phrase'].apply(self.clean_phrase)
         df = df[df['phrase_cleaned'].notna()].copy()
         df['phrase'] = df['phrase_cleaned']
         df.drop('phrase_cleaned', axis=1, inplace=True)
-        print(f"    ✓ 剩余 {len(df)} 条有效记录")
-
-        # 清洗seed_word
-        print("  - 清洗种子词...")
+        logger.info(f"    ✓ 剩余 {len(df)} 条有效记录")
+        logger.info("  - 清洗种子词...")
         df['seed_word'] = df['seed_word'].apply(self.clean_seed_word)
 
         # 确保数值列正确
@@ -229,7 +221,7 @@ class DataIntegration:
         df['volume'] = pd.to_numeric(df['volume'], errors='coerce').fillna(0).astype(int)
 
         # 4. 去重并聚合
-        print("\n🔄 去重并聚合...")
+        logger.info("\n🔄 去重并聚合...")
         df_grouped = df.groupby('phrase').agg({
             'seed_word': 'first',  # 取第一个种子词
             'source_type': 'first',  # 取第一个数据源
@@ -237,30 +229,28 @@ class DataIntegration:
             'volume': 'max',  # 搜索量取最大值
         }).reset_index()
 
-        print(f"✓ 去重后记录数: {len(df_grouped)}")
-
-        # 5. 添加first_seen_round列
+        logger.info(f"✓ 去重后记录数: {len(df_grouped)}")
         df_grouped['first_seen_round'] = round_id
 
         # 6. 最终排序
         df_grouped = df_grouped.sort_values('frequency', ascending=False).reset_index(drop=True)
 
         # 7. 统计信息
-        print("\n" + "="*60)
-        print("📊 数据统计")
-        print("="*60)
-        print(f"总记录数: {len(df_grouped)}")
-        print(f"\n按数据源分布:")
-        print(df_grouped['source_type'].value_counts())
-        print(f"\n频次统计:")
-        print(f"  最大值: {df_grouped['frequency'].max()}")
-        print(f"  最小值: {df_grouped['frequency'].min()}")
-        print(f"  平均值: {df_grouped['frequency'].mean():.2f}")
-        print(f"  中位数: {df_grouped['frequency'].median():.2f}")
-        print(f"\n搜索量统计:")
-        print(f"  有搜索量的记录: {(df_grouped['volume'] > 0).sum()}")
-        print(f"  最大搜索量: {df_grouped['volume'].max()}")
-        print("="*60)
+        logger.info("\n" + "="*60)
+        logger.info("📊 数据统计")
+        logger.info("="*60)
+        logger.info(f"总记录数: {len(df_grouped)}")
+        logger.info(f"\n按数据源分布:")
+        logger.info(df_grouped['source_type'].value_counts())
+        logger.info(f"\n频次统计:")
+        logger.info(f"  最大值: {df_grouped['frequency'].max()}")
+        logger.info(f"  最小值: {df_grouped['frequency'].min()}")
+        logger.info(f"  平均值: {df_grouped['frequency'].mean():.2f}")
+        logger.info(f"  中位数: {df_grouped['frequency'].median():.2f}")
+        logger.info(f"\n搜索量统计:")
+        logger.info(f"  有搜索量的记录: {(df_grouped['volume'] > 0).sum()}")
+        logger.info(f"  最大搜索量: {df_grouped['volume'].max()}")
+        logger.info("="*60)
 
         return df_grouped
 
@@ -274,7 +264,7 @@ class DataIntegration:
         Returns:
             字典列表，每个字典对应一条数据库记录
         """
-        print("\n📋 准备数据库插入格式...")
+        logger.info("\n📋 准备数据库插入格式...")
 
         records = []
         for _, row in tqdm(df.iterrows(), total=len(df), desc="转换记录"):
@@ -293,29 +283,31 @@ class DataIntegration:
             }
             records.append(record)
 
-        print(f"✓ 准备完成，共 {len(records)} 条记录")
+        logger.info(f"✓ 准备完成，共 {len(records)} 条记录")
         return records
 
 
 def test_data_integration():
     """测试数据整合功能"""
     from config.settings import RAW_DATA_DIR
+from utils.logger import get_logger
+
+logger = get_logger(__name__)
+
 
     integrator = DataIntegration(RAW_DATA_DIR)
     df = integrator.merge_and_clean(round_id=1)
 
     if not df.empty:
-        print("\n✅ 数据整合测试成功！")
-        print(f"\n前5条记录:")
-        print(df.head())
-
-        # 保存到processed目录
+        logger.info("\n✅ 数据整合测试成功！")
+        logger.info(f"\n前5条记录:")
+        logger.info(df.head())
         output_path = RAW_DATA_DIR.parent / 'processed' / 'integrated_data.csv'
         output_path.parent.mkdir(exist_ok=True)
         df.to_csv(output_path, index=False, encoding='utf-8-sig')
-        print(f"\n💾 测试数据已保存到: {output_path}")
+        logger.info(f"\n💾 测试数据已保存到: {output_path}")
     else:
-        print("\n❌ 数据整合失败！")
+        logger.error("\n❌ 数据整合失败！")
 
 
 if __name__ == "__main__":

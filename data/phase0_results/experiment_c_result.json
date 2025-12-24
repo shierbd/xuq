@@ -1,0 +1,12 @@
+{
+  "experiment": "C",
+  "name": "同义冗余率",
+  "timestamp": "2025-12-23T18:22:37.865775",
+  "sample_size": 1000,
+  "synonym_groups_count": 7,
+  "phrases_in_groups": 14,
+  "redundancy_rate": 0.007,
+  "automation_note": "此结果由自动化脚本生成，基于文本相似度算法识别同义组",
+  "recommendation": "ok",
+  "recommendation_detail": "冗余率0.7%可接受，无需特殊处理"
+}

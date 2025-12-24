@@ -41,9 +41,23 @@ tqdm>=4.66.0
 # 数据验证（可选）
 pydantic>=2.0.0
 
+# 自然语言处理（Phase 0词性标注）
+nltk>=3.8.0
+
+# 翻译服务（Phase 0，已解决依赖冲突）
+deep-translator>=1.11.0  # 使用deep-translator替代googletrans，无依赖冲突
+
+# ==================== Web UI ====================
+# Streamlit Web界面
+streamlit>=1.28.0
+
+# 词云生成（可选，Phase 5使用）
+wordcloud>=1.9.0
+matplotlib>=3.7.0
+
 # ==================== 注释：暂不包含的依赖 ====================
 # 以下依赖在MVP阶段不需要，后续迭代再添加：
-# - matplotlib, seaborn (Phase 6可视化时添加)
+# - seaborn (Phase 6可视化时添加)
 # - pytrends (Google Trends，暂不用)
 # - beautifulsoup4 (Web抓取，暂不用)
 # - transformers (sentence-transformers已包含)

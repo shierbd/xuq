@@ -1,0 +1,423 @@
+"""
+Phase 5: Token提取页面
+"""
+import streamlit as st
+import subprocess
+import sys
+from pathlib import Path
+import pandas as pd
+
+project_root = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(project_root))
+
+from storage.repository import TokenRepository, PhraseRepository
+
+
+def render():
+    st.markdown('<div class="main-header">🏷️ Phase 5: Token提取</div>', unsafe_allow_html=True)
+
+    st.markdown("""
+    ### 功能说明
+
+    从短语中提取高频关键词（tokens），并使用LLM进行语义分类。
+
+    **目的**: 建立需求框架词库，用于需求分析和SEO
+
+    **分类标准**:
+    - **intent**: 意图词（best, top, how to, cheap, free）
+    - **action**: 动作词（download, buy, make, create, install）
+    - **object**: 对象词（shoes, phone, tutorial, recipe）
+    - **other**: 其他（品牌名、地名、数字等）
+
+    **输出**: 500-2000个分类tokens
+    """)
+
+    st.markdown("---")
+
+    # 显示当前状态
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.markdown("### 📊 当前状态")
+
+        try:
+            with TokenRepository() as token_repo:
+                all_tokens = token_repo.get_all_tokens()
+                st.metric("Token总数", len(all_tokens))
+
+                if all_tokens:
+                    by_type = {}
+                    verified_count = 0
+                    for t in all_tokens:
+                        by_type[t.token_type] = by_type.get(t.token_type, 0) + 1
+                        if t.verified:
+                            verified_count += 1
+
+                    st.metric("已验证", verified_count)
+
+                    st.markdown("**按类型分布:**")
+                    for ttype, count in sorted(by_type.items(), key=lambda x: x[1], reverse=True):
+                        st.text(f"  {ttype}: {count}")
+
+            with PhraseRepository() as phrase_repo:
+                stats = phrase_repo.get_statistics()
+                st.metric("短语总数", f"{stats.get('total_count', 0):,}")
+
+        except Exception as e:
+            st.error(f"无法获取状态: {str(e)}")
+
+    with col2:
+        st.markdown("### ⚙️ 提取参数")
+
+        sample_size = st.number_input(
+            "采样短语数量",
+            min_value=0,
+            max_value=100000,
+            value=10000,
+            step=1000,
+            help="0表示使用全部短语，建议首次使用10000"
+        )
+
+        min_frequency = st.slider(
+            "最小词频",
+            min_value=1,
+            max_value=20,
+            value=3,
+            help="token在短语中至少出现的次数"
+        )
+
+        st.markdown("### 🧪 测试选项")
+
+        skip_llm = st.checkbox(
+            "跳过LLM分类",
+            value=False,
+            help="仅提取tokens，不进行分类"
+        )
+
+        round_id = st.number_input(
+            "Round ID",
+            min_value=1,
+            value=1,
+            help="数据轮次标识"
+        )
+
+    st.markdown("---")
+
+    # 预期结果提示
+    st.markdown("### 🎯 预期结果")
+
+    try:
+        with PhraseRepository() as phrase_repo:
+            stats = phrase_repo.get_statistics()
+            total_phrases = stats.get('total_count', 0)
+
+            actual_sample = sample_size if sample_size > 0 else total_phrases
+
+            # 估算token数量
+            estimated_tokens = actual_sample * 3  # 每个短语约3个词
+            estimated_unique = estimated_tokens // 10  # 去重后约10%
+            estimated_after_filter = estimated_unique // 3  # 频次过滤后约1/3
+
+            col1, col2, col3 = st.columns(3)
+            with col1:
+                st.info(f"**采样短语**: {actual_sample:,}")
+            with col2:
+                st.info(f"**预计tokens**: {estimated_after_filter}")
+            with col3:
+                if not skip_llm:
+                    estimated_batches = estimated_after_filter // 50 + 1
+                    estimated_cost = estimated_batches * 0.002  # 每批$0.002
+                    st.warning(f"**预计成本**: ${estimated_cost:.2f}")
+                else:
+                    st.success("**成本**: $0（跳过LLM）")
+
+    except Exception as e:
+        st.error(f"无法估算: {str(e)}")
+
+    st.markdown("---")
+
+    # 操作按钮
+    col1, col2, col3 = st.columns([1, 1, 2])
+
+    with col1:
+        start_button = st.button("🚀 开始提取", type="primary", use_container_width=True)
+
+    with col2:
+        if st.button("🔄 刷新状态", use_container_width=True):
+            st.rerun()
+
+    # 执行Phase 5
+    if start_button:
+        st.markdown("### 📝 执行日志")
+
+        # 构建命令
+        script_path = project_root / "scripts" / "run_phase5_tokens.py"
+
+        cmd = [
+            sys.executable,
+            str(script_path),
+            f"--sample-size={sample_size}",
+            f"--min-frequency={min_frequency}",
+            f"--round-id={round_id}"
+        ]
+
+        if skip_llm:
+            cmd.append("--skip-llm")
+
+        # 显示命令
+        st.code(" ".join(cmd), language="bash")
+
+        # 执行
+        with st.spinner("正在提取tokens..."):
+            try:
+                process = subprocess.Popen(
+                    cmd,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.STDOUT,
+                    text=True,
+                    bufsize=1,
+                    universal_newlines=True
+                )
+
+                # 创建日志输出区域
+                log_container = st.empty()
+                log_lines = []
+
+                # 实时读取输出
+                for line in process.stdout:
+                    log_lines.append(line.strip())
+                    log_container.text_area(
+                        "输出日志",
+                        "\n".join(log_lines[-50:]),
+                        height=400
+                    )
+
+                process.wait()
+
+                if process.returncode == 0:
+                    st.success("✅ Phase 5 完成！")
+                    st.balloons()
+
+                    # 显示结果统计
+                    with TokenRepository() as token_repo:
+                        all_tokens = token_repo.get_all_tokens()
+                        st.metric("提取Token数", len(all_tokens))
+
+                        if all_tokens:
+                            by_type = {}
+                            for t in all_tokens:
+                                by_type[t.token_type] = by_type.get(t.token_type, 0) + 1
+
+                            col1, col2, col3, col4 = st.columns(4)
+                            with col1:
+                                st.metric("intent", by_type.get('intent', 0))
+                            with col2:
+                                st.metric("action", by_type.get('action', 0))
+                            with col3:
+                                st.metric("object", by_type.get('object', 0))
+                            with col4:
+                                st.metric("other", by_type.get('other', 0))
+
+                    # 检查输出文件
+                    output_file = project_root / "data" / "output" / "tokens_extracted.csv"
+                    if output_file.exists():
+                        st.info(f"📄 Token CSV: {output_file}")
+                        st.markdown("**下一步**: 打开CSV进行人工审核")
+                else:
+                    st.error(f"❌ 执行失败，退出代码: {process.returncode}")
+
+            except Exception as e:
+                st.error(f"❌ 执行出错: {str(e)}")
+
+    st.markdown("---")
+
+    # 查看已提取的tokens
+    st.markdown("## 📋 已提取的Tokens")
+
+    try:
+        with TokenRepository() as token_repo:
+            all_tokens = token_repo.get_all_tokens()
+
+            if all_tokens:
+                st.markdown(f"**找到 {len(all_tokens)} 个tokens**")
+
+                # 显示token表格
+                token_data = []
+                for t in all_tokens:
+                    token_data.append({
+                        "Token": t.token_text,
+                        "类型": t.token_type,
+                        "频次": t.in_phrase_count,
+                        "已验证": "✅" if t.verified else "❌"
+                    })
+
+                df = pd.DataFrame(token_data)
+
+                # 筛选器
+                col1, col2, col3 = st.columns(3)
+
+                with col1:
+                    type_filter = st.multiselect(
+                        "按类型筛选",
+                        options=["全部"] + list(df["类型"].unique()),
+                        default=["全部"]
+                    )
+
+                with col2:
+                    verified_filter = st.selectbox(
+                        "按验证状态筛选",
+                        options=["全部", "已验证", "未验证"]
+                    )
+
+                with col3:
+                    min_freq_filter = st.number_input(
+                        "最小频次",
+                        min_value=0,
+                        value=0
+                    )
+
+                # 应用筛选
+                filtered_df = df.copy()
+
+                if "全部" not in type_filter:
+                    filtered_df = filtered_df[filtered_df["类型"].isin(type_filter)]
+
+                if verified_filter == "已验证":
+                    filtered_df = filtered_df[filtered_df["已验证"] == "✅"]
+                elif verified_filter == "未验证":
+                    filtered_df = filtered_df[filtered_df["已验证"] == "❌"]
+
+                if min_freq_filter > 0:
+                    filtered_df = filtered_df[filtered_df["频次"] >= min_freq_filter]
+
+                # 排序
+                sort_by = st.selectbox(
+                    "排序方式",
+                    ["按频次降序", "按Token字母序", "按类型"]
+                )
+
+                if sort_by == "按频次降序":
+                    filtered_df = filtered_df.sort_values("频次", ascending=False)
+                elif sort_by == "按Token字母序":
+                    filtered_df = filtered_df.sort_values("Token")
+                elif sort_by == "按类型":
+                    filtered_df = filtered_df.sort_values("类型")
+
+                # 显示表格
+                st.dataframe(
+                    filtered_df,
+                    use_container_width=True,
+                    height=400
+                )
+
+                # 词云
+                if st.checkbox("显示词云"):
+                    try:
+                        import matplotlib.pyplot as plt
+                        from wordcloud import WordCloud
+
+                        # 准备词频数据
+                        word_freq = {row["Token"]: row["频次"] for _, row in filtered_df.iterrows()}
+
+                        # 生成词云
+                        wordcloud = WordCloud(
+                            width=800,
+                            height=400,
+                            background_color='white',
+                            colormap='viridis'
+                        ).generate_from_frequencies(word_freq)
+
+                        # 显示
+                        fig, ax = plt.subplots(figsize=(10, 5))
+                        ax.imshow(wordcloud, interpolation='bilinear')
+                        ax.axis('off')
+                        st.pyplot(fig)
+
+                    except ImportError:
+                        st.warning("⚠️ 需要安装 wordcloud 和 matplotlib: pip install wordcloud matplotlib")
+
+            else:
+                st.info("ℹ️ 还没有提取tokens，请先运行 Phase 5")
+
+    except Exception as e:
+        st.error(f"❌ 加载tokens失败: {str(e)}")
+
+    # 使用说明
+    with st.expander("📖 使用说明"):
+        st.markdown("""
+        ### Phase 5 流程
+
+        1. **加载短语**: 从数据库加载短语（可采样）
+        2. **提取tokens**: 分词、清理、统计频次
+        3. **停用词过滤**: 移除常见停用词（~70个）
+        4. **提取bigrams**: 识别常见二元词组
+        5. **LLM分类**: 批量分类（50个/批）
+        6. **保存结果**: 更新数据库和导出CSV
+
+        ### 参数说明
+
+        **采样短语数量**:
+        - 0 = 使用全部短语
+        - 10000 = 采样1万条（推荐首次使用）
+        - 影响tokens数量和成本
+
+        **最小词频**:
+        - 默认: 3
+        - 增大 → tokens更少，但更有代表性
+        - 减小 → tokens更多，包含长尾词
+
+        ### 停用词列表
+
+        系统会自动过滤以下类型的词：
+        - 冠词: a, an, the
+        - 介词: in, on, at, by, for, with
+        - 连词: and, or, but
+        - 代词: i, you, he, she, it
+        - 助词: is, are, was, were, do, does
+
+        ### 人工审核
+
+        1. 打开 `data/output/tokens_extracted.csv`
+        2. 检查 `token_type` 是否正确
+        3. 修改错误的分类
+        4. 标记 `verified=TRUE` 表示已审核
+
+        ### 输出文件
+
+        - `data/output/tokens_extracted.csv` - Token CSV
+        - `data/output/phase5_tokens_report.txt` - 统计报告
+        """)
+
+    # 故障排查
+    with st.expander("🔧 故障排查"):
+        st.markdown("""
+        ### 常见问题
+
+        **Q: 提取的tokens数量太少**
+        - 减小"最小词频"（从3减到2）
+        - 增大"采样短语数量"
+        - 检查数据库中的短语数量
+
+        **Q: 提取的tokens数量太多**
+        - 增大"最小词频"（从3增到5或更高）
+        - 检查停用词列表是否完整
+
+        **Q: LLM分类错误率高**
+        - 这是正常的，AI分类准确率约70-80%
+        - 需要人工审核和修正
+        - 考虑调整Prompt（在 ai/client.py）
+
+        **Q: 重复运行会重复提取吗**
+        - 不会，系统会自动去重
+        - 已存在的tokens不会重复插入
+        - 可以安全地多次运行
+
+        **Q: 内存不足**
+        - 减小采样数量（从10000减到5000）
+        - 使用更小的batch_size（在代码中调整）
+
+        **Q: 某些重要词被过滤**
+        - 检查停用词列表（在 utils/token_extractor.py）
+        - 可以自定义停用词列表
+        - 减小最小词频
+        """)

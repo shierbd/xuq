@@ -1,0 +1,41 @@
+{
+  "experiment": "D",
+  "name": "搜索意图分布",
+  "timestamp": "2025-12-23T18:24:33.530682",
+  "sample_size": 1000,
+  "intent_distribution": {
+    "find_tool": {
+      "name": "寻找工具/服务",
+      "count": 116,
+      "percentage": 0.116
+    },
+    "learn_how": {
+      "name": "学习使用/教程",
+      "count": 75,
+      "percentage": 0.075
+    },
+    "solve_problem": {
+      "name": "解决问题",
+      "count": 1,
+      "percentage": 0.001
+    },
+    "find_free": {
+      "name": "寻找免费",
+      "count": 33,
+      "percentage": 0.033
+    },
+    "compare": {
+      "name": "对比评估",
+      "count": 25,
+      "percentage": 0.025
+    },
+    "other": {
+      "name": "其他",
+      "count": 750,
+      "percentage": 0.75
+    }
+  },
+  "automation_note": "此结果由自动化脚本生成，基于关键词规则自动分类",
+  "recommendation": "different_pattern",
+  "recommendation_detail": "find_tool占比11.6%，模式较分散，建议均衡策略"
+}
