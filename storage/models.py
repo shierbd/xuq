@@ -209,18 +209,24 @@ class Token(Base):
 
 # ==================== 4. WordSegment 分词结果库 ====================
 class WordSegment(Base):
-    """分词结果库 - 存储关键词分词后的单词统计"""
+    """分词结果库 - 存储关键词分词后的单词和短语统计
+
+    支持存储：
+    - 单词（word_count=1）：如 'free', 'best'
+    - 短语（word_count>1）：如 'best free', 'how to'
+    """
 
     __tablename__ = "word_segments"
 
     # 主键
     word_id = Column(Integer, primary_key=True, autoincrement=True)
-    word = Column(String(100), unique=True, nullable=False, index=True)
+    word = Column(String(255), unique=True, nullable=False, index=True)  # 扩展长度支持短语
 
     # 统计信息
     frequency = Column(Integer, default=1, index=True)  # 出现频次
+    word_count = Column(Integer, default=1, index=True)  # 词数（1=单词，>1=短语）
 
-    # 词性信息
+    # 词性信息（仅对单词有效，短语为NULL）
     pos_tag = Column(String(20))  # 详细词性标签（如NN, VBG）
     pos_category = Column(String(20), index=True)  # 词性分类（如Noun, Verb）
     pos_chinese = Column(String(50))  # 中文词性名称
@@ -243,7 +249,8 @@ class WordSegment(Base):
 
     def __repr__(self):
         root_mark = "⭐" if self.is_root else ""
-        return f"<WordSegment(id={self.word_id}, word='{self.word}', freq={self.frequency}{root_mark})>"
+        token_type = "短语" if self.word_count > 1 else "单词"
+        return f"<WordSegment({token_type}: '{self.word}', freq={self.frequency}{root_mark})>"
 
 
 # ==================== 5. SegmentationBatch 分词批次记录 ====================

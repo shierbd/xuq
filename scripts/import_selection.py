@@ -25,12 +25,13 @@ sys.path.insert(0, str(project_root))
 from config.settings import OUTPUT_DIR, CLUSTER_SELECTION_THRESHOLD
 from storage.repository import ClusterMetaRepository
 from storage.models import ClusterMeta
+from utils.input_validator import validate_csv_file as validator_validate_csv
 import pandas as pd
 
 
 def validate_csv_file(csv_file: Path) -> bool:
     """
-    验证CSV文件格式
+    验证CSV文件格式（包含安全性检查）
 
     Args:
         csv_file: CSV文件路径
@@ -38,21 +39,23 @@ def validate_csv_file(csv_file: Path) -> bool:
     Returns:
         是否验证通过
     """
-    if not csv_file.exists():
-        print(f"❌ CSV文件不存在: {csv_file}")
+    # 1. 安全性验证（文件大小、类型、行数）
+    is_valid, error_msg = validator_validate_csv(
+        csv_file,
+        required_columns=['cluster_id', 'selection_score']
+    )
+
+    if not is_valid:
+        print(f"❌ {error_msg}")
         return False
 
+    print(f"✓ 文件安全验证通过")
+
+    # 2. 业务逻辑验证
     try:
         df = pd.read_csv(csv_file, encoding='utf-8-sig')
     except Exception as e:
         print(f"❌ 读取CSV文件失败: {str(e)}")
-        return False
-
-    # 检查必需列
-    required_columns = ['cluster_id', 'selection_score']
-    missing_columns = [col for col in required_columns if col not in df.columns]
-    if missing_columns:
-        print(f"❌ CSV文件缺少必需列: {missing_columns}")
         return False
 
     # 检查是否有评分

@@ -55,28 +55,111 @@ class WordSegmentRepository:
 
         return {word: freq for word, freq in words}
 
+    def load_segmentation_results(
+        self,
+        min_word_frequency: int = 1,
+        min_ngram_frequency: int = 1
+    ) -> Tuple[Counter, Counter, Dict, Dict, Dict, SegmentationBatch]:
+        """
+        从数据库加载完整的分词结果（单词+短语）
+
+        Args:
+            min_word_frequency: 单词最小频次
+            min_ngram_frequency: 短语最小频次
+
+        Returns:
+            (
+                word_counter: {word: frequency},
+                ngram_counter: {ngram: frequency},
+                pos_tags: {word: (pos_tag, pos_category, pos_chinese)},
+                translations: {word: translation},
+                ngram_translations: {ngram: translation},
+                latest_batch: SegmentationBatch对象（最新批次信息）
+            )
+        """
+        # 加载单词（word_count = 1）
+        words_query = self.session.query(WordSegment).filter(
+            and_(
+                WordSegment.word_count == 1,
+                WordSegment.frequency >= min_word_frequency
+            )
+        ).all()
+
+        word_counter = Counter()
+        pos_tags = {}
+        translations = {}
+
+        for ws in words_query:
+            word_counter[ws.word] = ws.frequency
+
+            # 词性信息（如果有）
+            if ws.pos_tag and ws.pos_category and ws.pos_chinese:
+                pos_tags[ws.word] = (ws.pos_tag, ws.pos_category, ws.pos_chinese)
+
+            # 翻译（如果有）
+            if ws.translation:
+                translations[ws.word] = ws.translation
+
+        # 加载短语（word_count > 1）
+        ngrams_query = self.session.query(WordSegment).filter(
+            and_(
+                WordSegment.word_count > 1,
+                WordSegment.frequency >= min_ngram_frequency
+            )
+        ).all()
+
+        ngram_counter = Counter()
+        ngram_translations = {}
+
+        for ws in ngrams_query:
+            ngram_counter[ws.word] = ws.frequency
+
+            # 翻译（如果有）
+            if ws.translation:
+                ngram_translations[ws.word] = ws.translation
+
+        # 加载最新批次信息
+        latest_batch = self.get_latest_batch()
+
+        return (
+            word_counter,
+            ngram_counter,
+            pos_tags,
+            translations,
+            ngram_translations,
+            latest_batch
+        )
+
     def save_word_segments(
         self,
         word_counter: Counter,
         pos_tags: Optional[Dict[str, Tuple[str, str, str]]] = None,
         translations: Optional[Dict[str, str]] = None,
-        batch_id: Optional[int] = None
-    ) -> int:
+        batch_id: Optional[int] = None,
+        ngram_counter: Optional[Counter] = None,
+        ngram_translations: Optional[Dict[str, str]] = None
+    ) -> Tuple[int, int]:
         """
-        保存或更新分词结果
+        保存或更新分词结果（支持单词和短语）
 
         Args:
-            word_counter: {word: frequency} Counter对象
-            pos_tags: {word: (pos_tag, pos_category, pos_chinese)}
-            translations: {word: translation}
+            word_counter: {word: frequency} Counter对象（单词）
+            pos_tags: {word: (pos_tag, pos_category, pos_chinese)}（仅单词）
+            translations: {word: translation}（单词翻译）
             batch_id: 所属批次ID
+            ngram_counter: {ngram: frequency} Counter对象（短语，可选）
+            ngram_translations: {ngram: translation}（短语翻译，可选）
 
         Returns:
-            新增的单词数量
+            (新增单词数, 新增短语数)
         """
         new_words_count = 0
+        new_ngrams_count = 0
 
+        # 1. 保存单词（word_count=1）
         for word, frequency in word_counter.items():
+            word_count = 1  # 单词
+
             # 检查是否已存在
             existing = self.session.query(WordSegment).filter(
                 WordSegment.word == word
@@ -96,11 +179,16 @@ class WordSegmentRepository:
 
                 if translations and word in translations:
                     existing.translation = translations[word]
+
+                # 确保 word_count 正确
+                if not existing.word_count:
+                    existing.word_count = word_count
             else:
                 # 创建新记录
                 new_word = WordSegment(
                     word=word,
                     frequency=frequency,
+                    word_count=word_count,
                     pos_tag=pos_tags[word][0] if pos_tags and word in pos_tags else None,
                     pos_category=pos_tags[word][1] if pos_tags and word in pos_tags else None,
                     pos_chinese=pos_tags[word][2] if pos_tags and word in pos_tags else None,
@@ -109,8 +197,41 @@ class WordSegmentRepository:
                 self.session.add(new_word)
                 new_words_count += 1
 
+        # 2. 保存短语（word_count>1）
+        if ngram_counter:
+            for ngram, frequency in ngram_counter.items():
+                word_count = len(ngram.split())  # 短语词数
+
+                # 检查是否已存在
+                existing = self.session.query(WordSegment).filter(
+                    WordSegment.word == ngram
+                ).first()
+
+                if existing:
+                    # 更新频次（累加）
+                    existing.frequency += frequency
+                    existing.updated_at = datetime.utcnow()
+
+                    # 更新翻译（如果提供）
+                    if ngram_translations and ngram in ngram_translations:
+                        existing.translation = ngram_translations[ngram]
+
+                    # 确保 word_count 正确
+                    if not existing.word_count:
+                        existing.word_count = word_count
+                else:
+                    # 创建新记录（短语没有词性）
+                    new_ngram = WordSegment(
+                        word=ngram,
+                        frequency=frequency,
+                        word_count=word_count,
+                        translation=ngram_translations.get(ngram) if ngram_translations else None,
+                    )
+                    self.session.add(new_ngram)
+                    new_ngrams_count += 1
+
         self.session.commit()
-        return new_words_count
+        return new_words_count, new_ngrams_count
 
     def get_word_segment(self, word: str) -> Optional[WordSegment]:
         """获取单个单词的分词记录"""

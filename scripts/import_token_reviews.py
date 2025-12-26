@@ -27,12 +27,13 @@ from config.settings import OUTPUT_DIR, TOKEN_TYPES
 from storage.repository import TokenRepository
 from utils.logger import get_logger
 from utils.exceptions import DataValidationException
+from utils.input_validator import validate_csv_file as validator_validate_csv
 
 logger = get_logger(__name__)
 
 
 def validate_csv(df: pd.DataFrame) -> bool:
-    """验证CSV格式"""
+    """验证CSV格式（业务逻辑验证）"""
     required_columns = ['token_text']
 
     for col in required_columns:
@@ -64,9 +65,15 @@ def import_reviews(csv_file: Path):
     logger.info("Phase 5: 导入Token审核结果")
     logger.info("="*70)
 
-    # 读取CSV
-    if not csv_file.exists():
-        raise FileNotFoundError(f"文件不存在: {csv_file}")
+    # 安全性验证（文件大小、类型、行数）
+    is_valid, error_msg = validator_validate_csv(
+        csv_file,
+        required_columns=['token_text']
+    )
+    if not is_valid:
+        raise DataValidationException(f"文件验证失败: {error_msg}")
+
+    logger.info("✓ 文件安全验证通过")
 
     logger.info(f"读取CSV文件: {csv_file}")
     df = pd.read_csv(csv_file, encoding='utf-8')

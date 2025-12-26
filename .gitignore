@@ -83,6 +83,9 @@ models/
 .env.local
 *.key
 
+# User preferences (个人配置，不要提交)
+config/phase0_preferences.json
+
 # Large data files (optional, uncomment if needed)
 # data/raw/*.csv
 # data/processed/*.csv
