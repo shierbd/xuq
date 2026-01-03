@@ -420,3 +420,80 @@ class WordSegmentRepository:
         return self.session.query(SegmentationBatch).order_by(
             SegmentationBatch.batch_date.desc()
         ).limit(limit).all()
+
+    # ==================== 增量分词支持 ====================
+
+    def get_segmented_phrase_ids(self) -> set:
+        """
+        获取所有已经分词过的phrase_id集合
+
+        通过查询SegmentationBatch表关联的phrase记录
+
+        Returns:
+            已分词的phrase_id集合
+        """
+        from storage.models import Phrase
+
+        # 获取所有已完成的批次ID
+        completed_batches = self.session.query(SegmentationBatch.batch_id).filter(
+            SegmentationBatch.status == 'completed'
+        ).all()
+
+        if not completed_batches:
+            return set()
+
+        batch_ids = [b[0] for b in completed_batches]
+
+        # 注意：当前设计中SegmentationBatch没有直接记录处理了哪些phrases
+        # 作为替代方案，我们可以通过batch_date时间戳来推断
+        # 或者我们可以添加一个新表phrase_segmentation_log
+        # 简单方案：假设所有processed_status != 'unseen'的phrases都已分词
+
+        # 这里返回空集合，因为当前架构不支持精确追踪
+        # 建议：后续可以添加phrase_segmentation_log表
+        return set()
+
+    def get_unsegmented_phrases(self, limit: Optional[int] = None) -> List:
+        """
+        获取未分词的phrases
+
+        根据简化策略：优先处理新导入的rounds
+
+        Args:
+            limit: 限制返回数量（None=全部）
+
+        Returns:
+            Phrase对象列表
+        """
+        from storage.models import Phrase
+
+        # 策略：获取最新一轮（first_seen_round最大）的phrases
+        latest_round_query = self.session.query(func.max(Phrase.first_seen_round)).scalar()
+
+        if not latest_round_query:
+            return []
+
+        query = self.session.query(Phrase).filter(
+            Phrase.first_seen_round == latest_round_query
+        ).order_by(Phrase.phrase_id)
+
+        if limit:
+            query = query.limit(limit)
+
+        return query.all()
+
+    def get_phrases_by_rounds(self, round_ids: List[int]) -> List:
+        """
+        按轮次获取phrases
+
+        Args:
+            round_ids: 轮次ID列表
+
+        Returns:
+            Phrase对象列表
+        """
+        from storage.models import Phrase
+
+        return self.session.query(Phrase).filter(
+            Phrase.first_seen_round.in_(round_ids)
+        ).order_by(Phrase.first_seen_round, Phrase.phrase_id).all()

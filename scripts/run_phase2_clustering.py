@@ -3,25 +3,40 @@ Phase 2: 大组聚类
 对所有短语进行语义聚类，生成60-100个大组
 
 运行方式：
-    python scripts/run_phase2_clustering.py [--round-id 1] [--limit 0]
+    python scripts/run_phase2_clustering.py [选项]
 
 参数：
     --round-id: 数据轮次ID（默认为1）
     --limit: 限制处理的短语数量，用于测试（0=全部）
+    --min-cluster-size: HDBSCAN最小聚类大小（默认使用配置文件）
+    --min-samples: HDBSCAN最小样本数（默认使用配置文件）
+    --force-recalculate: 强制重新计算embeddings（忽略缓存）
+
+示例：
+    # 使用默认参数
+    python scripts/run_phase2_clustering.py
+
+    # 自定义聚类参数
+    python scripts/run_phase2_clustering.py --min-cluster-size=30 --min-samples=3
+
+    # 强制重新计算embeddings
+    python scripts/run_phase2_clustering.py --force-recalculate
+
+    # 测试模式（只处理100条）
+    python scripts/run_phase2_clustering.py --limit=100
 """
 import sys
 import argparse
 from pathlib import Path
 
-# 设置UTF-8编码输出（Windows兼容）
-if sys.platform.startswith('win'):
-    import io
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
-    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
-
 # 添加项目根目录到Python路径
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
+
+# ========== 编码修复（必须在所有其他导入之前）==========
+from utils.encoding_fix import setup_encoding
+setup_encoding()
+# ======================================================
 
 from config.settings import OUTPUT_DIR
 from core.embedding import EmbeddingService
@@ -30,13 +45,19 @@ from storage.repository import PhraseRepository, ClusterMetaRepository
 from storage.models import Phrase
 
 
-def run_phase2_clustering(round_id: int = 1, limit: int = 0):
+def run_phase2_clustering(round_id: int = 1, limit: int = 0,
+                          min_cluster_size: int = None,
+                          min_samples: int = None,
+                          force_recalculate: bool = False):
     """
     执行Phase 2大组聚类
 
     Args:
         round_id: 数据轮次ID
         limit: 限制处理数量（0=全部）
+        min_cluster_size: HDBSCAN最小聚类大小（None=使用配置默认值）
+        min_samples: HDBSCAN最小样本数（None=使用配置默认值）
+        force_recalculate: 是否强制重新计算embeddings（忽略缓存）
     """
     print("\n" + "="*70)
     print("Phase 2: 大组聚类".center(70))
@@ -74,7 +95,9 @@ def run_phase2_clustering(round_id: int = 1, limit: int = 0):
 
     # 2. 计算Embeddings
     print("\n【步骤2】计算Embeddings...")
-    embedding_service = EmbeddingService(use_cache=True)
+    embedding_service = EmbeddingService(use_cache=not force_recalculate)
+    if force_recalculate:
+        print("⚠️  强制重新计算模式：忽略embeddings缓存")
     embeddings, phrase_ids = embedding_service.embed_phrases_from_db(phrases, round_id)
 
     # 验证
@@ -83,7 +106,22 @@ def run_phase2_clustering(round_id: int = 1, limit: int = 0):
 
     # 3. 执行大组聚类
     print("\n【步骤3】执行大组聚类...")
-    cluster_ids, cluster_info, clusterer = cluster_phrases_large(embeddings, phrases)
+
+    # 准备聚类配置（如果有自定义参数）
+    cluster_config = None
+    if min_cluster_size is not None or min_samples is not None:
+        from config.settings import LARGE_CLUSTER_CONFIG
+        cluster_config = LARGE_CLUSTER_CONFIG.copy()
+        if min_cluster_size is not None:
+            cluster_config['min_cluster_size'] = min_cluster_size
+            print(f"  自定义参数: min_cluster_size={min_cluster_size}")
+        if min_samples is not None:
+            cluster_config['min_samples'] = min_samples
+            print(f"  自定义参数: min_samples={min_samples}")
+
+    cluster_ids, cluster_info, clusterer = cluster_phrases_large(
+        embeddings, phrases, config=cluster_config
+    )
 
     # 4. 更新数据库
     print("\n【步骤4】更新数据库...")
@@ -212,19 +250,66 @@ def main():
         default=0,
         help='限制处理的短语数量，用于测试（0=全部，默认0）'
     )
+    parser.add_argument(
+        '--min-cluster-size',
+        type=int,
+        default=None,
+        help='HDBSCAN最小聚类大小（默认使用配置文件）'
+    )
+    parser.add_argument(
+        '--min-samples',
+        type=int,
+        default=None,
+        help='HDBSCAN最小样本数（默认使用配置文件）'
+    )
+    parser.add_argument(
+        '--force-recalculate',
+        action='store_true',
+        help='强制重新计算embeddings（忽略缓存）'
+    )
 
     args = parser.parse_args()
 
     try:
-        success = run_phase2_clustering(round_id=args.round_id, limit=args.limit)
+        success = run_phase2_clustering(
+            round_id=args.round_id,
+            limit=args.limit,
+            min_cluster_size=args.min_cluster_size,
+            min_samples=args.min_samples,
+            force_recalculate=args.force_recalculate
+        )
         sys.exit(0 if success else 1)
     except KeyboardInterrupt:
         print("\n\n⚠️  用户中断操作")
         sys.exit(1)
     except Exception as e:
-        print(f"\n\n❌ 发生错误: {str(e)}")
+        # 安全地打印错误消息（处理编码问题）
+        try:
+            error_msg = str(e)
+        except:
+            error_msg = repr(e)
+
+        print(f"\n\n❌ 发生错误: {error_msg}")
+
+        # 安全地打印traceback
         import traceback
-        traceback.print_exc()
+        import io
+
+        try:
+            # 尝试正常打印traceback
+            traceback.print_exc()
+        except UnicodeEncodeError:
+            # 如果失败，将traceback写入字符串缓冲区
+            try:
+                buffer = io.StringIO()
+                traceback.print_exc(file=buffer)
+                tb_str = buffer.getvalue()
+                # 移除无法编码的字符
+                tb_safe = tb_str.encode('utf-8', errors='replace').decode('utf-8')
+                print(tb_safe)
+            except:
+                print("⚠️  无法显示完整错误堆栈（编码问题）")
+
         sys.exit(1)
 
 

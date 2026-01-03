@@ -189,23 +189,29 @@ class ClusteringEngine:
         return cluster_ids
 
 
-def cluster_phrases_large(embeddings: np.ndarray, phrases: List[Dict]) -> Tuple[np.ndarray, Dict]:
+def cluster_phrases_large(embeddings: np.ndarray, phrases: List[Dict],
+                          config: Dict = None) -> Tuple[np.ndarray, Dict]:
     """
     执行大组聚类（Phase 2）
 
     Args:
         embeddings: 短语embeddings
         phrases: 短语列表
+        config: 聚类配置参数（可选，默认使用LARGE_CLUSTER_CONFIG）
 
     Returns:
-        (cluster_ids, cluster_info)
+        (cluster_ids, cluster_info, clusterer)
     """
     logger.info("="*70)
     logger.info("执行大组聚类 (Level A)")
     logger.info("="*70)
 
+    # 使用提供的配置或默认配置
+    if config is None:
+        config = LARGE_CLUSTER_CONFIG
+
     # 创建聚类引擎
-    engine = ClusteringEngine(config=LARGE_CLUSTER_CONFIG, cluster_level='A')
+    engine = ClusteringEngine(config=config, cluster_level='A')
 
     # 执行聚类
     labels, clusterer = engine.fit_predict(embeddings)

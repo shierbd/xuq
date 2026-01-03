@@ -361,11 +361,11 @@ def render_segmentation_tab():
 
         if current_phrase_count > last_phrase_count:
             new_count = current_phrase_count - last_phrase_count
-            st.warning(f"⚠️ 检测到 {new_count:,} 条新关键词，建议重新分词以获取最新结果")
+            st.warning(f"⚠️ 检测到 {new_count:,} 条新关键词")
 
             col1, col2 = st.columns(2)
             with col1:
-                if st.button("🔄 全量重新分词", help="重新分词所有数据（包括旧数据和新数据）"):
+                if st.button("🔄 全量重新分词", help="重新分词所有数据（包括旧数据和新数据）", key="full_resegment"):
                     # 清空分词结果，触发重新分词
                     st.session_state.word_counter = None
                     st.session_state.ngram_counter = None
@@ -377,7 +377,10 @@ def render_segmentation_tab():
                     st.rerun()
 
             with col2:
-                st.info("💡 **提示**：增量分词功能开发中，目前请使用全量重新分词")
+                if st.button("⚡ 增量分词（推荐）", help="只对新数据分词，然后与旧结果合并", type="primary", key="incremental_segment"):
+                    # 触发增量分词
+                    st.session_state.trigger_incremental_segmentation = True
+                    st.rerun()
 
     # ========== 2. 停用词管理 ==========
     st.header("2️⃣ 停用词管理")
@@ -515,6 +518,94 @@ def render_segmentation_tab():
         if min_ngram_frequency != seg_prefs.get('min_ngram_frequency', 3):
             update_phase0_preference('segmentation', 'min_ngram_frequency', min_ngram_frequency)
             st.session_state.preferences = load_phase0_preferences()
+
+    # ========== 增量分词逻辑 ==========
+    if getattr(st.session_state, 'trigger_incremental_segmentation', False):
+        st.session_state.trigger_incremental_segmentation = False  # 重置标志
+
+        import time
+        start_time = time.time()
+
+        with st.spinner("正在执行增量分词..."):
+            try:
+                from utils.keyword_segmentation import load_and_segment_incrementally
+
+                # 获取所有rounds
+                with PhraseRepository() as repo:
+                    stats = repo.get_statistics()
+                    all_rounds = list(stats.get('by_round', {}).keys())
+
+                if not all_rounds:
+                    st.error("❌ 数据库中没有数据")
+                else:
+                    # 获取最新的round（假设是新数据）
+                    latest_round = max(all_rounds)
+                    st.info(f"🔄 正在对Round {latest_round}的数据进行增量分词...")
+
+                    # 执行增量分词
+                    (
+                        merged_word_counter,
+                        merged_word_to_seeds,
+                        merged_ngram_counter,
+                        merged_ngram_to_seeds,
+                        phrases_count
+                    ) = load_and_segment_incrementally(
+                        round_ids=[latest_round],
+                        stopwords=st.session_state.stopwords,
+                        extract_ngrams=extract_ngrams,
+                        min_ngram_frequency=min_ngram_frequency if extract_ngrams else 2
+                    )
+
+                    st.session_state.word_counter = merged_word_counter
+                    st.session_state.word_to_seeds = merged_word_to_seeds
+                    st.session_state.ngram_counter = merged_ngram_counter
+                    st.session_state.ngram_to_seeds = merged_ngram_to_seeds
+
+                    # 更新统计
+                    stats = get_statistics(merged_word_counter)
+
+                    st.success(f"✓ 增量分词完成！")
+                    st.info(f"📊 处理了 {phrases_count:,} 条新短语")
+
+                    col1, col2, col3 = st.columns(3)
+                    col1.metric("唯一词数", stats['total_unique_words'])
+                    col2.metric("总出现次数", stats['total_occurrences'])
+                    col3.metric("唯一短语数", len(merged_ngram_counter))
+
+                    # 保存到数据库
+                    with WordSegmentRepository() as ws_repo:
+                        # 创建批次记录
+                        batch_id = ws_repo.create_batch(
+                            phrase_count=phrases_count,
+                            notes=f"增量分词Round{latest_round} - {len(merged_word_counter)}词 + {len(merged_ngram_counter)}短语"
+                        )
+
+                        # 保存分词结果（只保存新词）
+                        new_words, new_ngrams = ws_repo.save_word_segments(
+                            word_counter=merged_word_counter,
+                            batch_id=batch_id,
+                            ngram_counter=merged_ngram_counter if extract_ngrams else None
+                        )
+
+                        # 更新批次记录
+                        duration = int(time.time() - start_time)
+                        ws_repo.complete_batch(
+                            batch_id=batch_id,
+                            word_count=len(merged_word_counter) + len(merged_ngram_counter),
+                            new_word_count=new_words + new_ngrams,
+                            duration_seconds=duration
+                        )
+
+                        # 更新状态
+                        st.session_state.segmentation_loaded_from_db = True
+                        st.session_state.last_batch_phrase_count = len(keywords) if keywords else 0
+
+                    st.success(f"✓ 已保存到数据库！新增 {new_words} 个单词 + {new_ngrams} 个短语")
+
+            except Exception as e:
+                st.error(f"❌ 增量分词失败: {str(e)}")
+                import traceback
+                st.error(traceback.format_exc())
 
     if st.button("🚀 开始分词", type="primary"):
         import time
@@ -1065,6 +1156,7 @@ def render_segmentation_tab():
         st.caption("💡 选择完成后，点击下方的'导出'或'添加到词根'按钮进行操作")
 
         # 渲染data_editor - 使用缓存的DataFrame作为输入
+        # ✅ 修复说明：移除了JavaScript滚动位置保存/恢复代码，因为修复了根本原因（不再修改editor_df输入）
         edited_df = st.data_editor(
             st.session_state.editor_df,  # ✅ 关键：使用缓存的DataFrame，而不是每次重新创建
             width='stretch',
@@ -1083,8 +1175,9 @@ def render_segmentation_tab():
 
         log_debug(f"📊 data_editor返回 - 返回选中数量: {edited_df['选择'].sum() if '选择' in edited_df.columns else 0}")
 
-        # 更新缓存和session_state
-        st.session_state.editor_df = edited_df  # 更新缓存
+        # 更新session_state - 只更新selected_words，不修改editor_df输入数据
+        # ✅ 修复说明：不再更新editor_df以避免触发widget重建和滚动位置跳转
+        # st.session_state.editor_df = edited_df  # ❌ 已注释：这行会导致widget重建
         if 'Token' in edited_df.columns and '选择' in edited_df.columns:
             new_selected = set(edited_df[edited_df['选择']]['Token'].tolist())
             old_count = len(st.session_state.selected_words)

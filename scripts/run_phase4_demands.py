@@ -15,15 +15,14 @@ import numpy as np
 from pathlib import Path
 from collections import defaultdict
 
-# 设置UTF-8编码输出（Windows兼容）
-if sys.platform.startswith('win'):
-    import io
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
-    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
-
 # 添加项目根目录到Python路径
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
+
+# ========== 编码修复（必须在所有其他导入之前）==========
+from utils.encoding_fix import setup_encoding
+setup_encoding()
+# ======================================================
 
 from config.settings import OUTPUT_DIR, CACHE_DIR, DEMAND_CARD_PHRASE_SAMPLE_SIZE
 from core.clustering import cluster_phrases_small

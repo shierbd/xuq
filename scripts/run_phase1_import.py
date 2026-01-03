@@ -13,15 +13,14 @@ import sys
 import argparse
 from pathlib import Path
 
-# 设置UTF-8编码输出（Windows兼容）
-if sys.platform.startswith('win'):
-    import io
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
-    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
-
 # 添加项目根目录到Python路径
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
+
+# ========== 编码修复（必须在所有其他导入之前）==========
+from utils.encoding_fix import setup_encoding
+setup_encoding()
+# ======================================================
 
 from config.settings import RAW_DATA_DIR, PROCESSED_DATA_DIR
 from core.data_integration import DataIntegration
@@ -29,13 +28,14 @@ from storage.repository import PhraseRepository, test_database_connection
 from storage.models import create_all_tables
 
 
-def run_phase1_import(round_id: int = 1, dry_run: bool = False):
+def run_phase1_import(round_id: int = 1, dry_run: bool = False, sources: list = None):
     """
     执行Phase 1数据导入
 
     Args:
         round_id: 数据轮次ID
         dry_run: 是否为试运行模式
+        sources: 要导入的数据源列表，如 ['semrush', 'dropdown']，None表示全部导入
     """
     print("\n" + "="*70)
     print("Phase 1: 数据导入".center(70))
@@ -61,8 +61,10 @@ def run_phase1_import(round_id: int = 1, dry_run: bool = False):
 
     # 3. 数据整合与清洗
     print("\n【步骤3】数据整合与清洗...")
+    if sources:
+        print(f"   只导入指定数据源: {', '.join(sources)}")
     integrator = DataIntegration(RAW_DATA_DIR)
-    df = integrator.merge_and_clean(round_id=round_id)
+    df = integrator.merge_and_clean(round_id=round_id, sources=sources)
 
     if df.empty:
         print("\n❌ 没有可导入的数据！")
@@ -149,11 +151,30 @@ def main():
         action='store_true',
         help='试运行模式，不实际插入数据库'
     )
+    parser.add_argument(
+        '--sources',
+        type=str,
+        default=None,
+        help='要导入的数据源，逗号分隔，如：semrush,dropdown,related_search（默认导入全部）'
+    )
 
     args = parser.parse_args()
 
+    # 解析数据源参数
+    sources = None
+    if args.sources:
+        sources = [s.strip() for s in args.sources.split(',')]
+        # 标准化名称（支持简写）
+        source_mapping = {
+            'semrush': 'semrush',
+            'dropdown': 'dropdown',
+            'related': 'related_search',
+            'related_search': 'related_search'
+        }
+        sources = [source_mapping.get(s, s) for s in sources]
+
     try:
-        success = run_phase1_import(round_id=args.round_id, dry_run=args.dry_run)
+        success = run_phase1_import(round_id=args.round_id, dry_run=args.dry_run, sources=sources)
         sys.exit(0 if success else 1)
     except KeyboardInterrupt:
         print("\n\n⚠️  用户中断操作")

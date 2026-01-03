@@ -171,6 +171,7 @@ LOG_CONFIG = {
             "formatter": "standard",
             "filename": LOG_DIR / "mvp.log",
             "mode": "a",
+            "encoding": "utf-8",
         },
     },
     "root": {

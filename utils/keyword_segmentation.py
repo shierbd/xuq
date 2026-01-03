@@ -312,3 +312,154 @@ if __name__ == "__main__":
     print(f"  唯一词数: {stats['total_unique_words']}")
     print(f"  总出现次数: {stats['total_occurrences']}")
     print(f"  平均频次: {stats['avg_frequency']}")
+
+
+# ==================== 增量分词支持 ====================
+
+def segment_new_phrases_incrementally(
+    new_phrases: list,
+    existing_word_counter: Counter,
+    existing_ngram_counter: Counter,
+    existing_word_to_seeds: Dict[str, Set[str]],
+    existing_ngram_to_seeds: Dict[str, Set[str]],
+    stopwords: Set[str],
+    extract_ngrams: bool = False,
+    min_ngram_frequency: int = 2
+) -> Tuple[Counter, Dict[str, Set[str]], Counter, Dict[str, Set[str]]]:
+    """
+    增量分词：只对新phrases进行分词，然后与已有结果合并
+
+    Args:
+        new_phrases: 新的Phrase对象列表
+        existing_word_counter: 已有的单词频次Counter
+        existing_ngram_counter: 已有的短语频次Counter
+        existing_word_to_seeds: 已有的单词到seeds映射
+        existing_ngram_to_seeds: 已有的短语到seeds映射
+        stopwords: 停用词集合
+        extract_ngrams: 是否提取n-gram短语
+        min_ngram_frequency: n-gram最小频次阈值
+
+    Returns:
+        (merged_word_counter, merged_word_to_seeds, merged_ngram_counter, merged_ngram_to_seeds)
+        - 合并后的单词频次
+        - 合并后的单词到seeds映射
+        - 合并后的短语频次
+        - 合并后的短语到seeds映射
+    """
+    # 1. 对新phrases进行分词
+    new_word_counter, new_word_to_seeds, new_ngram_counter, new_ngram_to_seeds = \
+        segment_keywords_with_seed_tracking(
+            new_phrases,
+            stopwords,
+            extract_ngrams=extract_ngrams,
+            min_ngram_frequency=min_ngram_frequency
+        )
+
+    # 2. 合并单词频次
+    merged_word_counter = Counter(existing_word_counter)
+    merged_word_counter.update(new_word_counter)
+
+    # 3. 合并单词到seeds映射
+    merged_word_to_seeds = defaultdict(set)
+    for word, seeds in existing_word_to_seeds.items():
+        merged_word_to_seeds[word].update(seeds)
+    for word, seeds in new_word_to_seeds.items():
+        merged_word_to_seeds[word].update(seeds)
+
+    # 4. 合并短语频次
+    merged_ngram_counter = Counter(existing_ngram_counter)
+    merged_ngram_counter.update(new_ngram_counter)
+
+    # 5. 合并短语到seeds映射
+    merged_ngram_to_seeds = defaultdict(set)
+    for ngram, seeds in existing_ngram_to_seeds.items():
+        merged_ngram_to_seeds[ngram].update(seeds)
+    for ngram, seeds in new_ngram_to_seeds.items():
+        merged_ngram_to_seeds[ngram].update(seeds)
+
+    return (
+        merged_word_counter,
+        dict(merged_word_to_seeds),
+        merged_ngram_counter,
+        dict(merged_ngram_to_seeds)
+    )
+
+
+def load_and_segment_incrementally(
+    round_ids: List[int],
+    stopwords: Set[str],
+    extract_ngrams: bool = False,
+    min_ngram_frequency: int = 2
+) -> Tuple[Counter, Dict[str, Set[str]], Counter, Dict[str, Set[str]], int]:
+    """
+    增量分词：从数据库加载指定轮次的phrases并分词，与已有结果合并
+
+    Args:
+        round_ids: 要处理的轮次ID列表（例如：[2] 只处理第2轮新数据）
+        stopwords: 停用词集合
+        extract_ngrams: 是否提取n-gram短语
+        min_ngram_frequency: n-gram最小频次阈值
+
+    Returns:
+        (word_counter, word_to_seeds, ngram_counter, ngram_to_seeds, phrases_count)
+        - 合并后的单词频次
+        - 合并后的单词到seeds映射
+        - 合并后的短语频次
+        - 合并后的短语到seeds映射
+        - 处理的phrases数量
+    """
+    from storage.word_segment_repository import WordSegmentRepository
+
+    with WordSegmentRepository() as repo:
+        # 1. 加载已有的分词结果
+        (
+            existing_word_counter,
+            existing_ngram_counter,
+            _,  # pos_tags
+            _,  # translations
+            _,  # ngram_translations
+            _   # latest_batch
+        ) = repo.load_segmentation_results()
+
+        # 转换为dict格式（因为load返回的可能没有seed信息）
+        existing_word_to_seeds = {}
+        existing_ngram_to_seeds = {}
+
+        # 2. 加载指定轮次的新phrases
+        new_phrases = repo.get_phrases_by_rounds(round_ids)
+
+        if not new_phrases:
+            # 没有新数据，返回已有结果
+            return (
+                existing_word_counter,
+                existing_word_to_seeds,
+                existing_ngram_counter,
+                existing_ngram_to_seeds,
+                0
+            )
+
+        # 3. 增量分词
+        (
+            merged_word_counter,
+            merged_word_to_seeds,
+            merged_ngram_counter,
+            merged_ngram_to_seeds
+        ) = segment_new_phrases_incrementally(
+            new_phrases,
+            existing_word_counter,
+            existing_ngram_counter,
+            existing_word_to_seeds,
+            existing_ngram_to_seeds,
+            stopwords,
+            extract_ngrams=extract_ngrams,
+            min_ngram_frequency=min_ngram_frequency
+        )
+
+        return (
+            merged_word_counter,
+            merged_word_to_seeds,
+            merged_ngram_counter,
+            merged_ngram_to_seeds,
+            len(new_phrases)
+        )
+

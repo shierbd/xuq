@@ -2,12 +2,17 @@
 Embedding服务模块
 使用Sentence Transformers进行文本向量化，支持缓存
 """
+import os
 import numpy as np
 from pathlib import Path
 from typing import List, Dict, Optional, Tuple
 import hashlib
 from tqdm import tqdm
 import torch
+
+# 设置离线模式，避免联网检查模型更新
+os.environ['TRANSFORMERS_OFFLINE'] = '1'
+os.environ['HF_HUB_OFFLINE'] = '1'
 
 from sentence_transformers import SentenceTransformer
 from config.settings import (

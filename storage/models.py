@@ -436,12 +436,23 @@ class ClusterMeta(Base):
 
 # ==================== 数据库引擎和会话 ====================
 def get_engine():
-    """获取数据库引擎"""
+    """获取数据库引擎（强制使用UTF-8编码）"""
+    # 根据数据库类型添加编码参数
+    connect_args = {}
+
+    if IS_SQLITE:
+        # SQLite默认使用UTF-8，但显式设置确保一致性
+        connect_args = {"check_same_thread": False}
+    else:
+        # MySQL/MariaDB强制使用UTF-8编码
+        connect_args = {"charset": "utf8mb4"}
+
     engine = create_engine(
         DATABASE_URL,
         echo=False,  # 设为True可以看到SQL语句
         pool_pre_ping=True,  # 连接池健康检查
         pool_recycle=3600,   # 连接回收时间（秒）
+        connect_args=connect_args  # 添加编码参数
     )
     return engine
 

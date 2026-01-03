@@ -78,6 +78,9 @@ Thumbs.db
 .cache/
 models/
 
+# Embedding cache files (large generated files)
+data/cache/*.npz
+
 # Environment variables and secrets
 .env
 .env.local

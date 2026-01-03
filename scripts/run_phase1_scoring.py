@@ -26,6 +26,11 @@ import time
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
+# ========== 编码修复（必须在所有其他导入之前）==========
+from utils.encoding_fix import setup_encoding
+setup_encoding()
+# ======================================================
+
 from storage.repository import PhraseRepository
 from storage.models import ClusterMeta, Phrase
 from core.cluster_scoring import ClusterScorer
