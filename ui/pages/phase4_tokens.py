@@ -11,6 +11,8 @@ project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
 from storage.repository import TokenRepository, PhraseRepository
+from storage.word_segment_repository import WordSegmentRepository
+from core.token_extraction import extract_tokens_from_word_segments
 
 
 def render():
@@ -69,21 +71,25 @@ def render():
     with col2:
         st.markdown("### ⚙️ 提取参数")
 
-        sample_size = st.number_input(
-            "采样短语数量",
-            min_value=0,
-            max_value=100000,
-            value=10000,
-            step=1000,
-            help="0表示使用全部短语，建议首次使用10000"
-        )
+        # Check word_segments status
+        try:
+            with WordSegmentRepository() as ws_repo:
+                stats = ws_repo.get_statistics()
+                total_words = stats.get('total_words', 0)
+
+            if total_words == 0:
+                st.warning("⚠️ 未找到分词结果！请先前往 **Phase 0 Tab 1** 执行分词")
+            else:
+                st.info(f"📊 分词结果：{total_words:,} 个词/短语")
+        except Exception as e:
+            st.error(f"无法获取分词数据: {str(e)}")
 
         min_frequency = st.slider(
             "最小词频",
             min_value=1,
             max_value=20,
             value=3,
-            help="token在短语中至少出现的次数"
+            help="token在分词结果中的最小出现次数"
         )
 
         st.markdown("### 🧪 测试选项")
@@ -107,29 +113,25 @@ def render():
     st.markdown("### 🎯 预期结果")
 
     try:
-        with PhraseRepository() as phrase_repo:
-            stats = phrase_repo.get_statistics()
-            total_phrases = stats.get('total_count', 0)
+        with WordSegmentRepository() as ws_repo:
+            stats = ws_repo.get_statistics()
+            total_words = stats.get('total_words', 0)
 
-            actual_sample = sample_size if sample_size > 0 else total_phrases
+        # 估算token数量（从word_segments读取后筛选）
+        estimated_after_filter = total_words // 3  # 频次过滤后约1/3
 
-            # 估算token数量
-            estimated_tokens = actual_sample * 3  # 每个短语约3个词
-            estimated_unique = estimated_tokens // 10  # 去重后约10%
-            estimated_after_filter = estimated_unique // 3  # 频次过滤后约1/3
-
-            col1, col2, col3 = st.columns(3)
-            with col1:
-                st.info(f"**采样短语**: {actual_sample:,}")
-            with col2:
-                st.info(f"**预计tokens**: {estimated_after_filter}")
-            with col3:
-                if not skip_llm:
-                    estimated_batches = estimated_after_filter // 50 + 1
-                    estimated_cost = estimated_batches * 0.002  # 每批$0.002
-                    st.warning(f"**预计成本**: ${estimated_cost:.2f}")
-                else:
-                    st.success("**成本**: $0（跳过LLM）")
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            st.info(f"**分词词数**: {total_words:,}")
+        with col2:
+            st.info(f"**预计tokens**: {estimated_after_filter:,}")
+        with col3:
+            if not skip_llm:
+                estimated_batches = estimated_after_filter // 50 + 1
+                estimated_cost = estimated_batches * 0.002  # 每批$0.002
+                st.warning(f"**预计成本**: ${estimated_cost:.2f}")
+            else:
+                st.success("**成本**: $0（跳过LLM）")
 
     except Exception as e:
         st.error(f"无法估算: {str(e)}")

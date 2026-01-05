@@ -142,9 +142,8 @@ with st.sidebar:
          "📥 Phase 1: 数据导入",
          "📝 Phase 0: 关键词扩展",
          "📊 Phase 0: 基线测量",
-         "🔄 Phase 2: 大组聚类",
-         "🎯 Phase 2D: 模板发现",
-         "🎯 Phase 2E: 君言方法",
+         "🔄 Phase 2A: 大组聚类-HDBSCAN",
+         "🎯 Phase 2E: 大组聚类-君言方法",
          "✅ Phase 3: 聚类筛选",
          "🏷️ Phase 4: Token提取",
          "📊 Phase 5: 需求生成",
@@ -222,8 +221,8 @@ if page == "🏠 首页概览":
     with col4:
         st.markdown("""
         <div class="phase-card">
-            <h4>🔄 Phase 2: 大组聚类</h4>
-            <p>语义聚类生成大组</p>
+            <h4>🔄 Phase 2A: 大组聚类-HDBSCAN</h4>
+            <p>HDBSCAN语义聚类生成大组</p>
         </div>
         """, unsafe_allow_html=True)
 
@@ -232,8 +231,8 @@ if page == "🏠 首页概览":
     with col5:
         st.markdown("""
         <div class="phase-card">
-            <h4>🎯 Phase 2D: 模板发现</h4>
-            <p>数据驱动的模板和产品提取</p>
+            <h4>🎯 Phase 2E: 大组聚类-君言方法</h4>
+            <p>模板-变量提取，人工引导的聚类方法</p>
         </div>
         """, unsafe_allow_html=True)
 
@@ -242,14 +241,6 @@ if page == "🏠 首页概览":
         <div class="phase-card">
             <h4>✅ Phase 3: 聚类筛选</h4>
             <p>人工筛选有价值聚类</p>
-        </div>
-        """, unsafe_allow_html=True)
-
-    with col6:
-        st.markdown("""
-        <div class="phase-card">
-            <h4>🏷️ Phase 4: Token提取</h4>
-            <p>提取关键词并分类</p>
         </div>
         """, unsafe_allow_html=True)
 
@@ -332,15 +323,11 @@ elif page == "📊 Phase 0: 基线测量":
     from ui.pages import phase0_baseline
     phase0_baseline.render()
 
-elif page == "🔄 Phase 2: 大组聚类":
+elif page == "🔄 Phase 2A: 大组聚类-HDBSCAN":
     from ui.pages import phase2_clustering
     phase2_clustering.render()
 
-elif page == "🎯 Phase 2D: 模板发现":
-    from ui.pages import phase2d_templates
-    phase2d_templates.render_page()
-
-elif page == "🎯 Phase 2E: 君言方法":
+elif page == "🎯 Phase 2E: 大组聚类-君言方法":
     from ui.pages import phase2e_junyan
     phase2e_junyan.render()
 

@@ -13,6 +13,7 @@ sys.path.insert(0, str(project_root))
 
 from storage.repository import PhraseRepository
 from storage.models import Phrase
+from storage.word_segment_repository import WordSegmentRepository
 from core.junyan_method import (
     JunyanTemplateExtractor,
     JunyanVariableExtractor,
@@ -112,47 +113,48 @@ def render():
                 help="显示Top N个高频词"
             )
 
-        segment_btn = st.button(
-            "🚀 开始分词统计",
+        load_btn = st.button(
+            "📥 从Phase 0加载分词结果",
             type="primary",
             use_container_width=True
         )
 
-        if segment_btn:
-            if not phrases:
-                st.error("请先加载短语数据！")
-            else:
-                with st.spinner(f"正在对 {len(phrases):,} 条短语进行分词统计..."):
-                    # 分词
-                    all_words = []
-                    progress_bar = st.progress(0)
-                    batch_size = 5000
+        if load_btn:
+            # Check if segmentation results exist
+            with st.spinner("正在检查分词结果..."):
+                with WordSegmentRepository() as ws_repo:
+                    stats = ws_repo.get_statistics()
+                    total_words = stats.get('total_words', 0)
 
-                    for i in range(0, len(phrases), batch_size):
-                        batch = phrases[i:i+batch_size]
-                        for phrase in batch:
-                            words = segment_keywords(phrase)
-                            all_words.extend(words)
+                if total_words == 0:
+                    st.error("❌ 未找到分词结果！请先前往 **Phase 0 Tab 1** 执行分词")
+                else:
+                    st.info(f"📊 当前分词结果：{total_words:,} 个词/短语")
 
-                        progress = min(1.0, (i + batch_size) / len(phrases))
-                        progress_bar.progress(progress)
+                    with st.spinner(f"正在从Phase 0加载分词结果..."):
+                        # Load words and phrases from word_segments table
+                        with WordSegmentRepository() as ws_repo:
+                            word_counter, ngram_counter, _, _, _, _ = ws_repo.load_segmentation_results(
+                                min_word_frequency=min_word_freq,
+                                min_ngram_frequency=min_word_freq
+                            )
 
-                    progress_bar.empty()
+                        # Merge words and phrases as candidate seed words
+                        all_candidates = Counter()
+                        all_candidates.update(word_counter)
+                        all_candidates.update(ngram_counter)
 
-                    # 统计词频
-                    word_freq = Counter(all_words)
+                        # Filter by length (at least 2 characters)
+                        filtered_candidates = [
+                            (word, freq)
+                            for word, freq in all_candidates.most_common()
+                            if len(word) >= 2
+                        ]
 
-                    # 过滤低频词
-                    filtered_words = [
-                        (word, freq)
-                        for word, freq in word_freq.most_common()
-                        if freq >= min_word_freq and len(word) >= 2  # 过滤单字符
-                    ]
+                        # Save to session_state
+                        st.session_state.candidate_seeds = filtered_candidates[:max_display]
 
-                    # 保存到session_state
-                    st.session_state.candidate_seeds = filtered_words[:max_display]
-
-                st.success(f"✅ 分词完成！发现 {len(word_freq)} 个不同的词，筛选后保留 {len(st.session_state.candidate_seeds)} 个")
+                    st.success(f"✅ 已加载 {len(all_candidates):,} 个候选种子词（包括单词和短语），筛选后显示 {len(st.session_state.candidate_seeds)} 个")
 
         # 显示候选种子词
         if 'candidate_seeds' in st.session_state:
