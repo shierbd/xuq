@@ -158,7 +158,6 @@ def render():
         cmd = [
             sys.executable,
             str(script_path),
-            f"--sample-size={sample_size}",
             f"--min-frequency={min_frequency}",
             f"--round-id={round_id}"
         ]
