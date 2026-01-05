@@ -1,0 +1,303 @@
+### Page state
+- Page URL: http://localhost:8501/
+- Page Title: 词根聚类需求挖掘系统
+- Page Snapshot:
+```yaml
+- generic [ref=e2]:
+  - generic [ref=e7]:
+    - button "keyboard_double_arrow_left" [ref=e10] [cursor=pointer]:
+      - generic [ref=e12]: keyboard_double_arrow_left
+    - generic [ref=e15]:
+      - heading "🔍 系统导航" [level=2] [ref=e20]
+      - generic [ref=e22]:
+        - paragraph [ref=e25]: 选择页面
+        - radiogroup "选择页面" [ref=e26] [cursor=pointer]:
+          - generic [ref=e27]:
+            - radio "🏠 首页概览"
+            - paragraph [ref=e32]: 🏠 首页概览
+          - generic [ref=e33]:
+            - 'radio "📥 Phase 1: 数据导入"'
+            - paragraph [ref=e38]: "📥 Phase 1: 数据导入"
+          - generic [ref=e39]:
+            - 'radio "📝 Phase 0: 关键词扩展"'
+            - paragraph [ref=e44]: "📝 Phase 0: 关键词扩展"
+          - generic [ref=e45]:
+            - 'radio "📊 Phase 0: 基线测量"'
+            - paragraph [ref=e50]: "📊 Phase 0: 基线测量"
+          - generic [ref=e51]:
+            - 'radio "🔄 Phase 2: 大组聚类"'
+            - paragraph [ref=e56]: "🔄 Phase 2: 大组聚类"
+          - generic [ref=e57]:
+            - 'radio "✅ Phase 3: 聚类筛选" [checked] [active]'
+            - paragraph [ref=e62]: "✅ Phase 3: 聚类筛选"
+          - generic [ref=e63]:
+            - 'radio "🏷️ Phase 4: Token提取"'
+            - paragraph [ref=e68]: "🏷️ Phase 4: Token提取"
+          - generic [ref=e69]:
+            - 'radio "📊 Phase 5: 需求生成"'
+            - paragraph [ref=e74]: "📊 Phase 5: 需求生成"
+          - generic [ref=e75]:
+            - radio "🌱 词根管理"
+            - paragraph [ref=e80]: 🌱 词根管理
+          - generic [ref=e81]:
+            - radio "📋 数据查看与管理"
+            - paragraph [ref=e86]: 📋 数据查看与管理
+          - generic [ref=e87]:
+            - radio "⚙️ 配置管理"
+            - paragraph [ref=e92]: ⚙️ 配置管理
+          - generic [ref=e93]:
+            - radio "📖 使用说明"
+            - paragraph [ref=e98]: 📖 使用说明
+      - separator [ref=e103]
+      - heading "📊 快速统计" [level=3] [ref=e108]
+      - generic [ref=e111]:
+        - paragraph [ref=e115]: 短语总数
+        - generic [ref=e117]: 125,315
+      - generic [ref=e120]:
+        - paragraph [ref=e124]: 大组数量
+        - generic [ref=e126]: "68"
+      - generic [ref=e129]:
+        - paragraph [ref=e133]: 选中大组
+        - generic [ref=e135]: "0"
+      - generic [ref=e138]:
+        - paragraph [ref=e142]: 需求卡片
+        - generic [ref=e144]: "129"
+      - generic [ref=e147]:
+        - paragraph [ref=e151]: Token数量
+        - generic [ref=e153]: "2714"
+      - separator [ref=e158]
+      - heading "ℹ️ 系统信息" [level=3] [ref=e163]
+      - generic [ref=e166]: "LLM: deepseek"
+      - generic [ref=e169]: "数据库: keyword_clustering"
+      - separator [ref=e174]
+      - paragraph [ref=e179]:
+        - strong [ref=e180]: 版本
+        - text: ": MVP v1.0"
+      - paragraph [ref=e185]:
+        - strong [ref=e186]: 更新
+        - text: ": 2024-12-19"
+  - generic [ref=e3]:
+    - banner [ref=e189]:
+      - generic [ref=e192]:
+        - button "Deploy" [ref=e194] [cursor=pointer]:
+          - generic [ref=e196]: Deploy
+        - button [ref=e198] [cursor=pointer]:
+          - img [ref=e199]
+    - generic [ref=e202]:
+      - generic [ref=e207]: "✅ Phase 3: 聚类筛选"
+      - generic [ref=e211]:
+        - heading "功能说明" [level=3] [ref=e466]: 功能说明
+        - paragraph [ref=e215]: 对Phase 2生成的大组进行人工筛选，选出有价值的聚类进行后续处理。
+        - paragraph [ref=e467]:
+          - strong [ref=e468]: 流程
+          - text: ":"
+        - list [ref=e715]:
+          - listitem [ref=e716]: 导出大组聚类报告（CSV + HTML）
+          - listitem [ref=e717]: 人工打分（1-5分，4-5分为选中）
+          - listitem [ref=e718]: 导入选择结果到数据库
+        - paragraph [ref=e470]:
+          - strong [ref=e471]: 目标
+          - text: ": 选出10-15个高价值大组"
+      - separator [ref=e482]
+      - generic [ref=e263]:
+        - generic [ref=e265]:
+          - heading "📊 聚类状态" [level=3] [ref=e719]: 📊 聚类状态
+          - generic [ref=e722]:
+            - paragraph [ref=e726]: 大组总数
+            - generic [ref=e728]: "68"
+          - generic [ref=e731]:
+            - paragraph [ref=e735]: 已选中
+            - generic [ref=e737]: "0"
+          - generic [ref=e739]:
+            - paragraph [ref=e743]: 未选中
+            - generic [ref=e745]: "68"
+          - generic [ref=e748]: "平均大小: 1,831"
+          - generic [ref=e751]: "总覆盖短语: 124,540"
+        - generic [ref=e276]:
+          - heading "🎯 质量评分统计" [level=3] [ref=e752]: 🎯 质量评分统计
+          - generic [ref=e577]:
+            - paragraph [ref=e581]: 已评分簇数
+            - generic [ref=e583]: "68"
+          - generic [ref=e586]:
+            - paragraph [ref=e590]: 平均质量分
+            - generic [ref=e592]: 40.2/100
+          - paragraph [ref=e756]:
+            - strong [ref=e757]: 质量分布
+            - text: ":"
+          - generic [ref=e759]: "[★★★] Excellent: 1"
+          - generic [ref=e610]: "[★★ ] Good: 2"
+          - generic [ref=e613]: "[★ ] Fair: 21"
+          - generic [ref=e616]: "[ ] Poor: 44"
+      - separator [ref=e301]
+      - generic [ref=e761]:
+        - generic [ref=e763]:
+          - heading "🎯 意图分析统计" [level=3] [ref=e769]: 🎯 意图分析统计
+          - generic [ref=e773]:
+            - paragraph [ref=e777]: 已分析簇数
+            - generic [ref=e779]: "68"
+          - generic [ref=e782]:
+            - paragraph [ref=e786]: 意图均衡簇
+            - generic [ref=e788]: 14 (20.6%)
+          - paragraph [ref=e793]:
+            - strong [ref=e794]: 意图分布
+            - text: ":"
+          - generic [ref=e797]: "其他意图 : 59 (86.8%)"
+          - generic [ref=e800]: "寻找工具 : 6 (8.8%)"
+          - generic [ref=e803]: "学习教程 : 3 (4.4%)"
+        - generic [ref=e805]:
+          - heading "📈 意图分析建议" [level=3] [ref=e811]: 📈 意图分析建议
+          - generic [ref=e816]:
+            - paragraph [ref=e817]:
+              - strong [ref=e818]: 基于Phase 0测量结果
+              - text: ":"
+            - list [ref=e819]:
+              - listitem [ref=e820]: find_tool占比11.6%（分散模式）
+              - listitem [ref=e821]:
+                - text: 建议采用
+                - strong [ref=e822]: 均衡策略
+              - listitem [ref=e823]: 不过度聚焦单一意图
+            - paragraph [ref=e824]:
+              - strong [ref=e825]: 意图均衡簇特点
+              - text: ":"
+            - list [ref=e826]:
+              - listitem [ref=e827]: 包含多种用户意图
+              - listitem [ref=e828]: 适合多维度分析
+              - listitem [ref=e829]: 商业价值更全面
+            - paragraph [ref=e830]:
+              - strong [ref=e831]: 使用建议
+              - text: ":"
+            - list [ref=e832]:
+              - listitem [ref=e833]: 关注意图均衡的簇
+              - listitem [ref=e834]: 提供多元化的解决方案
+      - separator [ref=e839]
+      - 'heading "步骤1: 导出聚类报告" [level=2] [ref=e841]': "步骤1: 导出聚类报告"
+      - generic [ref=e844]:
+        - button "📤 导出报告" [ref=e849] [cursor=pointer]:
+          - paragraph [ref=e853]: 📤 导出报告
+        - generic [ref=e858] [cursor=pointer]:
+          - checkbox "使用LLM生成主题标签" [checked]
+          - paragraph [ref=e863]: 使用LLM生成主题标签
+      - separator [ref=e870]
+      - 'heading "步骤1.5: 导出HTML用于翻译" [level=2] [ref=e876]': "步骤1.5: 导出HTML用于翻译"
+      - paragraph [ref=e882]:
+        - text: 💡
+        - strong [ref=e883]: 如果您需要翻译英文短语
+        - text: ，可以导出为HTML，然后在浏览器中翻译查看。
+      - button "🌐 导出为HTML（可翻译）" [ref=e890] [cursor=pointer]:
+        - paragraph [ref=e894]: 🌐 导出为HTML（可翻译）
+      - separator [ref=e901]
+      - 'heading "步骤2: 在线查看和筛选" [level=2] [ref=e907]': "步骤2: 在线查看和筛选"
+      - paragraph [ref=e913]:
+        - strong [ref=e914]: 找到 68 个大组聚类
+      - heading "⭐ 推荐关注的聚类（Top 10）" [level=3] [ref=e920]: ⭐ 推荐关注的聚类（Top 10）
+      - generic [ref=e926]:
+        - button "Download as CSV" [ref=e929] [cursor=pointer]:
+          - img [ref=e930]
+        - button "Search" [ref=e935] [cursor=pointer]:
+          - img [ref=e936]
+        - button "Fullscreen" [ref=e941] [cursor=pointer]:
+          - img [ref=e942]
+      - paragraph [ref=e957]:
+        - text: 💡
+        - strong [ref=e958]: 建议
+        - text: ": 上述聚类自动评分较高，建议优先审核。您可以直接在下方\"快速操作\"中输入ID进行选中。"
+      - separator [ref=e963]
+      - generic [ref=e965]:
+        - generic [ref=e969]:
+          - paragraph [ref=e972]: 按大小筛选
+          - generic [ref=e974]:
+            - generic [ref=e975]:
+              - generic [ref=e976]: 全部
+              - combobox "Selected 全部. 按大小筛选" [ref=e978]
+            - img "open" [ref=e980]
+        - generic [ref=e985]:
+          - paragraph [ref=e988]: 按状态筛选
+          - generic [ref=e990]:
+            - generic [ref=e991]:
+              - generic [ref=e992]: 全部
+              - combobox "Selected 全部. 按状态筛选" [ref=e994]
+            - img "open" [ref=e996]
+        - generic [ref=e1001]:
+          - paragraph [ref=e1004]: 按质量筛选
+          - generic [ref=e1006]:
+            - generic [ref=e1007]:
+              - generic [ref=e1008]: 全部
+              - combobox "Selected 全部. 按质量筛选" [ref=e1010]
+            - img "open" [ref=e1012]
+        - generic [ref=e1017]:
+          - paragraph [ref=e1020]: 按意图筛选
+          - generic [ref=e1022]:
+            - generic [ref=e1023]:
+              - generic [ref=e1024]: 全部
+              - combobox "Selected 全部. 按意图筛选" [ref=e1026]
+            - img "open" [ref=e1028]
+        - generic [ref=e1033]:
+          - paragraph [ref=e1036]: 按均衡度筛选
+          - generic [ref=e1038]:
+            - generic [ref=e1039]:
+              - generic [ref=e1040]: 全部
+              - combobox "Selected 全部. 按均衡度筛选" [ref=e1042]
+            - img "open" [ref=e1044]
+        - generic [ref=e1049]:
+          - paragraph [ref=e1052]: 排序方式
+          - generic [ref=e1054]:
+            - generic [ref=e1055]:
+              - generic [ref=e1056]: 按质量分降序
+              - combobox "Selected 按质量分降序. 排序方式" [ref=e1058]
+            - img "open" [ref=e1060]
+      - generic [ref=e1066]:
+        - button "Download as CSV" [ref=e1069] [cursor=pointer]:
+          - img [ref=e1070]
+        - button "Search" [ref=e1075] [cursor=pointer]:
+          - img [ref=e1076]
+        - button "Fullscreen" [ref=e1081] [cursor=pointer]:
+          - img [ref=e1082]
+      - heading "🎯 快速操作" [level=3] [ref=e1098]: 🎯 快速操作
+      - generic [ref=e1101]:
+        - generic [ref=e1103]:
+          - paragraph [ref=e1108]:
+            - strong [ref=e1109]: 选中聚类
+          - generic [ref=e1111]:
+            - paragraph [ref=e1114]: 输入要选中的cluster_id（支持逗号、换行、空格分隔）
+            - textbox "输入要选中的cluster_id（支持逗号、换行、空格分隔）" [ref=e1117]:
+              - /placeholder: "例如:\n1174\n1244\n1269\n或: 1174,1244,1269\n或: 1174 1244 1269"
+          - button "✅ 标记为选中" [ref=e1120] [cursor=pointer]:
+            - paragraph [ref=e1124]: ✅ 标记为选中
+        - generic [ref=e1126]:
+          - paragraph [ref=e1131]:
+            - strong [ref=e1132]: 取消选中
+          - generic [ref=e1134]:
+            - paragraph [ref=e1137]: 输入要取消的cluster_id（支持逗号、换行、空格分隔）
+            - textbox "输入要取消的cluster_id（支持逗号、换行、空格分隔）" [ref=e1140]:
+              - /placeholder: "例如:\n2\n4\n6\n或: 2,4,6\n或: 2 4 6"
+          - button "❌ 取消选中" [ref=e1143] [cursor=pointer]:
+            - paragraph [ref=e1147]: ❌ 取消选中
+      - separator [ref=e1152]
+      - 'heading "步骤3: 从CSV导入选择结果（可选）" [level=2] [ref=e1158]': "步骤3: 从CSV导入选择结果（可选）"
+      - paragraph [ref=e1164]:
+        - text: 如果您在CSV文件中编辑了
+        - code [ref=e1165]: is_selected
+        - text: 和
+        - code [ref=e1166]: selection_score
+        - text: 列，可以在此导入。
+      - generic [ref=e1168]:
+        - generic [ref=e1172]:
+          - generic [ref=e1173]:
+            - paragraph [ref=e1175]: CSV文件路径
+            - img [ref=e1179]
+          - textbox "CSV文件路径" [ref=e1184]:
+            - /placeholder: ""
+            - text: data/output/clusters_levelA.csv
+        - button "📥 导入CSV" [ref=e1189] [cursor=pointer]:
+          - paragraph [ref=e1193]: 📥 导入CSV
+      - group [ref=e1196]:
+        - generic "keyboard_arrow_right 📖 使用说明" [ref=e1197] [cursor=pointer]:
+          - generic [ref=e1198]:
+            - generic [ref=e1200]: keyboard_arrow_right
+            - paragraph [ref=e1203]: 📖 使用说明
+      - group [ref=e1206]:
+        - generic "keyboard_arrow_right 🔧 故障排查" [ref=e1207] [cursor=pointer]:
+          - generic [ref=e1208]:
+            - generic [ref=e1210]: keyboard_arrow_right
+            - paragraph [ref=e1213]: 🔧 故障排查
+```

@@ -1,0 +1,244 @@
+{
+  "statistics": {
+    "total_matches": 3513,
+    "unique_variables": 3438,
+    "variable_freq_p25": 1.0,
+    "variable_freq_p50": 1.0,
+    "variable_freq_p75": 1.0,
+    "variable_freq_p90": 1.0,
+    "variable_freq_max": 30
+  },
+  "top_variables": [
+    {
+      "variable_text": "what",
+      "frequency": 28,
+      "template_match_count": 3,
+      "total_volume": 18900,
+      "cross_validation_score": 84
+    },
+    {
+      "variable_text": "2025",
+      "frequency": 12,
+      "template_match_count": 3,
+      "total_volume": 0,
+      "cross_validation_score": 36
+    },
+    {
+      "variable_text": "what is",
+      "frequency": 9,
+      "template_match_count": 3,
+      "total_volume": 2600,
+      "cross_validation_score": 27
+    },
+    {
+      "variable_text": "android",
+      "frequency": 13,
+      "template_match_count": 2,
+      "total_volume": 0,
+      "cross_validation_score": 26
+    },
+    {
+      "variable_text": "resume",
+      "frequency": 6,
+      "template_match_count": 4,
+      "total_volume": 0,
+      "cross_validation_score": 24
+    },
+    {
+      "variable_text": "powerpoint",
+      "frequency": 6,
+      "template_match_count": 3,
+      "total_volume": 0,
+      "cross_validation_score": 18
+    },
+    {
+      "variable_text": "tutorial",
+      "frequency": 9,
+      "template_match_count": 2,
+      "total_volume": 0,
+      "cross_validation_score": 18
+    },
+    {
+      "variable_text": "cv",
+      "frequency": 4,
+      "template_match_count": 4,
+      "total_volume": 1600,
+      "cross_validation_score": 16
+    },
+    {
+      "variable_text": "top",
+      "frequency": 8,
+      "template_match_count": 2,
+      "total_volume": 0,
+      "cross_validation_score": 16
+    },
+    {
+      "variable_text": "english",
+      "frequency": 8,
+      "template_match_count": 2,
+      "total_volume": 0,
+      "cross_validation_score": 16
+    },
+    {
+      "variable_text": "facebook",
+      "frequency": 4,
+      "template_match_count": 3,
+      "total_volume": 0,
+      "cross_validation_score": 12
+    },
+    {
+      "variable_text": "video editing",
+      "frequency": 4,
+      "template_match_count": 3,
+      "total_volume": 0,
+      "cross_validation_score": 12
+    },
+    {
+      "variable_text": "best",
+      "frequency": 6,
+      "template_match_count": 2,
+      "total_volume": 0,
+      "cross_validation_score": 12
+    },
+    {
+      "variable_text": "when was",
+      "frequency": 6,
+      "template_match_count": 2,
+      "total_volume": 7100,
+      "cross_validation_score": 12
+    },
+    {
+      "variable_text": "coding",
+      "frequency": 5,
+      "template_match_count": 2,
+      "total_volume": 0,
+      "cross_validation_score": 10
+    },
+    {
+      "variable_text": "tattoo",
+      "frequency": 3,
+      "template_match_count": 3,
+      "total_volume": 0,
+      "cross_validation_score": 9
+    },
+    {
+      "variable_text": "warriors game on tonight",
+      "frequency": 3,
+      "template_match_count": 3,
+      "total_volume": 6800,
+      "cross_validation_score": 9
+    },
+    {
+      "variable_text": "penn state game on",
+      "frequency": 3,
+      "template_match_count": 3,
+      "total_volume": 14200,
+      "cross_validation_score": 9
+    },
+    {
+      "variable_text": "texas game on",
+      "frequency": 3,
+      "template_match_count": 3,
+      "total_volume": 5400,
+      "cross_validation_score": 9
+    },
+    {
+      "variable_text": "georgia game on",
+      "frequency": 3,
+      "template_match_count": 3,
+      "total_volume": 11800,
+      "cross_validation_score": 9
+    },
+    {
+      "variable_text": "lsu game on",
+      "frequency": 3,
+      "template_match_count": 3,
+      "total_volume": 4800,
+      "cross_validation_score": 9
+    },
+    {
+      "variable_text": "cw on directv",
+      "frequency": 3,
+      "template_match_count": 3,
+      "total_volume": 6100,
+      "cross_validation_score": 9
+    },
+    {
+      "variable_text": "abc on dish",
+      "frequency": 3,
+      "template_match_count": 3,
+      "total_volume": 4500,
+      "cross_validation_score": 9
+    },
+    {
+      "variable_text": "alabama game on",
+      "frequency": 3,
+      "template_match_count": 3,
+      "total_volume": 18100,
+      "cross_validation_score": 9
+    },
+    {
+      "variable_text": "cowboys game on",
+      "frequency": 3,
+      "template_match_count": 3,
+      "total_volume": 1900,
+      "cross_validation_score": 9
+    },
+    {
+      "variable_text": "pdf",
+      "frequency": 4,
+      "template_match_count": 2,
+      "total_volume": 0,
+      "cross_validation_score": 8
+    },
+    {
+      "variable_text": "youtube",
+      "frequency": 4,
+      "template_match_count": 2,
+      "total_volume": 0,
+      "cross_validation_score": 8
+    },
+    {
+      "variable_text": "which",
+      "frequency": 4,
+      "template_match_count": 2,
+      "total_volume": 0,
+      "cross_validation_score": 8
+    },
+    {
+      "variable_text": "how many icons",
+      "frequency": 4,
+      "template_match_count": 2,
+      "total_volume": 0,
+      "cross_validation_score": 8
+    },
+    {
+      "variable_text": "instagram",
+      "frequency": 3,
+      "template_match_count": 2,
+      "total_volume": 0,
+      "cross_validation_score": 6
+    },
+    {
+      "variable_text": "work",
+      "frequency": 3,
+      "template_match_count": 2,
+      "total_volume": 1900,
+      "cross_validation_score": 6
+    },
+    {
+      "variable_text": "python",
+      "frequency": 3,
+      "template_match_count": 2,
+      "total_volume": 0,
+      "cross_validation_score": 6
+    },
+    {
+      "variable_text": "best portraits",
+      "frequency": 3,
+      "template_match_count": 2,
+      "total_volume": 0,
+      "cross_validation_score": 6
+    }
+  ]
+}

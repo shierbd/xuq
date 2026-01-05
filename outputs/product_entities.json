@@ -1,0 +1,83 @@
+{
+  "total_products": 7,
+  "products": [
+    {
+      "product_name": "android",
+      "category": "software",
+      "description": "Mobile operating system developed by Google",
+      "commercial_value": 95,
+      "frequency": 13,
+      "template_match_count": 2,
+      "total_volume": 0,
+      "cross_validation_score": 26
+    },
+    {
+      "product_name": "facebook",
+      "category": "service",
+      "description": "Social media and social networking service.",
+      "commercial_value": 95,
+      "frequency": 4,
+      "template_match_count": 3,
+      "total_volume": 0,
+      "cross_validation_score": 12
+    },
+    {
+      "product_name": "youtube",
+      "category": "service",
+      "description": "Online video sharing and social media platform owned by Google.",
+      "commercial_value": 95,
+      "frequency": 4,
+      "template_match_count": 2,
+      "total_volume": 0,
+      "cross_validation_score": 8
+    },
+    {
+      "product_name": "instagram",
+      "category": "service",
+      "description": "Photo and video sharing social networking service owned by Meta.",
+      "commercial_value": 90,
+      "frequency": 3,
+      "template_match_count": 2,
+      "total_volume": 0,
+      "cross_validation_score": 6
+    },
+    {
+      "product_name": "python",
+      "category": "software",
+      "description": "A popular high-level programming language",
+      "commercial_value": 90,
+      "frequency": 3,
+      "template_match_count": 2,
+      "total_volume": 0,
+      "cross_validation_score": 6
+    },
+    {
+      "product_name": "powerpoint",
+      "category": "software",
+      "description": "Presentation software by Microsoft",
+      "commercial_value": 85,
+      "frequency": 6,
+      "template_match_count": 3,
+      "total_volume": 0,
+      "cross_validation_score": 18
+    },
+    {
+      "product_name": "pdf",
+      "category": "software",
+      "description": "Portable Document Format, a file standard created by Adobe.",
+      "commercial_value": 85,
+      "frequency": 4,
+      "template_match_count": 2,
+      "total_volume": 0,
+      "cross_validation_score": 8
+    }
+  ],
+  "statistics": {
+    "avg_commercial_value": 90.71428571428571,
+    "high_value_products": 7,
+    "categories": {
+      "software": 4,
+      "service": 3
+    }
+  }
+}

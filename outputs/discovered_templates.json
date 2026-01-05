@@ -1,0 +1,302 @@
+[
+  {
+    "anchor": "best way to",
+    "template_pattern": "best way to {X}",
+    "match_count": 1416,
+    "example_phrases": [
+      "best way to reheat steak",
+      "best way to get rid of mice",
+      "best way to cut a watermelon",
+      "best way to store strawberries",
+      "best way to clean hardwood floors"
+    ]
+  },
+  {
+    "anchor": "books in order",
+    "template_pattern": "{X} books in order",
+    "match_count": 280,
+    "example_phrases": [
+      "prey books in order",
+      "pretty little liars books in order",
+      "rachel hanna books in order",
+      "pll books in order",
+      "poirot books in order"
+    ]
+  },
+  {
+    "anchor": "tips and tricks",
+    "template_pattern": "{X} tips and tricks {Y}",
+    "match_count": 254,
+    "example_phrases": [
+      "service advisor tips and tricks",
+      "sampling tips and tricks",
+      "tattoo tips and tricks",
+      "tattoo tips and tricks for beginners",
+      "supermarket simulator tips and tricks"
+    ]
+  },
+  {
+    "anchor": "how to make",
+    "template_pattern": "how to make {X}",
+    "match_count": 211,
+    "example_phrases": [
+      "how to make a paper airplane",
+      "how to make jello shots",
+      "how to make netherite armor",
+      "how to make porridge in grow a garden",
+      "how to make oobleck"
+    ]
+  },
+  {
+    "anchor": "what channel is",
+    "template_pattern": "what channel is {X}",
+    "match_count": 185,
+    "example_phrases": [
+      "what channel is the texas game on",
+      "what channel is the weather channel on directv",
+      "what channel is tnt on dish",
+      "what channel is tnt on directv",
+      "what channel is thursday night football on tonight"
+    ]
+  },
+  {
+    "anchor": "how to get",
+    "template_pattern": "how to get {X}",
+    "match_count": 178,
+    "example_phrases": [
+      "how to get free robux",
+      "how to get rid of mice",
+      "how to get rid of a stye overnight",
+      "how to get rid of double chin",
+      "how to get rid of roaches"
+    ]
+  },
+  {
+    "anchor": "how to calculate",
+    "template_pattern": "how to calculate {X}",
+    "match_count": 163,
+    "example_phrases": [
+      "how to calculate a percentage increase of a percentage",
+      "how to calculate z score",
+      "how to calculate percent increase",
+      "how to calculate net income",
+      "how to calculate square feet of a room"
+    ]
+  },
+  {
+    "anchor": "speech to text",
+    "template_pattern": "{X} speech to text {Y}",
+    "match_count": 153,
+    "example_phrases": [
+      "reddit speech to text",
+      "speech to text",
+      "speech to text free",
+      "where is speech to text in word",
+      "where is speech to text on android"
+    ]
+  },
+  {
+    "anchor": "how much do",
+    "template_pattern": "how much do {X}",
+    "match_count": 137,
+    "example_phrases": [
+      "how much does it cost to build a house",
+      "how much do dental assistants make",
+      "how much do pilots make",
+      "how much does youtube pay per view",
+      "how much do physical therapists make"
+    ]
+  },
+  {
+    "anchor": "for beginners pdf",
+    "template_pattern": "{X} for beginners pdf",
+    "match_count": 122,
+    "example_phrases": [
+      "recorder for beginners pdf",
+      "tattoo for beginners pdf",
+      "sourdough starter for beginners pdf",
+      "pattern drafting for beginners pdf",
+      "mun guide for beginners pdf"
+    ]
+  },
+  {
+    "anchor": "kpop demon hunters",
+    "template_pattern": "{X} kpop demon hunters lyrics",
+    "match_count": 120,
+    "example_phrases": [
+      "song free kpop demon hunters",
+      "music kpop demon hunters",
+      "picture zoey kpop demon hunters",
+      "who animated kpop demon hunters",
+      "writer kpop demon hunters"
+    ]
+  },
+  {
+    "anchor": "how do you",
+    "template_pattern": "how do you {X}",
+    "match_count": 117,
+    "example_phrases": [
+      "how do you write on the envelope",
+      "how do you write an envelope address",
+      "how do you find out the area",
+      "how do you find the range",
+      "how do you say how to in spanish"
+    ]
+  },
+  {
+    "anchor": "of all time",
+    "template_pattern": "{X} of all time",
+    "match_count": 107,
+    "example_phrases": [
+      "best wide receivers of all time",
+      "best christmas movies of all time",
+      "best drummers of all time",
+      "best boxers of all time",
+      "top 10 movies of all time"
+    ]
+  },
+  {
+    "anchor": "is best for",
+    "template_pattern": "{X} is best for {Y}",
+    "match_count": 107,
+    "example_phrases": [
+      "which calculator is best for calculus",
+      "which calculator is best for engineering students",
+      "which calculator is best for fe exam",
+      "which calculator is best for statistics",
+      "which call recorder is best for android"
+    ]
+  },
+  {
+    "anchor": "public schools calendar",
+    "template_pattern": "{X} public schools calendar 2024-2025",
+    "match_count": 102,
+    "example_phrases": [
+      "quincy public schools calendar",
+      "polk county public schools calendar",
+      "portland public schools calendar 2024-2025",
+      "santa fe public schools calendar",
+      "savannah chatham public schools calendar"
+    ]
+  },
+  {
+    "anchor": "is the best",
+    "template_pattern": "{X} is the best {Y}",
+    "match_count": 101,
+    "example_phrases": [
+      "when is the best time to take a pregnancy test",
+      "bank is the best",
+      "when is the best time to buy a car",
+      "what is the best title for this bulleted list",
+      "what is the best hearing aid sold at costco"
+    ]
+  },
+  {
+    "anchor": "in the world",
+    "template_pattern": "{X} in the world",
+    "match_count": 99,
+    "example_phrases": [
+      "best beaches in the world",
+      "rarest animal in the world",
+      "50 best restaurants in the world",
+      "oldest building in the world",
+      "who is the father of music in the world"
+    ]
+  },
+  {
+    "anchor": "are there in",
+    "template_pattern": "{X} are there in {Y}",
+    "match_count": 99,
+    "example_phrases": [
+      "how many designer brands are there in the world",
+      "how many designer outlets are there in the uk",
+      "how many designers are there in india",
+      "how many designers are there in the world",
+      "how many dashboard are there in gpdp portal"
+    ]
+  },
+  {
+    "anchor": "channel is the",
+    "template_pattern": "what channel is the {X}",
+    "match_count": 98,
+    "example_phrases": [
+      "what channel is the texas game on",
+      "what channel is the weather channel on directv",
+      "what channel is the xfinity race on",
+      "what channel is the wild playing on tonight",
+      "what channel is the warriors game on tonight"
+    ]
+  },
+  {
+    "anchor": "county schools calendar",
+    "template_pattern": "{X} county schools calendar {Y}",
+    "match_count": 94,
+    "example_phrases": [
+      "polk county schools calendar",
+      "sarasota county schools calendar",
+      "rutherford county schools calendar tn",
+      "rutherford county schools calendar",
+      "shelby county schools calendar"
+    ]
+  },
+  {
+    "anchor": "what channel is the",
+    "template_pattern": "what channel is the {X}",
+    "match_count": 91,
+    "example_phrases": [
+      "what channel is the texas game on",
+      "what channel is the weather channel on directv",
+      "what channel is the xfinity race on",
+      "what channel is the wild playing on tonight",
+      "what channel is the warriors game on tonight"
+    ]
+  },
+  {
+    "anchor": "the book of",
+    "template_pattern": "{X} the book of {Y}",
+    "match_count": 87,
+    "example_phrases": [
+      "who wrote the book of acts",
+      "who wrote the book of revelation",
+      "how many speeches are in the book of acts",
+      "la muerte the book of life",
+      "when was the book of romans written"
+    ]
+  },
+  {
+    "anchor": "button up shirt",
+    "template_pattern": "{X} button up shirt magic kingdom muppet movie",
+    "match_count": 85,
+    "example_phrases": [
+      "button up shirts",
+      "button up shirts for women",
+      "purple button up shirt",
+      "pokemon button up shirt",
+      "silk button up shirt"
+    ]
+  },
+  {
+    "anchor": "button down shirt",
+    "template_pattern": "{X} button down shirt women",
+    "match_count": 80,
+    "example_phrases": [
+      "button down shirts for women",
+      "purple button down shirt",
+      "plus size button down shirt",
+      "satin button down shirt",
+      "silk button down shirt"
+    ]
+  },
+  {
+    "anchor": "jobs near me",
+    "template_pattern": "{X} jobs near me remote",
+    "match_count": 77,
+    "example_phrases": [
+      "medical assistant jobs near me",
+      "dental assistant jobs near me",
+      "vet assistant jobs near me",
+      "veterinary assistant jobs near me",
+      "office manager jobs near me"
+    ]
+  }
+]

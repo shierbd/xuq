@@ -143,6 +143,8 @@ with st.sidebar:
          "📝 Phase 0: 关键词扩展",
          "📊 Phase 0: 基线测量",
          "🔄 Phase 2: 大组聚类",
+         "🎯 Phase 2D: 模板发现",
+         "🎯 Phase 2E: 君言方法",
          "✅ Phase 3: 聚类筛选",
          "🏷️ Phase 4: Token提取",
          "📊 Phase 5: 需求生成",
@@ -225,9 +227,17 @@ if page == "🏠 首页概览":
         </div>
         """, unsafe_allow_html=True)
 
-    col5, col6, col7 = st.columns(3)
+    col5, col6, col7, col8 = st.columns(4)
 
     with col5:
+        st.markdown("""
+        <div class="phase-card">
+            <h4>🎯 Phase 2D: 模板发现</h4>
+            <p>数据驱动的模板和产品提取</p>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with col6:
         st.markdown("""
         <div class="phase-card">
             <h4>✅ Phase 3: 聚类筛选</h4>
@@ -244,6 +254,14 @@ if page == "🏠 首页概览":
         """, unsafe_allow_html=True)
 
     with col7:
+        st.markdown("""
+        <div class="phase-card">
+            <h4>🏷️ Phase 4: Token提取</h4>
+            <p>提取关键词并分类</p>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with col8:
         st.markdown("""
         <div class="phase-card">
             <h4>📊 Phase 5: 需求生成</h4>
@@ -317,6 +335,14 @@ elif page == "📊 Phase 0: 基线测量":
 elif page == "🔄 Phase 2: 大组聚类":
     from ui.pages import phase2_clustering
     phase2_clustering.render()
+
+elif page == "🎯 Phase 2D: 模板发现":
+    from ui.pages import phase2d_templates
+    phase2d_templates.render_page()
+
+elif page == "🎯 Phase 2E: 君言方法":
+    from ui.pages import phase2e_junyan
+    phase2e_junyan.render()
 
 elif page == "✅ Phase 3: 聚类筛选":
     from ui.pages import phase3_selection

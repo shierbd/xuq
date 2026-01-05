@@ -35,7 +35,7 @@ setup_encoding()
 from config.settings import OUTPUT_DIR
 from core.cluster_labeling import ClusterLabeler
 from storage.repository import ClusterMetaRepository, PhraseRepository
-from storage.models import ClusterMeta
+from storage.models import ClusterMeta, Phrase
 
 def run_phase2_label_clusters(
     round_id: int = 1,
@@ -74,8 +74,8 @@ def run_phase2_label_clusters(
     with PhraseRepository() as phrase_repo:
         for cluster in clusters_db:
             # 查询该聚类的所有短语
-            phrases_db = phrase_repo.session.query(phrase_repo.model).filter(
-                phrase_repo.model.cluster_id_A == cluster.cluster_id
+            phrases_db = phrase_repo.session.query(Phrase).filter(
+                Phrase.cluster_id_A == cluster.cluster_id
             ).all()
 
             phrases = [p.phrase for p in phrases_db]
