@@ -180,6 +180,35 @@ LOG_CONFIG = {
     },
 }
 
+# ==================== Louvain聚类配置 (Phase 2B) ====================
+LOUVAIN_CONFIG = {
+    # K近邻图构建参数
+    "k_neighbors": 20,          # 每个节点连接的最近邻数量
+    "similarity_threshold": 0.6, # 边权重过滤阈值 (cosine similarity)
+    "use_faiss": False,         # 是否使用FAISS加速（大规模数据推荐）
+
+    # Louvain算法参数
+    "resolution": 1.0,          # 分辨率参数（越大→社区越多越小）
+    "randomize": False,         # 是否随机化（影响可重复性）
+    "random_seed": 42,          # 随机种子
+
+    # 后处理参数
+    "min_community_size": 10,   # 最小社区大小（小于此值会被合并/标记为噪音）
+    "max_community_size": 5000, # 最大社区大小（大于此值会二次拆分）
+    "merge_small_clusters": True, # 是否合并小社区
+
+    # 质量评估
+    "calculate_modularity": True, # 是否计算模块度（评估聚类质量）
+}
+
+# DeepSeek标记配置 (Phase 2C)
+CLUSTER_LABELING_CONFIG = {
+    "sample_size_per_cluster": 40,  # 每个聚类抽样短语数
+    "max_clusters_per_batch": 10,   # 批量处理时每批聚类数
+    "temperature": 0.3,             # DeepSeek温度
+    "max_tokens": 500,              # 每次调用最大token数
+}
+
 # ==================== 版本信息 ====================
 MVP_VERSION = "1.0"
 LAST_UPDATED = "2024-12-19"

@@ -414,6 +414,18 @@ class ClusterMeta(Base):
     llm_summary = Column(Text)  # LLM生成的簇主题摘要
     llm_value_assessment = Column(Text)  # LLM的价值评估
 
+    # DeepSeek语义标注（Phase 2C新增）
+    llm_label = Column(String(100))  # 简短语义标签
+    primary_demand_type = enum_column(
+        "primary_demand_type",
+        ["tool", "content", "service", "education", "other"],
+        enum_name="primary_demand_type_enum",
+        index=True
+    )
+    secondary_demand_types = Column(Text)  # JSON格式的次要需求类型列表
+    labeling_confidence = Column(Integer)  # 标注置信度 0-100
+    labeling_timestamp = Column(TIMESTAMP)  # 标注时间
+
     # 意图分类（Phase 3新增）
     dominant_intent = Column(String(50), index=True)  # 主导意图
     dominant_intent_confidence = Column(Integer)  # 主导意图置信度 0-100

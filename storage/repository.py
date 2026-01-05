@@ -444,6 +444,53 @@ class ClusterMetaRepository:
             # 抛出异常而不是打印，让调用方处理
             raise e
 
+    def update_cluster_labeling(
+        self,
+        cluster_id: int,
+        llm_label: str,
+        llm_summary: str,
+        primary_demand_type: str,
+        secondary_demand_types: str,
+        labeling_confidence: int,
+        cluster_level: str = 'A'
+    ) -> bool:
+        """
+        更新聚类的DeepSeek语义标注
+
+        Args:
+            cluster_id: 聚类ID
+            llm_label: 简短语义标签
+            llm_summary: 详细描述
+            primary_demand_type: 主需求类型
+            secondary_demand_types: 次要需求类型（JSON字符串）
+            labeling_confidence: 标注置信度
+            cluster_level: 聚类级别（默认'A'）
+
+        Returns:
+            是否成功
+        """
+        try:
+            from datetime import datetime
+
+            cluster = self.session.query(ClusterMeta).filter(
+                and_(ClusterMeta.cluster_id == cluster_id,
+                     ClusterMeta.cluster_level == cluster_level)
+            ).first()
+
+            if cluster:
+                cluster.llm_label = llm_label
+                cluster.llm_summary = llm_summary
+                cluster.primary_demand_type = primary_demand_type
+                cluster.secondary_demand_types = secondary_demand_types
+                cluster.labeling_confidence = labeling_confidence
+                cluster.labeling_timestamp = datetime.utcnow()
+                self.session.commit()
+                return True
+            return False
+        except Exception as e:
+            self.session.rollback()
+            raise e
+
 
 class DemandRepository:
     """需求卡片表操作封装"""
