@@ -51,53 +51,115 @@ def segment_keywords(keywords: List[str], stopwords: Set[str]) -> Counter:
 
 
 def segment_keywords_with_seed_tracking(phrases_objects: list, stopwords: Set[str],
-                                        extract_ngrams: bool = False,
+                                        extract_ngrams: bool = True,
                                         min_ngram_frequency: int = 2) -> Tuple[Counter, Dict[str, Set[str]], Counter, Dict[str, Set[str]]]:
     """
     将关键词短语分词并统计词频，同时追踪每个词和短语来源于哪些seed_word
-    可选地提取高频短语（n-grams）
+
+    ⚠️ 此函数已重构为调用segment_keywords_unified()的wrapper函数，以保持向后兼容。
+    推荐新代码直接使用 segment_keywords_unified() 函数。
 
     Args:
         phrases_objects: Phrase对象列表（需要有phrase和seed_word属性）
         stopwords: 停用词集合
-        extract_ngrams: 是否提取n-gram短语（默认False）
-        min_ngram_frequency: n-gram最小频次阈值（默认2，只保留出现2次以上的短语）
+        extract_ngrams: 已废弃参数，现在总是提取n-grams（保留此参数仅为向后兼容）
+        min_ngram_frequency: 最小频次阈值（应用于所有1-6-gram）
 
     Returns:
         (word_counter, word_to_seeds, ngram_counter, ngram_to_seeds)
-        - word_counter: Counter对象，包含单词词频统计
-        - word_to_seeds: {word: {seed1, seed2, ...}} 每个词对应的所有原始词根集合
-        - ngram_counter: Counter对象，包含n-gram短语频次统计（如果extract_ngrams=False则为空）
+        - word_counter: Counter对象，包含1-gram（单词）词频统计
+        - word_to_seeds: {word: {seed1, seed2, ...}} 每个单词对应的所有原始词根集合
+        - ngram_counter: Counter对象，包含2-6-gram（短语）频次统计
         - ngram_to_seeds: {ngram: {seed1, seed2, ...}} 每个短语对应的所有原始词根集合
 
     Example:
         >>> phrases = [Phrase(phrase="best running shoes", seed_word="running")]
         >>> stopwords = {"for"}
-        >>> counter, word_seeds, ngrams, ngram_seeds = segment_keywords_with_seed_tracking(phrases, stopwords, extract_ngrams=True)
+        >>> counter, word_seeds, ngrams, ngram_seeds = segment_keywords_with_seed_tracking(phrases, stopwords)
         >>> word_seeds['running']
         {'running'}
         >>> ngram_seeds['best running']
         {'running'}
-        >>> ngrams.most_common(5)
-        [('best running', 10), ('running shoes', 15), ...]
 
     Note:
-        短语提取采用数据驱动的方式，会自动提取2-6词的所有短语组合。
-        用户应该在显示阶段根据实际数据筛选感兴趣的短语长度，而不是在提取阶段限制。
+        现在内部使用segment_keywords_unified()进行穷尽式n-gram提取，
+        然后拆分为word_counter（1-gram）和ngram_counter（2-6-gram）以保持向后兼容。
+        extract_ngrams参数已被忽略，总是提取所有n-grams。
     """
-    # 内部常量：最大n-gram长度
-    # 设为6是合理的上限，大多数有意义的短语不超过6词
-    # 例如："how to make money online fast" (6词)
-    MAX_NGRAM_LENGTH = 6
+    # 调用新的统一分词函数
+    token_counter, token_to_seeds = segment_keywords_unified(
+        phrases_objects,
+        stopwords,
+        min_frequency=min_ngram_frequency,
+        max_ngram_length=6
+    )
 
+    # 为了向后兼容，拆分为word_counter（1-gram）和ngram_counter（2-6-gram）
     word_counter = Counter()
-    word_to_seeds = defaultdict(set)  # 记录每个词对应的所有seed_word
-    ngram_counter = Counter()  # 记录n-gram短语频次
-    ngram_to_seeds = defaultdict(set)  # 记录每个n-gram对应的所有seed_word
+    word_to_seeds = {}
+    ngram_counter = Counter()
+    ngram_to_seeds = {}
+
+    for token, count in token_counter.items():
+        word_count = len(token.split())
+
+        if word_count == 1:
+            # 1-gram（单词）
+            word_counter[token] = count
+            word_to_seeds[token] = token_to_seeds[token]
+        else:
+            # 2-6-gram（短语）
+            ngram_counter[token] = count
+            ngram_to_seeds[token] = token_to_seeds[token]
+
+    return word_counter, word_to_seeds, ngram_counter, ngram_to_seeds
+
+
+def segment_keywords_unified(
+    phrases_objects: list,
+    stopwords: Set[str],
+    min_frequency: int = 2,
+    max_ngram_length: int = 6
+) -> Tuple[Counter, Dict[str, Set[str]]]:
+    """
+    统一提取1-6词的所有n-gram（穷尽式分词）
+
+    这是推荐使用的新函数，实现了完整的穷尽式n-gram提取。
+    不区分"单词"和"短语"，统一提取所有1-6词组合。
+
+    Args:
+        phrases_objects: Phrase对象列表（需要有phrase和seed_word属性）
+        stopwords: 停用词集合
+        min_frequency: 最小频次阈值（适用于所有n-gram，无论1词还是多词）
+        max_ngram_length: 最大n-gram长度（默认6）
+
+    Returns:
+        (token_counter, token_to_seeds)
+        - token_counter: Counter对象，包含所有tokens的统一频次统计（1-6词）
+        - token_to_seeds: {token: {seed1, seed2, ...}} 每个token对应的所有原始词根集合
+
+    Example:
+        >>> phrases = [Phrase(phrase="best running shoes", seed_word="running")]
+        >>> stopwords = {"for", "the"}
+        >>> tokens, seeds = segment_keywords_unified(phrases, stopwords, min_frequency=2)
+        >>> tokens.most_common(5)
+        [('running', 3), ('shoes', 3), ('running shoes', 3), ...]
+
+    Note:
+        这个函数实现了完整的穷尽式n-gram提取：
+        - 提取所有1-gram（单词）
+        - 提取所有2-gram（2词短语）
+        - 提取所有3-gram（3词短语）
+        - ...直到max_ngram_length
+
+        然后用min_frequency统一过滤所有结果。
+    """
+    token_counter = Counter()
+    token_to_seeds = defaultdict(set)
 
     for phrase_obj in phrases_objects:
         keyword = phrase_obj.phrase
-        seed_word = phrase_obj.seed_word or "unknown"  # 如果没有seed_word，标记为unknown
+        seed_word = phrase_obj.seed_word or "unknown"
 
         # 转小写
         keyword_lower = keyword.lower()
@@ -116,41 +178,37 @@ def segment_keywords_with_seed_tracking(phrases_objects: list, stopwords: Set[st
             and re.match(r'^[a-z]+$', w)
         ]
 
-        # 统计词频
-        word_counter.update(filtered_words)
+        if not filtered_words:
+            continue
 
-        # 记录每个词对应的seed_word
-        for word in filtered_words:
-            word_to_seeds[word].add(seed_word)
+        # 穷尽提取1-gram到max_ngram_length-gram
+        for n in range(1, min(max_ngram_length + 1, len(filtered_words) + 1)):
+            for i in range(len(filtered_words) - n + 1):
+                if n == 1:
+                    # 1-gram（单词）
+                    token = filtered_words[i]
+                else:
+                    # n-gram（短语）
+                    token = ' '.join(filtered_words[i:i+n])
 
-        # 提取n-gram短语（如果启用）
-        # 从数据中发现所有可能的短语模式（2词、3词...最多6词）
-        if extract_ngrams and len(filtered_words) >= 2:
-            for n in range(2, min(MAX_NGRAM_LENGTH + 1, len(filtered_words) + 1)):
-                for i in range(len(filtered_words) - n + 1):
-                    ngram = ' '.join(filtered_words[i:i+n])
-                    ngram_counter[ngram] += 1
-                    # 记录该n-gram对应的seed_word
-                    ngram_to_seeds[ngram].add(seed_word)
+                token_counter[token] += 1
+                token_to_seeds[token].add(seed_word)
 
-    # 过滤低频n-grams
-    if extract_ngrams:
-        # 同时过滤counter和seeds字典，保持一致
-        filtered_ngrams = {
-            ngram: count
-            for ngram, count in ngram_counter.items()
-            if count >= min_ngram_frequency
-        }
-        ngram_counter = Counter(filtered_ngrams)
+    # 应用频次阈值过滤
+    filtered_tokens = {
+        token: count
+        for token, count in token_counter.items()
+        if count >= min_frequency
+    }
 
-        # 只保留被保留的ngram的seeds信息
-        ngram_to_seeds = {
-            ngram: seeds
-            for ngram, seeds in ngram_to_seeds.items()
-            if ngram in ngram_counter
-        }
+    # 只保留被保留的token的seeds信息
+    filtered_token_to_seeds = {
+        token: seeds
+        for token, seeds in token_to_seeds.items()
+        if token in filtered_tokens
+    }
 
-    return word_counter, dict(word_to_seeds), ngram_counter, dict(ngram_to_seeds)
+    return Counter(filtered_tokens), dict(filtered_token_to_seeds)
 
 
 def get_sorted_words(word_counter: Counter,

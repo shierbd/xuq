@@ -492,32 +492,23 @@ def render_segmentation_tab():
             st.session_state.preferences = load_phase0_preferences()
 
     with col4:
-        extract_ngrams = st.checkbox(
-            "提取短语",
-            value=seg_prefs.get('extract_ngrams', True),
-            help="提取高频短语组合（如 'best free', 'how to' 等）",
-            key="extract_ngrams_checkbox"
+        st.markdown("**🔢 词频阈值**")
+        min_token_frequency = st.number_input(
+            "最小词频",
+            min_value=2,
+            max_value=20,
+            value=seg_prefs.get('min_token_frequency', 3),
+            help="只保留出现次数 >= 此值的词组（无论1词、2词...还是6词）",
+            key="min_token_frequency_input"
         )
         # 保存配置（如果值改变）
-        if extract_ngrams != seg_prefs.get('extract_ngrams', True):
-            update_phase0_preference('segmentation', 'extract_ngrams', extract_ngrams)
+        if min_token_frequency != seg_prefs.get('min_token_frequency', 3):
+            update_phase0_preference('segmentation', 'min_token_frequency', min_token_frequency)
             st.session_state.preferences = load_phase0_preferences()
 
-    # n-gram配置（当启用短语提取时显示）
-    if extract_ngrams:
-        st.markdown("**短语提取配置**")
-        st.info("💡 提示：系统会自动提取所有2-6词的短语组合（数据驱动），您可以在结果页面筛选感兴趣的长度")
-        min_ngram_frequency = st.number_input(
-            "短语最小频次",
-            min_value=2,
-            value=seg_prefs.get('min_ngram_frequency', 3),
-            help="只保留出现次数 >= 此值的短语（过滤噪声）",
-            key="min_ngram_frequency_input"
-        )
-        # 保存配置（如果值改变）
-        if min_ngram_frequency != seg_prefs.get('min_ngram_frequency', 3):
-            update_phase0_preference('segmentation', 'min_ngram_frequency', min_ngram_frequency)
-            st.session_state.preferences = load_phase0_preferences()
+    # 统一分词说明
+    st.markdown("---")
+    st.info("💡 **穷尽式n-gram提取**：系统会自动提取所有1-6词的词组组合，然后用上述最小词频阈值统一过滤。您可以在结果页面按词数、频次等条件筛选感兴趣的词组。")
 
     # ========== 增量分词逻辑 ==========
     if getattr(st.session_state, 'trigger_incremental_segmentation', False):
@@ -552,8 +543,8 @@ def render_segmentation_tab():
                     ) = load_and_segment_incrementally(
                         round_ids=[latest_round],
                         stopwords=st.session_state.stopwords,
-                        extract_ngrams=extract_ngrams,
-                        min_ngram_frequency=min_ngram_frequency if extract_ngrams else 2
+                        extract_ngrams=True,  # 总是提取n-grams（统一分词）
+                        min_ngram_frequency=min_token_frequency
                     )
 
                     st.session_state.word_counter = merged_word_counter
@@ -584,7 +575,7 @@ def render_segmentation_tab():
                         new_words, new_ngrams = ws_repo.save_word_segments(
                             word_counter=merged_word_counter,
                             batch_id=batch_id,
-                            ngram_counter=merged_ngram_counter if extract_ngrams else None
+                            ngram_counter=merged_ngram_counter  # 总是保存n-grams（统一分词）
                         )
 
                         # 更新批次记录
@@ -618,8 +609,8 @@ def render_segmentation_tab():
                 word_counter, word_to_seeds, ngram_counter, ngram_to_seeds = segment_keywords_with_seed_tracking(
                     st.session_state.phrases_cache,
                     st.session_state.stopwords,
-                    extract_ngrams=extract_ngrams,
-                    min_ngram_frequency=min_ngram_frequency if extract_ngrams else 2
+                    extract_ngrams=True,  # 总是提取n-grams（统一分词）
+                    min_ngram_frequency=min_token_frequency
                 )
                 st.session_state.word_to_seeds = word_to_seeds
                 st.session_state.ngram_counter = ngram_counter
@@ -657,8 +648,8 @@ def render_segmentation_tab():
                 noun_count = pos_stats.get('by_category', {}).get('Noun', 0)
                 col4.metric("名词数量", noun_count)
 
-            # 短语统计
-            if extract_ngrams and st.session_state.ngram_counter:
+            # 短语统计（总是显示，因为现在总是提取短语）
+            if st.session_state.ngram_counter:
                 st.markdown("**短语提取结果**")
                 col1, col2 = st.columns(2)
                 col1.metric("唯一短语数", len(st.session_state.ngram_counter))
@@ -680,7 +671,7 @@ def render_segmentation_tab():
                         pos_tags=st.session_state.pos_tags if enable_pos_tagging else None,
                         translations=st.session_state.translations,
                         batch_id=batch_id,
-                        ngram_counter=st.session_state.ngram_counter if extract_ngrams else None,
+                        ngram_counter=st.session_state.ngram_counter,  # 总是保存n-grams（统一分词）
                         ngram_translations=st.session_state.ngram_translations
                     )
 
