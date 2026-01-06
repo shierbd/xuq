@@ -55,6 +55,59 @@ class WordSegmentRepository:
 
         return {word: freq for word, freq in words}
 
+    def load_all_tokens(
+        self,
+        min_frequency: int = 1
+    ) -> Tuple[Counter, Dict, Dict, SegmentationBatch]:
+        """
+        统一加载所有tokens（不区分单词/短语）
+
+        这是推荐使用的新方法，符合穷尽式n-gram提取的统一分词逻辑。
+
+        Args:
+            min_frequency: 最小频次阈值（应用于所有1-6-gram）
+
+        Returns:
+            (
+                token_counter: {token: frequency} 所有tokens的统一Counter（1-6词）,
+                pos_tags: {word: (pos_tag, pos_category, pos_chinese)} 仅1-gram有词性,
+                translations: {token: translation} 所有tokens的翻译,
+                latest_batch: SegmentationBatch对象（最新批次信息）
+            )
+
+        Example:
+            >>> with WordSegmentRepository() as repo:
+            >>>     tokens, pos, trans, batch = repo.load_all_tokens(min_frequency=3)
+            >>>     # tokens包含所有频次>=3的单词和短语
+            >>>     # pos只包含单词的词性信息
+            >>>     # trans包含所有tokens的翻译
+        """
+        # 加载所有word_segments（不区分word_count）
+        all_tokens_query = self.session.query(WordSegment).filter(
+            WordSegment.frequency >= min_frequency
+        ).all()
+
+        token_counter = Counter()
+        pos_tags = {}
+        translations = {}
+
+        for ws in all_tokens_query:
+            # 频次统计
+            token_counter[ws.word] = ws.frequency
+
+            # 词性信息（仅单词有）
+            if ws.word_count == 1 and ws.pos_tag:
+                pos_tags[ws.word] = (ws.pos_tag, ws.pos_category, ws.pos_chinese)
+
+            # 翻译（单词和短语都可能有）
+            if ws.translation:
+                translations[ws.word] = ws.translation
+
+        # 加载最新批次信息
+        latest_batch = self.get_latest_batch()
+
+        return token_counter, pos_tags, translations, latest_batch
+
     def load_segmentation_results(
         self,
         min_word_frequency: int = 1,
@@ -62,6 +115,9 @@ class WordSegmentRepository:
     ) -> Tuple[Counter, Counter, Dict, Dict, Dict, SegmentationBatch]:
         """
         从数据库加载完整的分词结果（单词+短语）
+
+        ⚠️ 此方法已废弃，建议使用 load_all_tokens() 方法。
+        保留此方法仅为向后兼容。
 
         Args:
             min_word_frequency: 单词最小频次
