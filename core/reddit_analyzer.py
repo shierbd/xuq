@@ -129,12 +129,20 @@ class RedditAnalyzer:
         try:
             # 1. 数据验证
             df = df.dropna(subset=['name'])  # 移除name为空的行
-            df['subscribers'] = df['subscribers'].fillna(0).astype(int)
+
+            # 处理subscribers字段：将NaN转换为0
+            df['subscribers'] = df['subscribers'].fillna(0)
+            # 确保是整数类型
+            df['subscribers'] = pd.to_numeric(df['subscribers'], errors='coerce').fillna(0).astype(int)
             df = df[df['subscribers'] >= 0]  # 移除subscribers < 0的行
+
+            # 处理description字段：将NaN转换为None
+            df['description'] = df['description'].replace({pd.NA: None, float('nan'): None})
+            df['description'] = df['description'].apply(lambda x: None if pd.isna(x) else str(x))
 
             # 2. 标记描述为空的记录
             df['ai_analysis_status'] = df['description'].apply(
-                lambda x: 'skipped' if pd.isna(x) or str(x).strip() == '' else 'pending'
+                lambda x: 'skipped' if x is None or str(x).strip() == '' or str(x) == 'None' else 'pending'
             )
 
             # 3. 去重
@@ -274,7 +282,7 @@ class RedditAnalyzer:
                         )
 
                         # 调用LLM
-                        response = self.llm_client.chat(
+                        response = self.llm_client._call_llm(
                             messages=[
                                 {"role": "system", "content": config['system_message']},
                                 {"role": "user", "content": prompt}
@@ -296,7 +304,7 @@ class RedditAnalyzer:
                                 'ai_confidence': result.get('confidence'),
                                 'ai_analysis_status': 'completed',
                                 'ai_analysis_timestamp': datetime.now(),
-                                'ai_model_used': self.llm_client.model
+                                'ai_model_used': self.llm_client.config['model']
                             })
 
                         analyzed_count += 1
