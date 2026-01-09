@@ -80,7 +80,7 @@ def render():
             if total_words == 0:
                 st.warning("⚠️ 未找到分词结果！请先前往 **Phase 0 Tab 1** 执行分词")
             else:
-                st.info(f"📊 分词结果：{total_words:,} 个词/短语")
+                st.info(f"📊 分词结果：{total_words:,} 个tokens（1-6词统一分词）")
         except Exception as e:
             st.error(f"无法获取分词数据: {str(e)}")
 

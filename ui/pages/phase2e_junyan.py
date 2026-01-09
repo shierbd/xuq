@@ -128,32 +128,26 @@ def render():
                 if total_words == 0:
                     st.error("❌ 未找到分词结果！请先前往 **Phase 0 Tab 1** 执行分词")
                 else:
-                    st.info(f"📊 当前分词结果：{total_words:,} 个词/短语")
+                    st.info(f"📊 当前分词结果：{total_words:,} 个tokens（1-6词统一分词）")
 
                     with st.spinner(f"正在从Phase 0加载分词结果..."):
-                        # Load words and phrases from word_segments table
+                        # Load all tokens (1-6-gram) from word_segments table using unified method
                         with WordSegmentRepository() as ws_repo:
-                            word_counter, ngram_counter, _, _, _, _ = ws_repo.load_segmentation_results(
-                                min_word_frequency=min_word_freq,
-                                min_ngram_frequency=min_word_freq
+                            token_counter, _, _, _ = ws_repo.load_all_tokens(
+                                min_frequency=min_word_freq
                             )
-
-                        # Merge words and phrases as candidate seed words
-                        all_candidates = Counter()
-                        all_candidates.update(word_counter)
-                        all_candidates.update(ngram_counter)
 
                         # Filter by length (at least 2 characters)
                         filtered_candidates = [
-                            (word, freq)
-                            for word, freq in all_candidates.most_common()
-                            if len(word) >= 2
+                            (token, freq)
+                            for token, freq in token_counter.most_common()
+                            if len(token) >= 2
                         ]
 
                         # Save to session_state
                         st.session_state.candidate_seeds = filtered_candidates[:max_display]
 
-                    st.success(f"✅ 已加载 {len(all_candidates):,} 个候选种子词（包括单词和短语），筛选后显示 {len(st.session_state.candidate_seeds)} 个")
+                    st.success(f"✅ 已加载 {len(token_counter):,} 个候选种子词（1-6词统一分词），筛选后显示 {len(st.session_state.candidate_seeds)} 个")
 
         # 显示候选种子词
         if 'candidate_seeds' in st.session_state:

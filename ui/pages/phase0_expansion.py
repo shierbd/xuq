@@ -591,7 +591,7 @@ def render_segmentation_tab():
                         st.session_state.segmentation_loaded_from_db = True
                         st.session_state.last_batch_phrase_count = len(keywords) if keywords else 0
 
-                    st.success(f"✓ 已保存到数据库！新增 {new_words} 个单词 + {new_ngrams} 个短语")
+                    st.success(f"✓ 已保存到数据库！新增 {new_words + new_ngrams} 个tokens（1-6词统一分词）")
 
             except Exception as e:
                 st.error(f"❌ 增量分词失败: {str(e)}")
@@ -688,7 +688,7 @@ def render_segmentation_tab():
                     st.session_state.segmentation_loaded_from_db = True
                     st.session_state.last_batch_phrase_count = len(keywords_cleaned)
 
-            st.success(f"✓ 分词完成并已保存！新增 {new_words} 个单词 + {new_ngrams} 个短语")
+            st.success(f"✓ 分词完成并已保存！新增 {new_words + new_ngrams} 个tokens（1-6词统一分词）")
 
         except Exception as e:
             st.error(f"❌ 保存分词结果失败: {str(e)}")
@@ -700,7 +700,7 @@ def render_segmentation_tab():
     if st.session_state.word_counter is not None:
         st.header("4️⃣ 分词结果")
 
-        st.subheader("📊 Token分析（单词+短语）")
+        st.subheader("📊 Token分析（1-6词统一分词）")
 
         # ========== 合并单词和短语数据 ==========
         # 1. 准备单词数据
@@ -724,10 +724,10 @@ def render_segmentation_tab():
         # 3. 合并单词和短语
         if not df_ngrams.empty:
             df_all = pd.concat([df_words, df_ngrams], ignore_index=True)
-            st.info(f"✓ 已合并 {len(df_words)} 个单词 + {len(df_ngrams)} 个短语 = {len(df_all)} 个token")
+            st.info(f"✓ 共 {len(df_all)} 个tokens（包含 {len(df_words)} 个1-gram + {len(df_ngrams)} 个2-6-gram）")
         else:
             df_all = df_words
-            st.info(f"✓ 共 {len(df_all)} 个单词（未提取短语）")
+            st.info(f"✓ 共 {len(df_all)} 个tokens（仅1-gram）")
 
         # 4. 按频次重新排序
         df_all = df_all.sort_values('频次', ascending=False).reset_index(drop=True)
