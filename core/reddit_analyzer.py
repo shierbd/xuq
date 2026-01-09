@@ -192,7 +192,9 @@ class RedditAnalyzer:
         subreddit_ids: Optional[List[int]] = None,
         config_id: Optional[int] = None,
         batch_size: int = 10,
-        status_filter: str = 'pending'
+        status_filter: str = 'pending',
+        progress_callback: Optional[callable] = None,
+        max_retries: int = 3
     ) -> Dict[str, Any]:
         """
         批量分析Reddit板块
@@ -202,6 +204,8 @@ class RedditAnalyzer:
             config_id: AI配置ID（可选，默认使用默认配置）
             batch_size: 批次大小（默认10）
             status_filter: 状态筛选（默认'pending'）
+            progress_callback: 进度回调函数，接收(current, total, subreddit_name)
+            max_retries: 失败重试次数（默认3次）
 
         Returns:
             {
@@ -265,64 +269,86 @@ class RedditAnalyzer:
             results = []
             errors = []
 
+            total_count = len(subreddits)
+            current_index = 0
+
             for i in range(0, len(subreddits), batch_size):
                 batch = subreddits[i:i+batch_size]
 
                 for subreddit in batch:
-                    try:
-                        # 更新状态为processing
-                        with RedditSubredditRepository() as repo:
-                            repo.update_status(subreddit['subreddit_id'], 'processing')
+                    current_index += 1
 
-                        # 构建提示词
-                        prompt = config['prompt_template'].format(
-                            name=subreddit['name'],
-                            description=subreddit['description'] or '',
-                            subscribers=subreddit['subscribers']
-                        )
+                    # 调用进度回调
+                    if progress_callback:
+                        progress_callback(current_index, total_count, subreddit['name'])
 
-                        # 调用LLM
-                        response = self.llm_client._call_llm(
-                            messages=[
-                                {"role": "system", "content": config['system_message']},
-                                {"role": "user", "content": prompt}
-                            ],
-                            temperature=float(config['temperature']),
-                            max_tokens=config['max_tokens']
-                        )
+                    # 重试逻辑
+                    retry_count = 0
+                    success = False
 
-                        # 解析响应
-                        result = json.loads(response)
+                    while retry_count < max_retries and not success:
+                        try:
+                            # 更新状态为processing
+                            with RedditSubredditRepository() as repo:
+                                repo.update_status(subreddit['subreddit_id'], 'processing')
 
-                        # 更新数据库
-                        with RedditSubredditRepository() as repo:
-                            repo.update(subreddit['subreddit_id'], {
-                                'tag1': result.get('tag1'),
-                                'tag2': result.get('tag2'),
-                                'tag3': result.get('tag3'),
-                                'importance_score': result.get('importance_score'),
-                                'ai_confidence': result.get('confidence'),
-                                'ai_analysis_status': 'completed',
-                                'ai_analysis_timestamp': datetime.now(),
-                                'ai_model_used': self.llm_client.config['model']
+                            # 构建提示词
+                            prompt = config['prompt_template'].format(
+                                name=subreddit['name'],
+                                description=subreddit['description'] or '',
+                                subscribers=subreddit['subscribers']
+                            )
+
+                            # 调用LLM
+                            response = self.llm_client._call_llm(
+                                messages=[
+                                    {"role": "system", "content": config['system_message']},
+                                    {"role": "user", "content": prompt}
+                                ],
+                                temperature=float(config['temperature']),
+                                max_tokens=config['max_tokens']
+                            )
+
+                            # 解析响应
+                            result = json.loads(response)
+
+                            # 更新数据库
+                            with RedditSubredditRepository() as repo:
+                                repo.update(subreddit['subreddit_id'], {
+                                    'tag1': result.get('tag1'),
+                                    'tag2': result.get('tag2'),
+                                    'tag3': result.get('tag3'),
+                                    'importance_score': result.get('importance_score'),
+                                    'ai_confidence': result.get('confidence'),
+                                    'ai_analysis_status': 'completed',
+                                    'ai_analysis_timestamp': datetime.now(),
+                                    'ai_model_used': self.llm_client.config['model']
+                                })
+
+                            analyzed_count += 1
+                            results.append({
+                                'subreddit_id': subreddit['subreddit_id'],
+                                'name': subreddit['name'],
+                                'status': 'completed',
+                                'tags': [result.get('tag1'), result.get('tag2'), result.get('tag3')],
+                                'importance_score': result.get('importance_score')
                             })
 
-                        analyzed_count += 1
-                        results.append({
-                            'subreddit_id': subreddit['subreddit_id'],
-                            'name': subreddit['name'],
-                            'status': 'completed',
-                            'tags': [result.get('tag1'), result.get('tag2'), result.get('tag3')],
-                            'importance_score': result.get('importance_score')
-                        })
+                            success = True  # 成功，退出重试循环
 
-                    except Exception as e:
-                        # 标记为失败
-                        with RedditSubredditRepository() as repo:
-                            repo.update_status(subreddit['subreddit_id'], 'failed')
+                        except Exception as e:
+                            retry_count += 1
+                            if retry_count >= max_retries:
+                                # 达到最大重试次数，标记为失败
+                                with RedditSubredditRepository() as repo:
+                                    repo.update_status(subreddit['subreddit_id'], 'failed')
 
-                        failed_count += 1
-                        errors.append(f"{subreddit['name']}: {str(e)}")
+                                failed_count += 1
+                                errors.append(f"{subreddit['name']}: {str(e)} (重试{max_retries}次后失败)")
+                            else:
+                                # 继续重试
+                                import time
+                                time.sleep(1)  # 等待1秒后重试
 
             return {
                 'success': True,

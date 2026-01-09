@@ -15,6 +15,7 @@ from pathlib import Path
 import tempfile
 
 from core.reddit_analyzer import RedditAnalyzer
+from storage.reddit_repository import RedditSubredditRepository
 
 
 def render():
@@ -228,6 +229,20 @@ def render_list_tab(analyzer: RedditAnalyzer):
     """渲染板块列表选项卡"""
     st.header("板块列表")
 
+    # 获取统计信息
+    with RedditSubredditRepository() as repo:
+        status_counts = repo.count_by_status()
+
+    # 显示统计卡片
+    col1, col2, col3, col4, col5 = st.columns(5)
+    col1.metric("总数", status_counts.get('pending', 0) + status_counts.get('completed', 0) + status_counts.get('failed', 0) + status_counts.get('skipped', 0))
+    col2.metric("待分析", status_counts.get('pending', 0))
+    col3.metric("已完成", status_counts.get('completed', 0))
+    col4.metric("失败", status_counts.get('failed', 0))
+    col5.metric("已跳过", status_counts.get('skipped', 0))
+
+    st.markdown("---")
+
     # 筛选器
     col1, col2, col3 = st.columns(3)
 
@@ -257,6 +272,15 @@ def render_list_tab(analyzer: RedditAnalyzer):
         }[x]
     )
 
+    # 分页设置
+    col_page1, col_page2 = st.columns(2)
+    with col_page1:
+        page_size = st.selectbox("每页显示", [50, 100, 200, 500], index=1)
+    with col_page2:
+        page_number = st.number_input("页码", min_value=1, value=1, step=1)
+
+    offset = (page_number - 1) * page_size
+
     # 查询数据
     filters = {
         'status': status_filter,
@@ -269,7 +293,8 @@ def render_list_tab(analyzer: RedditAnalyzer):
         filters=filters,
         sort_by=sort_by,
         sort_order='desc',
-        limit=100
+        limit=page_size,
+        offset=offset
     )
 
     if not result['success']:
@@ -279,7 +304,9 @@ def render_list_tab(analyzer: RedditAnalyzer):
     total = result['data']['total']
     data = result['data']['data']
 
-    st.info(f"共找到 {total} 条记录，显示前 {len(data)} 条")
+    # 分页信息
+    total_pages = (total + page_size - 1) // page_size
+    st.info(f"共找到 {total} 条记录，当前第 {page_number}/{total_pages} 页，显示 {len(data)} 条")
 
     if not data:
         st.warning("没有符合条件的数据")
@@ -333,17 +360,34 @@ def render_list_tab(analyzer: RedditAnalyzer):
             if not pending_ids:
                 st.warning("没有待分析的板块")
             else:
-                with st.spinner(f"正在分析 {len(pending_ids)} 个板块..."):
-                    result = analyzer.analyze_subreddits(
-                        subreddit_ids=pending_ids,
-                        batch_size=10
-                    )
+                # 创建进度条和状态显示
+                progress_bar = st.progress(0)
+                status_text = st.empty()
+                result_placeholder = st.empty()
 
-                    if result['success']:
-                        st.success(result['message'])
-                        st.rerun()
-                    else:
-                        st.error(result['message'])
+                # 定义进度回调函数
+                def update_progress(current, total, name):
+                    progress = current / total
+                    progress_bar.progress(progress)
+                    status_text.text(f"正在分析 {current}/{total}: {name}")
+
+                # 执行分析
+                result = analyzer.analyze_subreddits(
+                    subreddit_ids=pending_ids,
+                    batch_size=10,
+                    progress_callback=update_progress
+                )
+
+                # 清除进度显示
+                progress_bar.empty()
+                status_text.empty()
+
+                # 显示结果
+                if result['success']:
+                    result_placeholder.success(result['message'])
+                    st.rerun()
+                else:
+                    result_placeholder.error(result['message'])
 
     with col2:
         if st.button("保存修改"):
