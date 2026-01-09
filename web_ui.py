@@ -147,6 +147,7 @@ with st.sidebar:
          "✅ Phase 3: 聚类筛选",
          "🏷️ Phase 4: Token提取",
          "📊 Phase 5: 需求生成",
+         "🔍 Phase 6: Reddit分析",
          "🌱 词根管理",
          "📋 数据查看与管理",
          "⚙️ 配置管理",
@@ -342,6 +343,10 @@ elif page == "🏷️ Phase 4: Token提取":
 elif page == "📊 Phase 5: 需求生成":
     from ui.pages import phase5_demands
     phase5_demands.render()
+
+elif page == "🔍 Phase 6: Reddit分析":
+    from ui.pages import phase6_reddit
+    phase6_reddit.render()
 
 elif page == "🌱 词根管理":
     from ui.pages import seed_word_management

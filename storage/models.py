@@ -11,6 +11,7 @@ MVP版本数据库模型
 - SQLite使用String + CheckConstraint
 """
 from datetime import datetime
+from decimal import Decimal
 from sqlalchemy import (
     create_engine,
     Column,
@@ -21,6 +22,7 @@ from sqlalchemy import (
     Enum as SQLEnum,
     Boolean,
     TIMESTAMP,
+    DECIMAL,
     Index,
     CheckConstraint,
 )
@@ -446,6 +448,129 @@ class ClusterMeta(Base):
         )
 
 
+# ==================== 8. RedditSubreddit Reddit板块数据 ====================
+class RedditSubreddit(Base):
+    """Reddit板块数据表 - 存储Reddit板块信息及AI分析结果"""
+
+    __tablename__ = "reddit_subreddits"
+
+    # 主键
+    subreddit_id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String(255), unique=True, nullable=False, index=True)
+
+    # 板块信息
+    description = Column(Text)
+    subscribers = Column(BigInteger, default=0)
+
+    # AI生成的标签（3个独立字段）
+    tag1 = Column(String(100))
+    tag2 = Column(String(100))
+    tag3 = Column(String(100))
+
+    # AI评估
+    importance_score = Column(Integer)  # 1-5分
+    ai_analysis_status = enum_column(
+        "ai_analysis_status",
+        ["pending", "processing", "completed", "failed", "skipped"],
+        enum_name="ai_analysis_status_enum",
+        nullable=False,
+        default="pending",
+        index=True
+    )
+    ai_analysis_timestamp = Column(TIMESTAMP)
+    ai_model_used = Column(String(100))
+    ai_confidence = Column(Integer)  # 0-100
+
+    # 人工备注
+    notes = Column(Text)
+
+    # 导入批次
+    import_batch_id = Column(String(50), index=True)
+
+    # 元数据
+    created_at = Column(TIMESTAMP, nullable=False, default=datetime.utcnow)
+    updated_at = Column(
+        TIMESTAMP,
+        nullable=False,
+        default=datetime.utcnow,
+        onupdate=datetime.utcnow
+    )
+
+    # 约束
+    __table_args__ = (
+        CheckConstraint(
+            "importance_score IS NULL OR (importance_score >= 1 AND importance_score <= 5)",
+            name="chk_importance_score"
+        ),
+        CheckConstraint(
+            "ai_confidence IS NULL OR (ai_confidence >= 0 AND ai_confidence <= 100)",
+            name="chk_ai_confidence"
+        ),
+        CheckConstraint("subscribers >= 0", name="chk_subscribers"),
+        Index("idx_status_score", "ai_analysis_status", "importance_score"),
+        Index("idx_batch_status", "import_batch_id", "ai_analysis_status"),
+    )
+
+    def __repr__(self):
+        return f"<RedditSubreddit(id={self.subreddit_id}, name='{self.name}', status='{self.ai_analysis_status}')>"
+
+
+# ==================== 9. AIPromptConfig AI提示词配置 ====================
+class AIPromptConfig(Base):
+    """AI提示词配置表 - 存储不同场景的AI提示词模板"""
+
+    __tablename__ = "ai_prompt_configs"
+
+    # 主键
+    config_id = Column(Integer, primary_key=True, autoincrement=True)
+    config_name = Column(String(100), unique=True, nullable=False)
+
+    # 配置类型
+    config_type = Column(String(50), nullable=False, default="reddit_analysis", index=True)
+
+    # 提示词内容
+    prompt_template = Column(Text, nullable=False)
+    system_message = Column(Text)
+
+    # LLM参数
+    temperature = Column(DECIMAL(3, 2), default=Decimal("0.7"))
+    max_tokens = Column(Integer, default=500)
+
+    # 状态管理
+    is_active = Column(Boolean, nullable=False, default=True, index=True)
+    is_default = Column(Boolean, nullable=False, default=False, index=True)
+
+    # 描述
+    description = Column(Text)
+    created_by = Column(String(100), default="system")
+
+    # 元数据
+    created_at = Column(TIMESTAMP, nullable=False, default=datetime.utcnow)
+    updated_at = Column(
+        TIMESTAMP,
+        nullable=False,
+        default=datetime.utcnow,
+        onupdate=datetime.utcnow
+    )
+
+    # 约束
+    __table_args__ = (
+        CheckConstraint(
+            "temperature >= 0 AND temperature <= 2",
+            name="chk_temperature"
+        ),
+        CheckConstraint(
+            "max_tokens > 0 AND max_tokens <= 10000",
+            name="chk_max_tokens"
+        ),
+        Index("idx_type_active", "config_type", "is_active"),
+        Index("idx_type_default", "config_type", "is_default"),
+    )
+
+    def __repr__(self):
+        return f"<AIPromptConfig(id={self.config_id}, name='{self.config_name}', type='{self.config_type}')>"
+
+
 # ==================== 数据库引擎和会话 ====================
 def get_engine():
     """获取数据库引擎（强制使用UTF-8编码）"""
@@ -499,6 +624,8 @@ __all__ = [
     "SegmentationBatch",
     "SeedWord",
     "ClusterMeta",
+    "RedditSubreddit",
+    "AIPromptConfig",
     "get_engine",
     "get_session",
     "create_all_tables",
