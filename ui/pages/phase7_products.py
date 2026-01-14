@@ -244,7 +244,7 @@ def render_import():
                 "sales": "销量",
                 "rating": "评分",
                 "review_count": "评价数",
-                "url": "商品链接 *",
+                "url": "商品链接（可选）",
                 "shop_name": "店铺名称"
             }
 
@@ -271,9 +271,11 @@ def render_import():
                     st.error("❌ 请至少映射一个字段")
                 elif "product_name" not in field_mapping.values():
                     st.error("❌ 商品名称是必填字段")
-                elif "url" not in field_mapping.values():
-                    st.error("❌ 商品链接是必填字段")
                 else:
+                    # URL字段不再是必填，如果没有会自动生成占位符
+                    if "url" not in field_mapping.values():
+                        st.warning("⚠️ 未映射URL字段，将自动生成占位符URL")
+
                     # 执行导入
                     with st.spinner("正在导入数据..."):
                         importer = ProductImporter()

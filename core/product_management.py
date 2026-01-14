@@ -263,8 +263,12 @@ class ProductImporter:
         if not product.get('product_name'):
             return False
 
+        # URL字段改为可选，如果没有则生成占位符
         if not product.get('url'):
-            return False
+            # 使用商品名称生成唯一的占位符URL
+            import hashlib
+            name_hash = hashlib.md5(product['product_name'].encode()).hexdigest()[:8]
+            product['url'] = f"https://placeholder.com/product/{name_hash}"
 
         # 价格验证
         price = product.get('price')

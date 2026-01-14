@@ -1,0 +1,1112 @@
+# 模板化产品提取优化计划
+# Template-Based Product Extraction Optimization Plan
+
+**创建日期**: 2026-01-05
+**版本**: v2.0 (数据驱动版)
+**核心理念**: 让数据说话，需求自然涌现
+
+---
+
+## 一、核心方法论纠正
+
+### 1.1 错误的主观驱动方法 ❌
+
+```python
+# 错误示例：预设产品类别
+target_categories = ["电子产品", "软件工具", "在线服务"]  # 主观假设
+target_count = 500  # 拍脑袋定目标
+
+for category in target_categories:
+    提取该类别产品()
+```
+
+**问题**：
+- 我们在创造需求，而不是发现需求
+- 可能错过真实的高价值需求（如"tattoo ideas"）
+- 本末倒置：目标应该是准确率，而不是数量
+
+---
+
+### 1.2 正确的数据驱动方法 ✅
+
+```python
+# 正确示例：盲提取 + 频次过滤
+all_templates = 应用所有模板模式(phrases)  # 无偏见提取
+distribution = 统计频次分布(all_templates)  # 看数据分布
+
+# 基于分布设定阈值
+threshold = distribution.percentile(75)  # P75作为分界点
+
+valid_templates = [t for t in all_templates if t.freq >= threshold]
+products = 从有效模板提取产品(valid_templates)
+
+# 结果：数据告诉我们有N个产品，而不是我们定N个目标
+```
+
+**优势**：
+- ✅ 数据驱动：让搜索数据告诉我们用户真正需要什么
+- ✅ 客观公正：不因主观偏见错过重要需求
+- ✅ 可验证：所有决策基于统计分布，可追溯
+
+---
+
+## 二、实施路线图（数据驱动版）
+
+### Phase 1: 数据库准备（1天）
+
+**目标**: 创建存储结构，不预设任何产品类别
+
+#### 1.1 数据库表设计
+
+```sql
+-- 表1: 搜索模板表
+CREATE TABLE search_templates (
+    template_id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    cluster_id INT NOT NULL,
+    template_pattern VARCHAR(255) NOT NULL,  -- 如 "best {X} for {Y}"
+    template_regex VARCHAR(500),  -- 正则表达式
+
+    -- 统计字段（数据驱动）
+    match_count INT DEFAULT 0,  -- 匹配到的短语数量
+    total_search_volume BIGINT DEFAULT 0,  -- 匹配短语的总搜索量
+
+    -- 质量评估（基于统计）
+    frequency_percentile FLOAT,  -- 频次百分位（0-100）
+    is_high_frequency BOOLEAN DEFAULT FALSE,  -- 是否高频模板
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    INDEX idx_cluster_id (cluster_id),
+    INDEX idx_match_count (match_count),
+    INDEX idx_is_high_frequency (is_high_frequency)
+);
+
+-- 表2: 模板变量表
+CREATE TABLE template_variables (
+    variable_id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    template_id BIGINT NOT NULL,
+    variable_text VARCHAR(255) NOT NULL,  -- 变量值，如 "laptop", "gaming"
+    variable_slot VARCHAR(50),  -- 变量槽位，如 "{product}", "{use_case}"
+
+    -- 统计字段（交叉验证）
+    template_match_count INT DEFAULT 0,  -- 该变量匹配了多少个不同模板
+    phrase_occurrence_count INT DEFAULT 0,  -- 该变量在多少个短语中出现
+    total_search_volume BIGINT DEFAULT 0,  -- 该变量的总搜索量
+
+    -- 质量评估（基于统计）
+    cross_validation_score FLOAT,  -- 交叉验证分数（匹配模板数 × 出现次数）
+    confidence_level ENUM('low', 'medium', 'high', 'very_high'),
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (template_id) REFERENCES search_templates(template_id),
+    INDEX idx_template_id (template_id),
+    INDEX idx_variable_text (variable_text),
+    INDEX idx_template_match_count (template_match_count),
+    INDEX idx_confidence_level (confidence_level)
+);
+
+-- 表3: 产品实体表（自然涌现）
+CREATE TABLE product_entities (
+    product_id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    product_name VARCHAR(255) NOT NULL UNIQUE,
+
+    -- 来源追溯（数据可验证）
+    source_variable_ids TEXT,  -- JSON数组，记录来自哪些变量
+    source_template_ids TEXT,  -- JSON数组，记录来自哪些模板
+    source_cluster_ids TEXT,  -- JSON数组，记录来自哪些聚类
+
+    -- 统计指标（完全基于数据）
+    total_search_volume BIGINT DEFAULT 0,  -- 总搜索量
+    template_coverage INT DEFAULT 0,  -- 覆盖了多少个模板
+    cluster_coverage INT DEFAULT 0,  -- 覆盖了多少个聚类
+    phrase_occurrence INT DEFAULT 0,  -- 在多少个短语中出现
+
+    -- 质量评分（公式化计算）
+    discovery_score FLOAT,  -- 发现度 = template_coverage × phrase_occurrence
+    commercial_value_score INT,  -- 商业价值 = log(total_search_volume) × template_coverage
+
+    -- AI增强（可选，仅用于理解产品语义）
+    llm_category VARCHAR(100),  -- DeepSeek识别的类别
+    llm_description TEXT,  -- DeepSeek生成的描述
+    llm_confidence INT,  -- AI置信度
+
+    -- 验证标记
+    is_verified BOOLEAN DEFAULT FALSE,  -- 人工验证
+    verification_notes TEXT,
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    INDEX idx_total_search_volume (total_search_volume),
+    INDEX idx_discovery_score (discovery_score),
+    INDEX idx_commercial_value_score (commercial_value_score)
+);
+
+-- 表4: 频次分布统计表（元数据）
+CREATE TABLE extraction_statistics (
+    stat_id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    extraction_round INT NOT NULL,  -- 提取轮次
+
+    -- 模板统计
+    total_templates_extracted INT,
+    template_freq_p25 INT,  -- 模板频次P25
+    template_freq_p50 INT,  -- 模板频次P50（中位数）
+    template_freq_p75 INT,  -- 模板频次P75
+    template_freq_p90 INT,  -- 模板频次P90
+
+    -- 变量统计
+    total_variables_extracted INT,
+    variable_freq_p25 INT,
+    variable_freq_p50 INT,
+    variable_freq_p75 INT,
+    variable_freq_p90 INT,
+
+    -- 产品统计
+    total_products_discovered INT,
+
+    -- 阈值决策（记录决策依据）
+    template_threshold_used INT,  -- 使用的模板频次阈值
+    variable_threshold_used INT,  -- 使用的变量频次阈值
+    threshold_rationale TEXT,  -- 阈值设定理由
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    INDEX idx_extraction_round (extraction_round)
+);
+```
+
+#### 1.2 创建迁移脚本
+
+**文件**: `scripts/migrate_add_template_tables.py`
+
+```python
+"""
+数据库迁移：添加模板化产品提取相关表
+"""
+import sys
+from pathlib import Path
+project_root = Path(__file__).parent.parent
+sys.path.insert(0, str(project_root))
+
+from utils.encoding_fix import setup_encoding
+setup_encoding()
+
+from storage.database import get_engine
+from sqlalchemy import text
+
+def migrate():
+    engine = get_engine()
+
+    print("="*70)
+    print("Database Migration: Template Extraction Tables".center(70))
+    print("="*70)
+
+    tables = [
+        ("search_templates", CREATE_SEARCH_TEMPLATES_SQL),
+        ("template_variables", CREATE_TEMPLATE_VARIABLES_SQL),
+        ("product_entities", CREATE_PRODUCT_ENTITIES_SQL),
+        ("extraction_statistics", CREATE_EXTRACTION_STATISTICS_SQL),
+    ]
+
+    with engine.connect() as conn:
+        for table_name, create_sql in tables:
+            try:
+                print(f"\n[Creating] {table_name}...")
+                conn.execute(text(create_sql))
+                conn.commit()
+                print(f"  [OK] {table_name} created successfully")
+            except Exception as e:
+                if "already exists" in str(e).lower():
+                    print(f"  [SKIP] {table_name} already exists")
+                else:
+                    print(f"  [ERROR] {table_name}: {str(e)}")
+                    raise
+
+    print("\n" + "="*70)
+    print("[OK] Migration completed successfully!".center(70))
+    print("="*70)
+
+if __name__ == "__main__":
+    migrate()
+```
+
+---
+
+### Phase 2: 盲提取阶段（2-3天）
+
+**目标**: 无偏见地应用所有模板，让数据自己说话
+
+#### 2.1 英文模板模式库设计
+
+**文件**: `core/template_patterns.py`
+
+```python
+"""
+英文搜索模板模式库
+原则：覆盖尽可能多的搜索意图，不预设产品类别
+"""
+
+# 模板库：按搜索意图组织，而非产品类别
+ENGLISH_TEMPLATE_PATTERNS = {
+
+    # 类别1: 比较和推荐类（高商业价值）
+    "comparison_recommendation": [
+        {
+            "name": "best_X_for_Y",
+            "regex": r"best (.+?) for (.+)",
+            "slots": ["product", "use_case"],
+            "examples": ["best laptop for gaming", "best camera for beginners"]
+        },
+        {
+            "name": "top_X",
+            "regex": r"top (.+?) (?:brands|models|products)",
+            "slots": ["product"],
+            "examples": ["top laptop brands", "top headphone models"]
+        },
+        {
+            "name": "X_vs_Y",
+            "regex": r"(.+?) vs (.+)",
+            "slots": ["product_A", "product_B"],
+            "examples": ["iphone vs samsung", "macbook vs dell"]
+        },
+        {
+            "name": "X_or_Y",
+            "regex": r"(.+?) or (.+)",
+            "slots": ["option_A", "option_B"],
+            "examples": ["laptop or desktop", "canon or nikon"]
+        },
+    ],
+
+    # 类别2: 价格和购买类
+    "pricing_purchase": [
+        {
+            "name": "X_price",
+            "regex": r"(.+?) price",
+            "slots": ["product"],
+            "examples": ["iphone 15 price", "macbook pro price"]
+        },
+        {
+            "name": "cheap_X",
+            "regex": r"cheap (.+)",
+            "slots": ["product"],
+            "examples": ["cheap laptop", "cheap camera"]
+        },
+        {
+            "name": "affordable_X",
+            "regex": r"affordable (.+)",
+            "slots": ["product"],
+            "examples": ["affordable smartphone", "affordable gaming pc"]
+        },
+        {
+            "name": "X_on_sale",
+            "regex": r"(.+?) on sale",
+            "slots": ["product"],
+            "examples": ["ps5 on sale", "airpods on sale"]
+        },
+        {
+            "name": "X_deal",
+            "regex": r"(.+?) (?:deal|deals)",
+            "slots": ["product"],
+            "examples": ["laptop deal", "black friday deals"]
+        },
+        {
+            "name": "where_to_buy_X",
+            "regex": r"where to buy (.+)",
+            "slots": ["product"],
+            "examples": ["where to buy ps5", "where to buy gaming chair"]
+        },
+        {
+            "name": "X_coupon",
+            "regex": r"(.+?) (?:coupon|promo code|discount code)",
+            "slots": ["brand"],
+            "examples": ["amazon coupon", "doordash promo code"]
+        },
+    ],
+
+    # 类别3: 评测和评价类
+    "review_evaluation": [
+        {
+            "name": "X_review",
+            "regex": r"(.+?) review",
+            "slots": ["product"],
+            "examples": ["iphone 15 review", "macbook air review"]
+        },
+        {
+            "name": "is_X_worth_it",
+            "regex": r"is (.+?) worth it",
+            "slots": ["product"],
+            "examples": ["is airpods pro worth it", "is ps5 worth it"]
+        },
+        {
+            "name": "is_X_good",
+            "regex": r"is (.+?) (?:good|any good)",
+            "slots": ["product"],
+            "examples": ["is macbook air good", "is kindle any good"]
+        },
+    ],
+
+    # 类别4: 使用和教程类
+    "tutorial_howto": [
+        {
+            "name": "how_to_use_X",
+            "regex": r"how to use (.+)",
+            "slots": ["product"],
+            "examples": ["how to use ring light", "how to use tripod"]
+        },
+        {
+            "name": "how_to_X",
+            "regex": r"how to (.+)",
+            "slots": ["action"],
+            "examples": ["how to edit videos", "how to create website"]
+        },
+        {
+            "name": "X_tutorial",
+            "regex": r"(.+?) tutorial",
+            "slots": ["skill"],
+            "examples": ["photoshop tutorial", "coding tutorial"]
+        },
+        {
+            "name": "X_for_beginners",
+            "regex": r"(.+?) for beginners",
+            "slots": ["skill"],
+            "examples": ["python for beginners", "photography for beginners"]
+        },
+        {
+            "name": "learn_X",
+            "regex": r"learn (.+)",
+            "slots": ["skill"],
+            "examples": ["learn python", "learn guitar"]
+        },
+    ],
+
+    # 类别5: 工具和服务类
+    "tools_services": [
+        {
+            "name": "free_X",
+            "regex": r"free (.+?) (?:tool|app|software|online)",
+            "slots": ["service"],
+            "examples": ["free video editor", "free pdf converter"]
+        },
+        {
+            "name": "online_X",
+            "regex": r"online (.+)",
+            "slots": ["service"],
+            "examples": ["online calculator", "online converter"]
+        },
+        {
+            "name": "X_generator",
+            "regex": r"(.+?) generator",
+            "slots": ["content"],
+            "examples": ["password generator", "qr code generator"]
+        },
+        {
+            "name": "X_to_Y_converter",
+            "regex": r"(.+?) to (.+?) converter",
+            "slots": ["format_from", "format_to"],
+            "examples": ["youtube to mp3 converter", "pdf to word converter"]
+        },
+        {
+            "name": "X_downloader",
+            "regex": r"(.+?) downloader",
+            "slots": ["content"],
+            "examples": ["youtube downloader", "instagram downloader"]
+        },
+    ],
+
+    # 类别6: 信息查询类
+    "information_query": [
+        {
+            "name": "what_is_X",
+            "regex": r"what is (.+)",
+            "slots": ["concept"],
+            "examples": ["what is vpn", "what is nft"]
+        },
+        {
+            "name": "X_meaning",
+            "regex": r"(.+?) meaning",
+            "slots": ["term"],
+            "examples": ["emoji meaning", "acronym meaning"]
+        },
+        {
+            "name": "X_definition",
+            "regex": r"(.+?) definition",
+            "slots": ["term"],
+            "examples": ["nft definition", "blockchain definition"]
+        },
+    ],
+
+    # 类别7: 问题解决类
+    "problem_solving": [
+        {
+            "name": "X_not_working",
+            "regex": r"(.+?) not working",
+            "slots": ["product"],
+            "examples": ["wifi not working", "bluetooth not working"]
+        },
+        {
+            "name": "how_to_fix_X",
+            "regex": r"how to fix (.+)",
+            "slots": ["problem"],
+            "examples": ["how to fix laptop", "how to fix slow computer"]
+        },
+        {
+            "name": "X_troubleshooting",
+            "regex": r"(.+?) troubleshooting",
+            "slots": ["product"],
+            "examples": ["printer troubleshooting", "router troubleshooting"]
+        },
+    ],
+}
+
+def get_all_patterns():
+    """获取所有模板模式（扁平化）"""
+    all_patterns = []
+    for category, patterns in ENGLISH_TEMPLATE_PATTERNS.items():
+        for pattern in patterns:
+            pattern['category'] = category
+            all_patterns.append(pattern)
+    return all_patterns
+
+def get_pattern_count():
+    """统计模板总数"""
+    return sum(len(patterns) for patterns in ENGLISH_TEMPLATE_PATTERNS.values())
+```
+
+#### 2.2 盲提取核心算法
+
+**文件**: `core/blind_template_extractor.py`
+
+```python
+"""
+Blind Template Extractor - 盲提取器
+核心原则：无偏见地应用所有模板，让数据自己说话
+"""
+import re
+from typing import List, Dict, Tuple
+from collections import Counter
+from storage.models import ClusterMeta, Phrase
+from storage.repository import ClusterMetaRepository, PhraseRepository
+from core.template_patterns import get_all_patterns
+
+class BlindTemplateExtractor:
+    """
+    盲提取器：不预设产品类别，全面提取所有模板匹配
+    """
+
+    def __init__(self):
+        self.patterns = get_all_patterns()
+        self.extraction_results = {
+            'templates': [],  # 模板匹配结果
+            'variables': [],  # 变量提取结果
+            'statistics': {}  # 统计信息
+        }
+
+    def extract_from_all_clusters(self) -> Dict:
+        """
+        从所有聚类中盲提取
+        返回：完整的提取结果和统计分布
+        """
+        print("\n" + "="*70)
+        print("Phase 2.1: Blind Template Extraction".center(70))
+        print("="*70)
+        print("\n[Principle] Let data speak for itself, no bias, no preset")
+
+        # 1. 加载所有聚类
+        print("\n[Step 1] Loading all clusters...")
+        with ClusterMetaRepository() as meta_repo:
+            clusters = meta_repo.session.query(ClusterMeta).filter(
+                ClusterMeta.cluster_level == 'A'
+            ).all()
+
+        print(f"  [OK] Loaded {len(clusters)} clusters")
+        print(f"  [OK] Will apply {len(self.patterns)} template patterns")
+
+        # 2. 对每个聚类应用所有模板
+        template_matches = []
+
+        with PhraseRepository() as phrase_repo:
+            for i, cluster in enumerate(clusters, 1):
+                print(f"\n[Processing {i}/{len(clusters)}] Cluster {cluster.cluster_id} (size={cluster.size})...")
+
+                # 获取聚类短语
+                phrases_db = phrase_repo.session.query(Phrase).filter(
+                    Phrase.cluster_id_A == cluster.cluster_id
+                ).all()
+
+                phrases = [p.phrase for p in phrases_db]
+                phrase_volumes = {p.phrase: p.volume for p in phrases_db}
+
+                # 应用所有模板
+                cluster_matches = self._apply_all_patterns(
+                    cluster_id=cluster.cluster_id,
+                    phrases=phrases,
+                    phrase_volumes=phrase_volumes
+                )
+
+                template_matches.extend(cluster_matches)
+
+                print(f"  [OK] Found {len(cluster_matches)} template matches")
+
+        # 3. 统计频次分布
+        print("\n[Step 2] Analyzing frequency distribution...")
+        self.extraction_results = self._analyze_distribution(template_matches)
+
+        # 4. 生成统计报告
+        self._print_distribution_report()
+
+        return self.extraction_results
+
+    def _apply_all_patterns(
+        self,
+        cluster_id: int,
+        phrases: List[str],
+        phrase_volumes: Dict[str, int]
+    ) -> List[Dict]:
+        """对短语列表应用所有模板模式"""
+        matches = []
+
+        for pattern in self.patterns:
+            regex = re.compile(pattern['regex'], re.IGNORECASE)
+
+            for phrase in phrases:
+                match = regex.search(phrase)
+                if match:
+                    # 提取变量
+                    variables = {}
+                    for i, slot in enumerate(pattern['slots'], 1):
+                        if i <= len(match.groups()):
+                            variables[slot] = match.group(i).strip()
+
+                    matches.append({
+                        'cluster_id': cluster_id,
+                        'phrase': phrase,
+                        'search_volume': phrase_volumes.get(phrase, 0),
+                        'template_name': pattern['name'],
+                        'template_regex': pattern['regex'],
+                        'template_category': pattern['category'],
+                        'variables': variables
+                    })
+
+        return matches
+
+    def _analyze_distribution(self, template_matches: List[Dict]) -> Dict:
+        """分析频次分布"""
+        # 统计模板频次
+        template_freq = Counter()
+        template_volume = Counter()
+
+        for match in template_matches:
+            template_freq[match['template_name']] += 1
+            template_volume[match['template_name']] += match['search_volume']
+
+        # 统计变量频次
+        variable_freq = Counter()
+        variable_template_match = {}  # 变量匹配了多少个不同模板
+
+        for match in template_matches:
+            for slot, value in match['variables'].items():
+                var_key = f"{slot}:{value}"
+                variable_freq[var_key] += 1
+
+                if var_key not in variable_template_match:
+                    variable_template_match[var_key] = set()
+                variable_template_match[var_key].add(match['template_name'])
+
+        # 计算百分位数
+        freq_values = list(template_freq.values())
+        freq_values.sort()
+
+        def percentile(data, p):
+            if not data:
+                return 0
+            k = (len(data) - 1) * p / 100
+            f = int(k)
+            c = k - f
+            if f + 1 < len(data):
+                return data[f] + c * (data[f+1] - data[f])
+            else:
+                return data[f]
+
+        return {
+            'template_matches': template_matches,
+            'template_freq': dict(template_freq),
+            'template_volume': dict(template_volume),
+            'variable_freq': dict(variable_freq),
+            'variable_template_match': {k: len(v) for k, v in variable_template_match.items()},
+            'statistics': {
+                'total_matches': len(template_matches),
+                'total_templates': len(template_freq),
+                'total_variables': len(variable_freq),
+                'template_freq_p25': percentile(freq_values, 25),
+                'template_freq_p50': percentile(freq_values, 50),
+                'template_freq_p75': percentile(freq_values, 75),
+                'template_freq_p90': percentile(freq_values, 90),
+                'template_freq_max': max(freq_values) if freq_values else 0,
+            }
+        }
+
+    def _print_distribution_report(self):
+        """打印频次分布报告"""
+        stats = self.extraction_results['statistics']
+
+        print("\n" + "="*70)
+        print("Frequency Distribution Report".center(70))
+        print("="*70)
+
+        print("\n[Overall Statistics]")
+        print(f"  Total phrase matches: {stats['total_matches']}")
+        print(f"  Unique templates matched: {stats['total_templates']}")
+        print(f"  Unique variables extracted: {stats['total_variables']}")
+
+        print("\n[Template Frequency Distribution]")
+        print(f"  P25 (25th percentile): {stats['template_freq_p25']}")
+        print(f"  P50 (median): {stats['template_freq_p50']}")
+        print(f"  P75 (75th percentile): {stats['template_freq_p75']}")
+        print(f"  P90 (90th percentile): {stats['template_freq_p90']}")
+        print(f"  Max: {stats['template_freq_max']}")
+
+        print("\n[Suggested Thresholds]")
+        print(f"  Conservative (P75): Use templates with freq >= {stats['template_freq_p75']}")
+        print(f"  Moderate (P50): Use templates with freq >= {stats['template_freq_p50']}")
+        print(f"  Aggressive (P25): Use templates with freq >= {stats['template_freq_p25']}")
+
+        print("\n[Top 10 High-Frequency Templates]")
+        template_freq = self.extraction_results['template_freq']
+        top_templates = sorted(template_freq.items(), key=lambda x: x[1], reverse=True)[:10]
+
+        for i, (template, freq) in enumerate(top_templates, 1):
+            volume = self.extraction_results['template_volume'][template]
+            print(f"  {i}. {template}: {freq} matches, volume={volume}")
+
+        print("\n" + "="*70)
+
+
+def run_blind_extraction():
+    """运行盲提取流程"""
+    extractor = BlindTemplateExtractor()
+    results = extractor.extract_from_all_clusters()
+
+    # 保存结果到JSON（用于后续分析）
+    import json
+    from config.settings import OUTPUT_DIR
+
+    OUTPUT_DIR.mkdir(exist_ok=True)
+    output_file = OUTPUT_DIR / 'blind_extraction_results.json'
+
+    # 简化结果（不保存所有匹配细节，太大）
+    summary = {
+        'statistics': results['statistics'],
+        'template_freq': results['template_freq'],
+        'template_volume': results['template_volume'],
+        'top_variables': dict(
+            sorted(results['variable_freq'].items(), key=lambda x: x[1], reverse=True)[:100]
+        )
+    }
+
+    with open(output_file, 'w', encoding='utf-8') as f:
+        json.dump(summary, f, indent=2, ensure_ascii=False)
+
+    print(f"\n[OK] Results saved to: {output_file}")
+
+    return results
+
+
+if __name__ == "__main__":
+    run_blind_extraction()
+```
+
+---
+
+### Phase 3: 频次分布分析（半天）
+
+**目标**: 基于数据分布确定阈值，而非主观判断
+
+#### 3.1 分布分析脚本
+
+**文件**: `scripts/analyze_template_distribution.py`
+
+```python
+"""
+模板频次分布分析
+目标：找出数据的自然分界点，设定合理阈值
+"""
+import json
+from pathlib import Path
+import matplotlib.pyplot as plt
+from collections import Counter
+
+def analyze_distribution():
+    """分析盲提取结果的频次分布"""
+
+    # 加载盲提取结果
+    results_file = Path("outputs/blind_extraction_results.json")
+    with open(results_file, 'r', encoding='utf-8') as f:
+        data = json.load(f)
+
+    template_freq = data['template_freq']
+    variable_freq = data['variable_freq']
+
+    print("="*70)
+    print("Template Frequency Distribution Analysis".center(70))
+    print("="*70)
+
+    # 1. 模板频次分布
+    print("\n[1] Template Frequency Distribution")
+    freq_values = list(template_freq.values())
+    freq_values.sort()
+
+    # 分段统计
+    buckets = {
+        '1': 0,
+        '2-5': 0,
+        '6-10': 0,
+        '11-20': 0,
+        '21-50': 0,
+        '51-100': 0,
+        '100+': 0
+    }
+
+    for freq in freq_values:
+        if freq == 1:
+            buckets['1'] += 1
+        elif 2 <= freq <= 5:
+            buckets['2-5'] += 1
+        elif 6 <= freq <= 10:
+            buckets['6-10'] += 1
+        elif 11 <= freq <= 20:
+            buckets['11-20'] += 1
+        elif 21 <= freq <= 50:
+            buckets['21-50'] += 1
+        elif 51 <= freq <= 100:
+            buckets['51-100'] += 1
+        else:
+            buckets['100+'] += 1
+
+    print("\nFrequency Buckets:")
+    for bucket, count in buckets.items():
+        print(f"  {bucket} matches: {count} templates")
+
+    # 2. 寻找自然分界点（拐点）
+    print("\n[2] Finding Natural Cutoff Point")
+
+    # 使用肘部法则（Elbow Method）
+    cumulative_coverage = []
+    for i, freq in enumerate(freq_values):
+        coverage = sum(freq_values[i:]) / sum(freq_values) * 100
+        cumulative_coverage.append((freq, coverage))
+
+    print("\nCumulative Coverage:")
+    for freq, coverage in cumulative_coverage[::10]:  # 每10个打印一次
+        print(f"  Threshold >= {freq}: covers {coverage:.1f}% of total matches")
+
+    # 3. 推荐阈值
+    print("\n[3] Recommended Thresholds")
+
+    stats = data['statistics']
+    p25 = stats['template_freq_p25']
+    p50 = stats['template_freq_p50']
+    p75 = stats['template_freq_p75']
+
+    print(f"\nOption A (Conservative): Use templates with freq >= {p75} (P75)")
+    print(f"  → Retain {sum(1 for f in freq_values if f >= p75)} templates")
+    print(f"  → Coverage: {sum(f for f in freq_values if f >= p75) / sum(freq_values) * 100:.1f}%")
+
+    print(f"\nOption B (Moderate): Use templates with freq >= {p50} (P50)")
+    print(f"  → Retain {sum(1 for f in freq_values if f >= p50)} templates")
+    print(f"  → Coverage: {sum(f for f in freq_values if f >= p50) / sum(freq_values) * 100:.1f}%")
+
+    print(f"\nOption C (Aggressive): Use templates with freq >= {p25} (P25)")
+    print(f"  → Retain {sum(1 for f in freq_values if f >= p25)} templates")
+    print(f"  → Coverage: {sum(f for f in freq_values if f >= p25) / sum(freq_values) * 100:.1f}%")
+
+    # 4. 生成可视化
+    print("\n[4] Generating visualizations...")
+    generate_visualizations(freq_values, buckets)
+
+    print("\n" + "="*70)
+    print("[Decision Point] Please review the analysis and decide threshold".center(70))
+    print("="*70)
+
+
+def generate_visualizations(freq_values, buckets):
+    """生成频次分布可视化图表"""
+    import matplotlib
+    matplotlib.use('Agg')  # 非交互式后端
+
+    fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+
+    # 图1: 频次直方图
+    axes[0, 0].hist(freq_values, bins=50, edgecolor='black')
+    axes[0, 0].set_title('Template Frequency Histogram')
+    axes[0, 0].set_xlabel('Frequency')
+    axes[0, 0].set_ylabel('Number of Templates')
+
+    # 图2: 分段柱状图
+    axes[0, 1].bar(buckets.keys(), buckets.values())
+    axes[0, 1].set_title('Frequency Buckets')
+    axes[0, 1].set_xlabel('Frequency Range')
+    axes[0, 1].set_ylabel('Number of Templates')
+    axes[0, 1].tick_params(axis='x', rotation=45)
+
+    # 图3: 累积分布
+    cumulative = []
+    for i in range(len(freq_values)):
+        cumulative.append(sum(freq_values[:i+1]) / sum(freq_values) * 100)
+
+    axes[1, 0].plot(range(len(cumulative)), cumulative)
+    axes[1, 0].set_title('Cumulative Distribution')
+    axes[1, 0].set_xlabel('Template Index (sorted by frequency)')
+    axes[1, 0].set_ylabel('Cumulative Coverage (%)')
+    axes[1, 0].grid(True)
+
+    # 图4: 对数分布
+    axes[1, 1].hist(freq_values, bins=50, edgecolor='black', log=True)
+    axes[1, 1].set_title('Template Frequency (Log Scale)')
+    axes[1, 1].set_xlabel('Frequency')
+    axes[1, 1].set_ylabel('Number of Templates (log scale)')
+
+    plt.tight_layout()
+    output_path = Path("outputs/template_frequency_distribution.png")
+    plt.savefig(output_path, dpi=150)
+    print(f"  [OK] Saved visualization to: {output_path}")
+
+
+if __name__ == "__main__":
+    analyze_distribution()
+```
+
+---
+
+### Phase 4: 阈值过滤与变量提取（1-2天）
+
+**目标**: 基于分布分析确定的阈值，提取高质量变量和产品
+
+#### 4.1 阈值过滤器
+
+**文件**: `core/threshold_filter.py`
+
+```python
+"""
+Threshold Filter - 阈值过滤器
+基于数据分布确定的阈值进行过滤
+"""
+
+class ThresholdFilter:
+    """
+    阈值过滤器：根据频次分布过滤低质量模板和变量
+    """
+
+    def __init__(
+        self,
+        template_threshold: int,
+        variable_threshold: int,
+        min_template_match: int = 2  # 变量必须匹配至少2个模板
+    ):
+        self.template_threshold = template_threshold
+        self.variable_threshold = variable_threshold
+        self.min_template_match = min_template_match
+
+    def filter_templates(self, extraction_results: Dict) -> List[Dict]:
+        """过滤高频模板"""
+        template_freq = extraction_results['template_freq']
+
+        high_freq_templates = [
+            tmpl for tmpl, freq in template_freq.items()
+            if freq >= self.template_threshold
+        ]
+
+        print(f"\n[Filtering] Templates")
+        print(f"  Threshold: freq >= {self.template_threshold}")
+        print(f"  Before: {len(template_freq)} templates")
+        print(f"  After: {len(high_freq_templates)} templates")
+        print(f"  Retention rate: {len(high_freq_templates)/len(template_freq)*100:.1f}%")
+
+        return high_freq_templates
+
+    def filter_variables(
+        self,
+        extraction_results: Dict,
+        valid_templates: List[str]
+    ) -> List[Dict]:
+        """
+        过滤高质量变量
+        条件：
+        1. 出现频次 >= variable_threshold
+        2. 匹配模板数 >= min_template_match（交叉验证）
+        3. 所属模板必须在valid_templates中
+        """
+        variable_freq = extraction_results['variable_freq']
+        variable_template_match = extraction_results['variable_template_match']
+
+        valid_variables = []
+
+        for var_key, freq in variable_freq.items():
+            # 条件1: 频次过滤
+            if freq < self.variable_threshold:
+                continue
+
+            # 条件2: 交叉验证（匹配多个模板）
+            if variable_template_match[var_key] < self.min_template_match:
+                continue
+
+            # 条件3: 所属模板有效性检查
+            # （这里简化处理，实际需要检查变量来自哪些模板）
+
+            valid_variables.append({
+                'variable_key': var_key,
+                'frequency': freq,
+                'template_match_count': variable_template_match[var_key],
+                'cross_validation_score': freq * variable_template_match[var_key]
+            })
+
+        print(f"\n[Filtering] Variables")
+        print(f"  Threshold: freq >= {self.variable_threshold}, templates >= {self.min_template_match}")
+        print(f"  Before: {len(variable_freq)} variables")
+        print(f"  After: {len(valid_variables)} variables")
+        print(f"  Retention rate: {len(valid_variables)/len(variable_freq)*100:.1f}%")
+
+        return valid_variables
+
+    def extract_products(self, valid_variables: List[Dict]) -> List[Dict]:
+        """
+        从有效变量中提取产品实体
+        合并同义变量，去重
+        """
+        products = []
+
+        for var in valid_variables:
+            var_key = var['variable_key']
+            slot, value = var_key.split(':', 1)
+
+            # 仅提取可能是产品的槽位
+            if slot in ['product', 'product_A', 'product_B', 'service', 'tool']:
+                products.append({
+                    'product_name': value,
+                    'source_slot': slot,
+                    'frequency': var['frequency'],
+                    'template_coverage': var['template_match_count'],
+                    'discovery_score': var['cross_validation_score']
+                })
+
+        # 去重（同一产品名可能来自不同槽位）
+        product_dict = {}
+        for p in products:
+            name = p['product_name']
+            if name not in product_dict:
+                product_dict[name] = p
+            else:
+                # 合并统计
+                product_dict[name]['frequency'] += p['frequency']
+                product_dict[name]['template_coverage'] = max(
+                    product_dict[name]['template_coverage'],
+                    p['template_coverage']
+                )
+
+        final_products = list(product_dict.values())
+        final_products.sort(key=lambda x: x['discovery_score'], reverse=True)
+
+        print(f"\n[Product Extraction]")
+        print(f"  Total unique products: {len(final_products)}")
+        print(f"  Top 10 products by discovery score:")
+
+        for i, prod in enumerate(final_products[:10], 1):
+            print(f"    {i}. {prod['product_name']}: score={prod['discovery_score']}, freq={prod['frequency']}, templates={prod['template_coverage']}")
+
+        return final_products
+```
+
+---
+
+### Phase 5: DeepSeek AI增强（1-2天）
+
+**目标**: 仅对通过阈值筛选的高频产品进行AI标注
+
+（AI标注代码与之前设计类似，此处省略）
+
+---
+
+### Phase 6: UI展示（2天）
+
+**目标**: 展示数据自然涌现的产品，而非预设类别
+
+**UI设计原则**:
+1. ✅ 按发现度评分排序（而非按类别分组）
+2. ✅ 展示数据来源（来自哪些模板、哪些聚类）
+3. ✅ 展示频次分布图（让用户看到阈值设定的依据）
+4. ✅ 支持导出完整数据（透明化）
+
+---
+
+## 三、成功标准（数据驱动版）
+
+### 3.1 定量指标
+
+| 指标 | 目标 | 说明 |
+|------|------|------|
+| **召回率** | >90% | 高频产品（freq>P75）不应遗漏 |
+| **准确率** | >85% | 提取的产品应该是真实用户需求 |
+| **交叉验证率** | >60% | 产品至少匹配2个不同模板 |
+| **阈值合理性** | 基于P50-P75 | 阈值应基于统计分布，而非拍脑袋 |
+
+### 3.2 定性标准
+
+✅ **发现意外需求**: 发现了"tattoo ideas"等非预设的高价值需求
+✅ **数据可追溯**: 每个产品都能追溯到原始短语和模板
+✅ **阈值可解释**: 阈值设定有明确的统计依据
+✅ **结果可验证**: 人工审核Top 50产品，确认为真实需求
+
+---
+
+## 四、与原方案的对比
+
+| 维度 | 原方案（主观驱动） | 新方案（数据驱动） |
+|------|------------------|------------------|
+| **产品类别** | 预设电子产品/软件工具 | 数据自然涌现 |
+| **提取规模** | 目标500个产品 | 由阈值自然决定 |
+| **阈值设定** | 拍脑袋定 >= 3次 | 基于P50/P75统计分布 |
+| **成功标准** | 提取了500个 | 准确率>85%，无遗漏 |
+| **可验证性** | 低 | 高（完整数据追溯） |
+| **偏见风险** | 高（可能错过真实需求） | 低（让数据说话） |
+
+---
+
+## 五、风险与缓解
+
+### 风险1: 数据噪音
+
+**风险**: 盲提取可能包含大量低质量匹配
+
+**缓解**:
+- ✅ 多层过滤：模板频次 + 变量频次 + 交叉验证
+- ✅ 统计阈值：基于P75而非绝对值
+- ✅ 人工验证：Top 50产品人工审核
+
+### 风险2: 模板模式不完整
+
+**风险**: 预定义模板可能无法覆盖所有搜索模式
+
+**缓解**:
+- ✅ 持续迭代：分析未匹配短语，发现新模式
+- ✅ 用户反馈：允许用户添加自定义模板
+- ✅ AI辅助：使用LLM识别新模板
+
+---
+
+## 六、下一步行动
+
+### 立即执行:
+
+1. ✅ 创建数据库迁移脚本
+2. ✅ 实现盲提取器（`core/blind_template_extractor.py`）
+3. ✅ 在1个聚类上试运行，验证代码正确性
+4. ✅ 在全部68个聚类上运行盲提取
+5. ✅ 生成频次分布报告
+6. ✅ 根据报告决定阈值
+7. ✅ 提取高质量产品
+8. ✅ 人工验证Top 50
+
+---
+
+**文档版本**: v2.0 (数据驱动版)
+**创建时间**: 2026-01-05
+**核心原则**: 让数据说话，需求自然涌现，阈值基于统计
