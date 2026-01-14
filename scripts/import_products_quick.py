@@ -5,7 +5,7 @@
     python scripts/import_products_quick.py <文件路径>
 
 示例：
-    python scripts/import_products_quick.py "C:\Users\32941\Downloads\合并表格_20260114_150935.xlsx"
+    python scripts/import_products_quick.py "C:\\Users\\32941\\Downloads\\合并表格_20260114_150935.xlsx"
 """
 import sys
 from pathlib import Path
@@ -19,31 +19,31 @@ from core.product_management import ProductImporter
 
 def main():
     if len(sys.argv) < 2:
-        print("❌ 错误：请提供文件路径")
-        print("\n用法：")
-        print("    python scripts/import_products_quick.py <文件路径>")
-        print("\n示例：")
-        print('    python scripts/import_products_quick.py "C:\\Users\\32941\\Downloads\\合并表格_20260114_150935.xlsx"')
+        print("Error: Please provide file path")
+        print("\nUsage:")
+        print("    python scripts/import_products_quick.py <file_path>")
+        print("\nExample:")
+        print('    python scripts/import_products_quick.py "C:\\Users\\32941\\Downloads\\file.xlsx"')
         sys.exit(1)
 
     file_path = sys.argv[1]
 
     if not Path(file_path).exists():
-        print(f"❌ 错误：文件不存在: {file_path}")
+        print(f"Error: File not found: {file_path}")
         sys.exit(1)
 
     print("=" * 60)
-    print("📦 Phase 7 商品数据快速导入")
+    print("Phase 7 Product Import")
     print("=" * 60)
-    print(f"\n📁 文件路径: {file_path}")
-    print(f"📊 平台: etsy")
-    print(f"🔧 字段映射:")
-    print("   - 列0 → 商品名称")
-    print("   - 列1 → 评分")
-    print("   - 列2 → 销量")
-    print("   - 列3 → 店铺名称")
-    print("   - 列4 → 价格")
-    print("\n⚠️  注意：URL字段将使用占位符（因为数据中没有URL）")
+    print(f"\nFile: {file_path}")
+    print(f"Platform: etsy")
+    print(f"Field Mapping:")
+    print("   - Column 0 -> product_name")
+    print("   - Column 1 -> rating")
+    print("   - Column 2 -> review_count")
+    print("   - Column 3 -> shop_name")
+    print("   - Column 4 -> price")
+    print("\nNote: URL field will use placeholder (no URL in data)")
     print("\n" + "=" * 60)
 
     # 配置字段映射
@@ -55,7 +55,7 @@ def main():
         "col_4": "price",          # 价格
     }
 
-    print("\n🚀 开始导入...")
+    print("\nStarting import...")
 
     # 创建导入器
     importer = ProductImporter()
@@ -71,18 +71,18 @@ def main():
     print("\n" + "=" * 60)
 
     if result["success"]:
-        print("✅ 导入成功！")
-        print(f"\n📊 导入统计:")
-        print(f"   - 总行数: {result['total_rows']}")
-        print(f"   - 成功导入: {result['imported_rows']}")
-        print(f"   - 跳过: {result['skipped_rows']}")
-        print(f"   - 耗时: {result['duration_seconds']}秒")
-        print(f"\n💡 提示: 现在可以在Web UI中查看导入的商品了")
-        print(f"   访问: http://localhost:8501")
-        print(f"   导航: Phase 7 → 商品筛选")
+        print("Import Success!")
+        print(f"\nStatistics:")
+        print(f"   - Total rows: {result['total_rows']}")
+        print(f"   - Imported: {result['imported_rows']}")
+        print(f"   - Skipped: {result['skipped_rows']}")
+        print(f"   - Duration: {result['duration_seconds']}s")
+        print(f"\nTip: You can now view products in Web UI")
+        print(f"   URL: http://localhost:8501")
+        print(f"   Navigate: Phase 7 -> Product Filter")
     else:
-        print("❌ 导入失败！")
-        print(f"\n错误信息: {result.get('error', '未知错误')}")
+        print("Import Failed!")
+        print(f"\nError: {result.get('error', 'Unknown error')}")
 
     print("=" * 60)
 
