@@ -590,7 +590,7 @@ class Product(Base):
     sales = Column(Integer, default=0)
     rating = Column(DECIMAL(3, 2))
     review_count = Column(Integer, default=0, index=True)
-    url = Column(String(1000), unique=True, index=True)
+    url = Column(String(1000), unique=True)  # 移除index，使用__table_args__定义前缀索引
     shop_name = Column(String(200), index=True)
 
     # 平台来源
@@ -628,6 +628,11 @@ class Product(Base):
         nullable=False,
         default=datetime.utcnow,
         onupdate=datetime.utcnow
+    )
+
+    # 约束和索引
+    __table_args__ = (
+        Index('idx_url_prefix', 'url', mysql_length=255),  # URL前缀索引
     )
 
     def __repr__(self):
