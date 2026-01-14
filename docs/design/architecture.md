@@ -104,6 +104,8 @@
 - `ui/pages/phase3_selection.py`: Phase 3 聚类筛选页面
 - `ui/pages/phase4_demands.py`: Phase 4 需求生成页面
 - `ui/pages/phase5_tokens.py`: Phase 5 Token管理页面
+- `ui/pages/phase6_reddit.py`: Phase 6 Reddit板块分析页面
+- `ui/pages/phase7_products.py`: Phase 7 商品筛选页面
 - `ui/pages/config_page.py`: 配置管理页面
 - `ui/pages/documentation.py`: 文档查看器
 
@@ -173,6 +175,12 @@
 - 搜索意图分析
 - 意图类型分类
 
+#### 3.2.12 商品管理 (product_management.py)
+- 商品数据导入和清理
+- 字段映射配置
+- AI标注调度
+- 动态字段管理
+
 ---
 
 ### 3.3 Data Access Layer (storage/)
@@ -190,6 +198,9 @@
 - `Token`: Token词库
 - `SeedWord`: 种子词管理
 - `WordSegment`: 分词结果缓存
+- `Product`: 商品主表
+- `ProductFieldDefinition`: 字段定义表
+- `ProductImportLog`: 导入日志表
 
 #### 3.3.2 Repository层
 - `PhraseRepository`: 短语CRUD操作
@@ -197,6 +208,9 @@
 - `DemandRepository`: 需求卡片操作
 - `TokenRepository`: Token操作
 - `WordSegmentRepository`: 分词结果操作
+- `ProductRepository`: 商品CRUD操作
+- `ProductFieldDefinitionRepository`: 字段定义操作
+- `ProductImportLogRepository`: 导入日志操作
 
 **优势**:
 - 隔离业务逻辑和数据库细节
@@ -219,6 +233,9 @@
 - `tokens`: Token词库（数千个）
 - `seed_words`: 种子词管理
 - `word_segments`: 分词结果缓存
+- `products`: 商品主表（Phase 7）
+- `product_field_definitions`: 字段定义表（Phase 7）
+- `product_import_logs`: 导入日志表（Phase 7）
 
 ---
 
@@ -273,7 +290,8 @@ core/
 ├── cluster_scoring.py       # 聚类评分
 ├── cluster_llm_assessment.py # LLM质量评估
 ├── intent_classification.py # 意图分类
-└── variable_extractor.py    # 变量提取
+├── variable_extractor.py    # 变量提取
+└── product_management.py    # 商品管理（Phase 7）
 ```
 
 ---
@@ -307,6 +325,8 @@ ui/
     ├── phase3_intent_analysis.py
     ├── phase4_demands.py
     ├── phase5_tokens.py
+    ├── phase6_reddit.py
+    ├── phase7_products.py
     ├── config_page.py
     └── documentation.py
 ```
@@ -460,6 +480,28 @@ TokenRepository.save_token()
 tokens表
     ↓
 导出CSV供人工审核
+```
+
+---
+
+### 5.6 Phase 7: 商品筛选与AI标注
+
+```
+商品数据文件 (CSV/Excel)
+    ↓
+product_management.py (字段映射、清洗、去重)
+    ↓
+ProductRepository.bulk_insert_products()
+    ↓
+products表
+    ↓
+llm_service.py (AI标注：标签生成、需求判断)
+    ↓
+ProductRepository.update_ai_analysis()
+    ↓
+products.tags, products.demand_analysis 更新
+    ↓
+导出筛选结果
 ```
 
 ---
@@ -710,6 +752,10 @@ tokens表
 
 ---
 
-**文档版本**: v1.0
-**生成日期**: 2026-01-08
+**文档版本**: v1.1
+**生成日期**: 2026-01-14
 **生成方式**: 基于代码分析自动生成
+
+**变更记录**:
+- v1.1 (2026-01-14): 添加Phase 7商品筛选与AI标注系统
+- v1.0 (2026-01-08): 初始版本

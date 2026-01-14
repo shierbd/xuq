@@ -268,6 +268,98 @@ The system uses a custom `enum_column()` function to ensure compatibility:
 
 ---
 
+### 8. products - 商品主表
+
+**Purpose**: Stores product data imported from e-commerce platforms (Etsy, Gumroad) with AI-generated tags and demand analysis.
+
+**Table Name**: `products`
+
+| Column Name | Data Type | Constraints | Description |
+|------------|-----------|-------------|-------------|
+| `product_id` | BigInteger | PRIMARY KEY, AUTO_INCREMENT | Unique product identifier |
+| `product_name` | String(500) | NOT NULL, INDEX | Product name |
+| `description` | Text | NULL | Product description |
+| `price` | DECIMAL(10,2) | NULL | Price in USD |
+| `sales` | Integer | DEFAULT 0 | Sales count |
+| `rating` | DECIMAL(3,2) | NULL | Average rating (0-5 stars) |
+| `review_count` | Integer | DEFAULT 0, INDEX | Number of reviews |
+| `url` | String(1000) | UNIQUE, INDEX | Product URL |
+| `shop_name` | String(200) | NULL, INDEX | Shop/store name |
+| `platform` | ENUM/String(50) | NOT NULL, INDEX | Platform: 'etsy', 'gumroad' |
+| `source_file` | String(255) | NULL | Source file name |
+| `tags` | Text | NULL | AI-generated tags (JSON array, 3 Chinese tags) |
+| `demand_analysis` | Text | NULL | AI-generated demand analysis |
+| `ai_analysis_status` | ENUM/String(50) | INDEX, DEFAULT 'pending' | AI status: 'pending', 'processing', 'completed', 'failed' |
+| `custom_fields` | JSON/Text | NULL | User-defined custom fields (JSON format) |
+| `imported_at` | TIMESTAMP | DEFAULT CURRENT_TIMESTAMP | Import timestamp |
+| `updated_at` | TIMESTAMP | DEFAULT CURRENT_TIMESTAMP ON UPDATE | Last update timestamp |
+
+**Key Features**:
+- Supports multiple e-commerce platforms
+- AI-powered tagging and demand analysis
+- Dynamic custom fields (JSON storage)
+- Flexible data import with field mapping
+- Duplicate prevention via unique URL
+
+---
+
+### 9. product_field_definitions - 字段定义表
+
+**Purpose**: Stores metadata for custom fields in products table, enabling dynamic field management similar to Feishu multi-dimensional tables.
+
+**Table Name**: `product_field_definitions`
+
+| Column Name | Data Type | Constraints | Description |
+|------------|-----------|-------------|-------------|
+| `field_id` | Integer | PRIMARY KEY, AUTO_INCREMENT | Unique field identifier |
+| `field_name` | String(100) | NOT NULL | Field display name (Chinese/English) |
+| `field_key` | String(100) | UNIQUE, NOT NULL, INDEX | Field key for JSON storage |
+| `field_type` | ENUM/String(50) | NOT NULL | Type: 'text', 'number', 'date', 'url', 'tags', 'select', 'multi_select', 'textarea' |
+| `is_required` | Boolean | DEFAULT FALSE | Whether field is required |
+| `default_value` | String(500) | NULL | Default value |
+| `field_options` | Text | NULL | Field options (JSON array for select/multi_select) |
+| `field_order` | Integer | DEFAULT 0, INDEX | Display order |
+| `field_description` | String(500) | NULL | Field description |
+| `is_system_field` | Boolean | DEFAULT FALSE | Whether system field (cannot be deleted) |
+| `created_at` | TIMESTAMP | DEFAULT CURRENT_TIMESTAMP | Creation timestamp |
+
+**Key Features**:
+- Dynamic field management without ALTER TABLE
+- Supports multiple field types
+- Field ordering and validation rules
+- System field protection
+
+---
+
+### 10. product_import_logs - 导入日志表
+
+**Purpose**: Records import history and statistics for product data imports.
+
+**Table Name**: `product_import_logs`
+
+| Column Name | Data Type | Constraints | Description |
+|------------|-----------|-------------|-------------|
+| `log_id` | Integer | PRIMARY KEY, AUTO_INCREMENT | Unique log identifier |
+| `source_file` | String(255) | NOT NULL | Source file name |
+| `platform` | ENUM/String(50) | NOT NULL, INDEX | Platform: 'etsy', 'gumroad' |
+| `total_rows` | Integer | NOT NULL | Total rows in file |
+| `imported_rows` | Integer | NOT NULL | Successfully imported rows |
+| `skipped_rows` | Integer | DEFAULT 0 | Skipped rows |
+| `duplicate_rows` | Integer | DEFAULT 0 | Duplicate rows |
+| `field_mapping` | Text | NULL | Field mapping configuration (JSON) |
+| `import_status` | ENUM/String(50) | INDEX, DEFAULT 'in_progress' | Status: 'in_progress', 'completed', 'failed' |
+| `error_message` | Text | NULL | Error message if failed |
+| `imported_at` | TIMESTAMP | DEFAULT CURRENT_TIMESTAMP | Import timestamp |
+| `duration_seconds` | Integer | NULL | Import duration in seconds |
+
+**Key Features**:
+- Complete import audit trail
+- Field mapping history for reuse
+- Performance monitoring
+- Error tracking and debugging
+
+---
+
 ## Table Relationships
 
 ### Entity Relationship Overview
@@ -289,6 +381,14 @@ phrases (N) >---- (1) cluster_meta [B level]
 word_segments (independent, derived from phrases)
 tokens (independent, vocabulary reference)
 segmentation_batches (independent, audit log)
+
+products (independent, e-commerce data)
+    |
+    | (N:1)
+    v
+product_field_definitions (field metadata)
+
+products (1) ----< (N) product_import_logs
 ```
 
 ### Detailed Relationships
@@ -342,6 +442,24 @@ segmentation_batches (independent, audit log)
 - **tokens**: Reference vocabulary, no direct FK relationship
 - **segmentation_batches**: Audit log, no direct FK relationship
 
+#### 9. products → product_field_definitions
+- **Type**: Many-to-One (via JSON reference)
+- **Foreign Key**: `products.custom_fields` (JSON) references `product_field_definitions.field_key`
+- **Description**: Products use field definitions for custom fields
+- **Cardinality**: N:1
+
+#### 10. products → product_import_logs
+- **Type**: One-to-Many
+- **Foreign Key**: `product_import_logs.source_file` relates to `products.source_file`
+- **Description**: Each import creates multiple product records
+- **Cardinality**: 1:N
+
+#### 11. Product Module Independence
+- **products**: Independent module, no FK to phrase/cluster/demand tables
+- **product_field_definitions**: Metadata for products table
+- **product_import_logs**: Audit log for product imports
+- **Future Integration**: May link products to demands via product names clustering
+
 ---
 
 ## Indexes and Constraints
@@ -357,6 +475,9 @@ segmentation_batches (independent, audit log)
 | segmentation_batches | batch_id | Integer AUTO_INCREMENT |
 | seed_words | seed_id | Integer AUTO_INCREMENT |
 | cluster_meta | (cluster_id, cluster_level) | Composite |
+| products | product_id | BigInteger AUTO_INCREMENT |
+| product_field_definitions | field_id | Integer AUTO_INCREMENT |
+| product_import_logs | log_id | Integer AUTO_INCREMENT |
 
 ### Unique Constraints
 
@@ -366,6 +487,8 @@ segmentation_batches (independent, audit log)
 | tokens | token_text | Prevent duplicate tokens |
 | word_segments | word | Prevent duplicate words/phrases |
 | seed_words | seed_word | Prevent duplicate seed words |
+| products | url | Prevent duplicate products |
+| product_field_definitions | field_key | Prevent duplicate field keys |
 
 ### Single-Column Indexes
 
@@ -414,6 +537,22 @@ segmentation_batches (independent, audit log)
 - `quality_level`
 - `primary_demand_type`
 - `dominant_intent`
+
+#### products
+- `product_name`
+- `url` (UNIQUE INDEX)
+- `review_count`
+- `shop_name`
+- `platform`
+- `ai_analysis_status`
+
+#### product_field_definitions
+- `field_key` (UNIQUE INDEX)
+- `field_order`
+
+#### product_import_logs
+- `platform`
+- `import_status`
 
 ### Composite Indexes
 
@@ -531,6 +670,39 @@ CHECK (processed_status IN ('unseen', 'reviewed', 'assigned', 'archived'))
 | fair | Quality score 40-59 |
 | poor | Quality score 0-39 |
 
+#### platform (products, product_import_logs)
+| Value | Description |
+|-------|-------------|
+| etsy | Etsy platform |
+| gumroad | Gumroad platform |
+
+#### ai_analysis_status (products)
+| Value | Description |
+|-------|-------------|
+| pending | Waiting for AI analysis |
+| processing | AI analysis in progress |
+| completed | AI analysis completed |
+| failed | AI analysis failed |
+
+#### field_type (product_field_definitions)
+| Value | Description |
+|-------|-------------|
+| text | Single-line text |
+| number | Numeric value |
+| date | Date value |
+| url | URL link |
+| tags | Tags (multi-select) |
+| select | Single select |
+| multi_select | Multiple select |
+| textarea | Long text |
+
+#### import_status (product_import_logs)
+| Value | Description |
+|-------|-------------|
+| in_progress | Import in progress |
+| completed | Import completed |
+| failed | Import failed |
+
 ### JSON Field Formats
 
 #### seed_words.token_types
@@ -559,6 +731,40 @@ CHECK (processed_status IN ('unseen', 'reviewed', 'assigned', 'archived'))
   "informational": 0.45,
   "transactional": 0.35,
   "navigational": 0.20
+}
+```
+
+#### products.tags
+```json
+["电子产品", "设计工具", "数字下载"]
+```
+
+#### products.custom_fields
+```json
+{
+  "profit_margin": 25.5,
+  "target_audience": "设计师",
+  "launch_date": "2024-01-15",
+  "custom_tag_1": ["标签A", "标签B"]
+}
+```
+
+#### product_field_definitions.field_options
+```json
+["选项1", "选项2", "选项3"]
+```
+
+#### product_import_logs.field_mapping
+```json
+{
+  "col_0": "product_name",
+  "col_1": "description",
+  "col_2": "price",
+  "col_3": "sales",
+  "col_4": "rating",
+  "col_5": "review_count",
+  "col_6": "url",
+  "col_7": "shop_name"
 }
 ```
 
@@ -782,6 +988,7 @@ ORDER BY actual_expansions DESC;
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.1 | 2026-01-14 | Added Phase 7 product management tables: products, product_field_definitions, product_import_logs |
 | 1.0 | 2026-01-08 | Initial comprehensive documentation |
 
 ---
