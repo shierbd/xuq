@@ -571,6 +571,158 @@ class AIPromptConfig(Base):
         return f"<AIPromptConfig(id={self.config_id}, name='{self.config_name}', type='{self.config_type}')>"
 
 
+# ==================== 8. Product 商品主表 (Phase 7) ====================
+class Product(Base):
+    """
+    [REQ-2.7] 商品主表 - 存储从电商平台导入的商品数据
+    支持Etsy、Gumroad等平台，包含AI生成的标签和需求分析
+    """
+
+    __tablename__ = "products"
+
+    # 主键
+    product_id = Column(BigInteger, primary_key=True, autoincrement=True)
+
+    # 核心字段
+    product_name = Column(String(500), nullable=False, index=True)
+    description = Column(Text)
+    price = Column(DECIMAL(10, 2))
+    sales = Column(Integer, default=0)
+    rating = Column(DECIMAL(3, 2))
+    review_count = Column(Integer, default=0, index=True)
+    url = Column(String(1000), unique=True, index=True)
+    shop_name = Column(String(200), index=True)
+
+    # 平台来源
+    platform = enum_column(
+        "platform",
+        ["etsy", "gumroad"],
+        enum_name="platform_enum",
+        nullable=False,
+        index=True
+    )
+
+    # 元数据
+    source_file = Column(String(255))
+
+    # AI生成字段
+    tags = Column(Text)  # JSON数组，3个中文标签
+    demand_analysis = Column(Text)  # AI判断的需求描述
+
+    # AI分析状态
+    ai_analysis_status = enum_column(
+        "ai_analysis_status",
+        ["pending", "processing", "completed", "failed"],
+        enum_name="ai_analysis_status_enum",
+        default="pending",
+        index=True
+    )
+
+    # 动态字段（JSON格式）
+    custom_fields = Column(Text)  # JSON格式存储用户自定义字段
+
+    # 时间戳
+    imported_at = Column(TIMESTAMP, nullable=False, default=datetime.utcnow)
+    updated_at = Column(
+        TIMESTAMP,
+        nullable=False,
+        default=datetime.utcnow,
+        onupdate=datetime.utcnow
+    )
+
+    def __repr__(self):
+        return f"<Product(id={self.product_id}, name='{self.product_name[:30]}...', platform='{self.platform}')>"
+
+
+# ==================== 9. ProductFieldDefinition 字段定义表 (Phase 7) ====================
+class ProductFieldDefinition(Base):
+    """
+    [REQ-2.7] 字段定义表 - 存储商品表的动态字段元数据
+    支持类似飞书多维表格的动态字段管理
+    """
+
+    __tablename__ = "product_field_definitions"
+
+    # 主键
+    field_id = Column(Integer, primary_key=True, autoincrement=True)
+
+    # 字段信息
+    field_name = Column(String(100), nullable=False)  # 显示名称
+    field_key = Column(String(100), unique=True, nullable=False, index=True)  # JSON键名
+
+    # 字段类型
+    field_type = enum_column(
+        "field_type",
+        ["text", "number", "date", "url", "tags", "select", "multi_select", "textarea"],
+        enum_name="field_type_enum",
+        nullable=False
+    )
+
+    # 字段配置
+    is_required = Column(Boolean, default=False)
+    default_value = Column(String(500))
+    field_options = Column(Text)  # JSON数组，用于select/multi_select类型
+    field_order = Column(Integer, default=0, index=True)
+    field_description = Column(String(500))
+    is_system_field = Column(Boolean, default=False)  # 系统字段不可删除
+
+    # 时间戳
+    created_at = Column(TIMESTAMP, nullable=False, default=datetime.utcnow)
+
+    def __repr__(self):
+        return f"<ProductFieldDefinition(id={self.field_id}, key='{self.field_key}', type='{self.field_type}')>"
+
+
+# ==================== 10. ProductImportLog 导入日志表 (Phase 7) ====================
+class ProductImportLog(Base):
+    """
+    [REQ-2.7] 导入日志表 - 记录商品数据导入的历史和统计信息
+    """
+
+    __tablename__ = "product_import_logs"
+
+    # 主键
+    log_id = Column(Integer, primary_key=True, autoincrement=True)
+
+    # 导入信息
+    source_file = Column(String(255), nullable=False)
+    platform = enum_column(
+        "platform",
+        ["etsy", "gumroad"],
+        enum_name="import_platform_enum",
+        nullable=False,
+        index=True
+    )
+
+    # 统计信息
+    total_rows = Column(Integer, nullable=False)
+    imported_rows = Column(Integer, nullable=False)
+    skipped_rows = Column(Integer, default=0)
+    duplicate_rows = Column(Integer, default=0)
+
+    # 字段映射配置（JSON格式）
+    field_mapping = Column(Text)  # 例如：{"col_0": "product_name", "col_1": "description"}
+
+    # 导入状态
+    import_status = enum_column(
+        "import_status",
+        ["in_progress", "completed", "failed"],
+        enum_name="import_status_enum",
+        default="in_progress",
+        index=True
+    )
+
+    # 错误信息
+    error_message = Column(Text)
+
+    # 时间戳
+    imported_at = Column(TIMESTAMP, nullable=False, default=datetime.utcnow)
+    duration_seconds = Column(Integer)  # 导入耗时
+
+    def __repr__(self):
+        return f"<ProductImportLog(id={self.log_id}, file='{self.source_file}', status='{self.import_status}')>"
+
+
 # ==================== 数据库引擎和会话 ====================
 def get_engine():
     """获取数据库引擎（强制使用UTF-8编码）"""
@@ -626,6 +778,9 @@ __all__ = [
     "ClusterMeta",
     "RedditSubreddit",
     "AIPromptConfig",
+    "Product",
+    "ProductFieldDefinition",
+    "ProductImportLog",
     "get_engine",
     "get_session",
     "create_all_tables",
