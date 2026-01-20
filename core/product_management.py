@@ -6,6 +6,7 @@
 2. 字段映射配置
 3. AI标注调度
 4. 动态字段管理
+5. 需求溯源集成
 """
 from typing import Dict, Any, List, Optional, Tuple
 import pandas as pd
@@ -18,6 +19,7 @@ from storage.product_repository import (
     ProductImportLogRepository
 )
 from ai.client import LLMClient
+from core.demand_provenance_service import DemandProvenanceService
 
 
 class ProductImporter:
@@ -284,11 +286,12 @@ class ProductImporter:
 
 
 class ProductAIAnnotator:
-    """[REQ-2.7] 商品AI标注器"""
+    """[REQ-2.7] 商品AI标注器（集成需求溯源）"""
 
     def __init__(self, llm_client: Optional[LLMClient] = None):
         self.product_repo = ProductRepository()
         self.llm_client = llm_client or LLMClient()
+        self.provenance_service = DemandProvenanceService()
 
     def annotate_batch(
         self,
@@ -317,6 +320,7 @@ class ProductAIAnnotator:
 
         success_count = 0
         failed_count = 0
+        demands_created = 0
 
         for product in products:
             try:
@@ -327,7 +331,119 @@ class ProductAIAnnotator:
                 self.product_repo.update_ai_analysis(
                     product['product_id'],
                     result['tags'],
-                    result['demand_analysis'],
+                    result.get('product_brief', ''),
+                    result.get('core_need', ''),
+                    result.get('virtual_product_fit', 'medium'),
+                    result.get('fit_reason', ''),
+                    'completed'
+                )
+
+                # 如果提取到了核心需求，创建需求并建立溯源关系
+                core_need = result.get('core_need', '').strip()
+                if core_need:
+                    try:
+                        # 计算初始置信度（基于适配度）
+                        fit_level = result.get('virtual_product_fit', 'medium')
+                        confidence_map = {'high': 0.75, 'medium': 0.6, 'low': 0.5}
+                        initial_confidence = confidence_map.get(fit_level, 0.6)
+
+                        # 创建需求并记录溯源
+                        demand_id = self.provenance_service.create_demand_with_provenance(
+                            title=core_need,
+                            description=result.get('product_brief', ''),
+                            source_phase='phase7',
+                            source_method='product_reverse_engineering',
+                            source_data_ids=[product['product_id']],
+                            confidence_score=initial_confidence,
+                            demand_type='tool',  # 可以根据商品类型调整
+                            user_scenario=result.get('fit_reason', '')
+                        )
+
+                        # 建立需求与商品的关联
+                        fit_score_map = {'high': 0.9, 'medium': 0.7, 'low': 0.5}
+                        fit_score = fit_score_map.get(fit_level, 0.7)
+
+                        self.provenance_service.link_demand_to_products(
+                            demand_id=demand_id,
+                            product_ids=[product['product_id']],
+                            fit_scores=[fit_score],
+                            fit_levels=[fit_level],
+                            source='product_analysis',
+                            phase='phase7',
+                            method='ai_annotation'
+                        )
+
+                        demands_created += 1
+
+                    except Exception as demand_error:
+                        # 需求创建失败不影响商品标注成功
+                        print(f"Warning: Failed to create demand for product {product['product_id']}: {demand_error}")
+
+                success_count += 1
+
+            except Exception as e:
+                # 标记为失败
+                self.product_repo.update(
+                    product['product_id'],
+                    {'ai_analysis_status': 'failed'}
+                )
+                failed_count += 1
+
+        return {
+            "success": True,
+            "processed": len(products),
+            "success_count": success_count,
+            "failed_count": failed_count,
+            "demands_created": demands_created
+        }
+
+    def reannotate_failed(
+        self,
+        prompt_template: Optional[str] = None
+    ) -> Dict[str, Any]:
+        """
+        [REQ-2.7] 重新标注失败的商品
+
+        Args:
+            prompt_template: 自定义提示词模板
+
+        Returns:
+            标注结果统计
+        """
+        # 获取所有失败的商品
+        failed_products = self.product_repo.get_all(ai_status='failed')
+
+        if not failed_products:
+            return {
+                "success": True,
+                "processed": 0,
+                "success_count": 0,
+                "failed_count": 0,
+                "message": "没有失败的商品需要重新标注"
+            }
+
+        success_count = 0
+        failed_count = 0
+
+        for product in failed_products:
+            try:
+                # 重置状态为processing
+                self.product_repo.update(
+                    product['product_id'],
+                    {'ai_analysis_status': 'processing'}
+                )
+
+                # 执行标注
+                result = self._annotate_single(product, prompt_template)
+
+                # 更新商品信息
+                self.product_repo.update_ai_analysis(
+                    product['product_id'],
+                    result['tags'],
+                    result.get('product_brief', ''),
+                    result.get('core_need', ''),
+                    result.get('virtual_product_fit', 'medium'),
+                    result.get('fit_reason', ''),
                     'completed'
                 )
 
@@ -343,7 +459,7 @@ class ProductAIAnnotator:
 
         return {
             "success": True,
-            "processed": len(products),
+            "processed": len(failed_products),
             "success_count": success_count,
             "failed_count": failed_count
         }
@@ -361,11 +477,25 @@ class ProductAIAnnotator:
             prompt_template: 自定义提示词模板
 
         Returns:
-            标注结果 {"tags": [...], "demand_analysis": "..."}
+            标注结果 {
+                "tags": [...],
+                "product_brief": "...",
+                "core_need": "...",
+                "virtual_product_fit": "high/medium/low",
+                "fit_reason": "..."
+            }
         """
         # 构建提示词
         if not prompt_template:
-            prompt_template = """
+            # 从文件读取默认提示词
+            from pathlib import Path
+            prompt_file = Path("docs/ai提示词.md")
+            if prompt_file.exists():
+                with open(prompt_file, 'r', encoding='utf-8') as f:
+                    prompt_template = f.read()
+            else:
+                # 如果文件不存在，使用内置的默认提示词
+                prompt_template = """
 请分析以下商品信息，完成两个任务：
 
 1. 生成3个中文标签，描述商品的类别、特点或用途
@@ -381,37 +511,63 @@ class ProductAIAnnotator:
 请以JSON格式返回结果：
 {{
     "tags": ["标签1", "标签2", "标签3"],
-    "demand_analysis": "需求分析文本"
+    "product_brief": "商品简介",
+    "core_need": "核心需求",
+    "virtual_product_fit": "high",
+    "fit_reason": "适配原因"
 }}
 """
 
         prompt = prompt_template.format(
-            product_name=product.get('product_name', ''),
-            description=product.get('description', '')[:500],  # 限制长度
-            price=product.get('price', 0),
-            rating=product.get('rating', 0),
+            product_name=product.get('product_name', '未知商品'),
+            description=product.get('description', '无描述')[:500] if product.get('description') else '无描述',
+            price=product.get('price') if product.get('price') is not None else '未知',
+            rating=product.get('rating') if product.get('rating') is not None else '未知',
             review_count=product.get('review_count', 0)
         )
 
         # 调用LLM
-        response = self.llm_client.chat(
+        response = self.llm_client._call_llm(
             messages=[{"role": "user", "content": prompt}],
             temperature=0.7,
-            max_tokens=500
+            max_tokens=800  # 增加token数以支持更多字段
         )
 
         # 解析响应
         try:
+            # 尝试直接解析JSON
             result = json.loads(response)
             return {
                 "tags": result.get('tags', [])[:3],  # 确保只有3个标签
-                "demand_analysis": result.get('demand_analysis', '')
+                "product_brief": result.get('product_brief', ''),
+                "core_need": result.get('core_need', ''),
+                "virtual_product_fit": result.get('virtual_product_fit', 'medium'),
+                "fit_reason": result.get('fit_reason', '')
             }
-        except:
-            # 如果解析失败，返回默认值
+        except json.JSONDecodeError as e:
+            # 如果解析失败，尝试提取JSON部分
+            import re
+            json_match = re.search(r'\{[^{}]*"tags"[^{}]*\}', response, re.DOTALL)
+            if json_match:
+                try:
+                    result = json.loads(json_match.group())
+                    return {
+                        "tags": result.get('tags', [])[:3],
+                        "product_brief": result.get('product_brief', ''),
+                        "core_need": result.get('core_need', ''),
+                        "virtual_product_fit": result.get('virtual_product_fit', 'medium'),
+                        "fit_reason": result.get('fit_reason', '')
+                    }
+                except:
+                    pass
+
+            # 如果还是失败，返回默认值
             return {
                 "tags": ["未分类", "待标注", "其他"],
-                "demand_analysis": "AI分析失败，需要人工标注"
+                "product_brief": "AI分析失败",
+                "core_need": "未知",
+                "virtual_product_fit": "low",
+                "fit_reason": f"JSON解析错误"
             }
 
 

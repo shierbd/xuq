@@ -169,6 +169,26 @@ class Demand(Base):
         onupdate=datetime.utcnow
     )
 
+    # 溯源字段 (Traceability fields)
+    # 来源追踪
+    source_phase = Column(String(20), index=True)  # phase1-7, manual
+    source_method = Column(String(50), index=True)  # 发现方法
+    source_data_ids = Column(Text)  # JSON数组: 源数据ID列表
+
+    # 置信度管理
+    confidence_score = Column(DECIMAL(3, 2), default=Decimal("0.5"))
+    confidence_history = Column(Text)  # JSON数组: 置信度变化历史
+
+    # 时间追踪
+    discovered_at = Column(TIMESTAMP, default=datetime.utcnow)
+    last_validated_at = Column(TIMESTAMP)
+    validation_count = Column(Integer, default=0)
+
+    # 验证状态
+    is_validated = Column(Boolean, default=False, index=True)
+    validated_by = Column(String(100))
+    validation_notes = Column(Text)
+
     def __repr__(self):
         return f"<Demand(id={self.demand_id}, title='{self.title}', status='{self.status}')>"
 
@@ -607,7 +627,15 @@ class Product(Base):
 
     # AI生成字段
     tags = Column(Text)  # JSON数组，3个中文标签
-    demand_analysis = Column(Text)  # AI判断的需求描述
+    demand_analysis = Column(Text)  # AI判断的需求描述（已废弃，保留兼容）
+    product_brief = Column(String(100))  # 商品简介（不超过30字）
+    core_need = Column(String(100))  # 核心需求（不超过30字）
+    virtual_product_fit = enum_column(
+        "virtual_product_fit",
+        ["high", "medium", "low"],
+        enum_name="virtual_product_fit_enum"
+    )  # 虚拟产品适配度
+    fit_reason = Column(String(100))  # 适配原因（不超过30字）
 
     # AI分析状态
     ai_analysis_status = enum_column(
@@ -728,6 +756,28 @@ class ProductImportLog(Base):
         return f"<ProductImportLog(id={self.log_id}, file='{self.source_file}', status='{self.import_status}')>"
 
 
+# ==================== 10. UI配置表 ====================
+class UIConfig(Base):
+    """
+    [REQ-2.7] 用户界面配置表
+
+    存储用户的界面配置，包括表格列宽、列顺序等
+    """
+    __tablename__ = 'ui_configs'
+
+    config_id = Column(Integer, primary_key=True, autoincrement=True)
+    config_key = Column(String(100), unique=True, nullable=False, index=True)
+    config_value = Column(Text, nullable=False)  # JSON格式
+    config_type = Column(String(50), nullable=False, index=True)
+    description = Column(String(500))
+    is_active = Column(Boolean, default=True, index=True)
+    created_at = Column(TIMESTAMP, nullable=False, default=datetime.utcnow)
+    updated_at = Column(TIMESTAMP, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    def __repr__(self):
+        return f"<UIConfig(config_id={self.config_id}, config_key='{self.config_key}', config_type='{self.config_type}')>"
+
+
 # ==================== 数据库引擎和会话 ====================
 def get_engine():
     """获取数据库引擎（强制使用UTF-8编码）"""
@@ -786,6 +836,7 @@ __all__ = [
     "Product",
     "ProductFieldDefinition",
     "ProductImportLog",
+    "UIConfig",
     "get_engine",
     "get_session",
     "create_all_tables",
