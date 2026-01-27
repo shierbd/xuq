@@ -227,3 +227,99 @@ def batch_delete_products(
         "message": f"成功删除 {count} 个商品",
         "deleted_count": count
     }
+
+# [REQ-007] 数据导出功能 - API 路由扩展
+
+from fastapi.responses import StreamingResponse
+from backend.services.export_service import ExportService
+import io
+
+@router.get("/export/products")
+def export_products(
+    format: str = "csv",
+    db: Session = Depends(get_db)
+):
+    """
+    [REQ-007] 导出原始商品数据
+    
+    支持格式：csv, excel
+    """
+    if format not in ["csv", "excel"]:
+        raise HTTPException(status_code=400, detail="不支持的导出格式，请使用 csv 或 excel")
+    
+    export_service = ExportService(db)
+    file_content = export_service.export_products(format)
+    
+    # 设置文件名和 MIME 类型
+    if format == "csv":
+        filename = "products.csv"
+        media_type = "text/csv"
+    else:
+        filename = "products.xlsx"
+        media_type = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    
+    return StreamingResponse(
+        io.BytesIO(file_content),
+        media_type=media_type,
+        headers={"Content-Disposition": f"attachment; filename={filename}"}
+    )
+
+@router.get("/export/clustered")
+def export_clustered_products(
+    format: str = "csv",
+    db: Session = Depends(get_db)
+):
+    """
+    [REQ-007] 导出聚类结果
+    
+    支持格式：csv, excel
+    """
+    if format not in ["csv", "excel"]:
+        raise HTTPException(status_code=400, detail="不支持的导出格式，请使用 csv 或 excel")
+    
+    export_service = ExportService(db)
+    file_content = export_service.export_clustered_products(format)
+    
+    # 设置文件名和 MIME 类型
+    if format == "csv":
+        filename = "clustered_products.csv"
+        media_type = "text/csv"
+    else:
+        filename = "clustered_products.xlsx"
+        media_type = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    
+    return StreamingResponse(
+        io.BytesIO(file_content),
+        media_type=media_type,
+        headers={"Content-Disposition": f"attachment; filename={filename}"}
+    )
+
+@router.get("/export/cluster-summary")
+def export_cluster_summary(
+    format: str = "csv",
+    db: Session = Depends(get_db)
+):
+    """
+    [REQ-007] 导出簇级汇总
+    
+    支持格式：csv, excel
+    """
+    if format not in ["csv", "excel"]:
+        raise HTTPException(status_code=400, detail="不支持的导出格式，请使用 csv 或 excel")
+    
+    export_service = ExportService(db)
+    file_content = export_service.export_cluster_summary(format)
+    
+    # 设置文件名和 MIME 类型
+    if format == "csv":
+        filename = "cluster_summary.csv"
+        media_type = "text/csv"
+    else:
+        filename = "cluster_summary.xlsx"
+        media_type = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    
+    return StreamingResponse(
+        io.BytesIO(file_content),
+        media_type=media_type,
+        headers={"Content-Disposition": f"attachment; filename={filename}"}
+    )
