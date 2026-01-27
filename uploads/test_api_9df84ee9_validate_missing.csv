@@ -1,0 +1,4 @@
+phrase,source_type,first_seen_round,volume,frequency
+test_api_e8f3007f_phrase_1,semrush,1,1000,10
+test_api_e8f3007f_phrase_2,dropdown,1,500,5
+test_api_e8f3007f_phrase_3,related_search,2,2000,20

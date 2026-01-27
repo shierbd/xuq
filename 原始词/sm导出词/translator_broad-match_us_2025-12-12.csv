@@ -1,0 +1,45 @@
+Keyword,Intent,Volume,Trend,Keyword Difficulty,CPC (USD),Competitive Density,SERP Features,Number of Results
+translate english to vietnamese,Informational,60500,"1.00,0.81,0.81,1.00,0.81,1.00,1.00,1.00,0.81,0.81,0.81,1.00",29,0.69,0.01,"Instant answer, Video, Related searches",10
+translate creole to english,Informational,33100,"0.81,0.66,0.66,0.66,0.66,1.00,0.81,0.81,0.81,0.81,0.81,0.81",25,0.94,0.03,"Instant answer, Image pack, Video, People also ask, Related searches",10
+translate and print,Informational,18100,"1.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00",23,1.03,0.27,"Sitelinks, AI Overview, Image pack, Video, People also ask, Related searches",9
+canine translator,Informational,14800,"0.66,0.66,0.81,1.00,0.81,0.81,0.81,0.54,0.54,0.00,0.00,0.00",25,0.23,0.15,"Video, Video carousel, Related searches",9
+dog translator,"Informational, Commercial",14800,"1.00,0.45,0.55,0.66,0.55,0.55,0.55,0.45,0.55,0.55,0.66,0.36",29,0.23,0.15,"Image pack, Video, Related searches",10
+translate to creole to english,Informational,14800,"1.00,1.00,0.81,1.00,0.81,0.81,0.81,1.00,0.81,1.00,1.00,1.00",27,0.85,0.03,"Instant answer, Video, Related searches",10
+ivrit to english translation,Informational,12100,"1.00,1.00,1.00,1.00,0.81,1.00,1.00,0.00,0.66,0.00,0.00,0.00",28,0.95,0.05,"Sitelinks, Instant answer, Video, Related searches",9
+translate english to ukrainian,Informational,12100,"0.81,0.81,0.67,0.81,1.00,0.81,1.00,0.81,0.81,0.67,0.67,0.81",18,0.76,0.02,"AI Overview, Instant answer, Image pack, Video, People also ask, Related searches",8
+translate to korean,Informational,12100,"1.00,0.81,0.81,1.00,0.81,1.00,1.00,0.81,0.81,1.00,1.00,1.00",28,0.55,0.01,"Instant answer, Image pack, Video, Related searches",10
+creole translation in english,Informational,9900,"0.00,0.00,0.00,0.00,0.00,0.24,1.00,0.66,0.44,0.00,0.36,0.36",16,0.94,0.03,"Sitelinks, Instant answer, Video, Related searches",10
+english for translators,Informational,9900,"0.00,0.00,0.00,0.00,0.00,0.00,1.00,0.44,0.36,0.00,0.02,0.20",26,0.79,0.00,"Sitelinks, AI Overview, Image pack, Video, Video carousel, Related searches",10
+english to creole translation,Informational,9900,"1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,0.81,1.00,0.81",27,0.87,0.01,"Sitelinks, Instant answer, Video, People also ask, Related searches",10
+english to korean translation,Informational,9900,"0.55,1.00,0.82,1.00,0.66,0.66,0.66,1.00,0.82,0.66,0.82,0.66",28,0.76,0.01,"Instant answer, Video, Related searches",427000000
+translate english to albanian,Informational,9900,"0.81,0.81,0.81,0.81,0.67,1.00,0.81,1.00,0.81,0.67,0.67,0.67",25,0.77,0.01,"Instant answer, Video, People also ask, Related searches",64600000
+translate english to khmer,Informational,9900,"0.81,1.00,0.81,0.81,0.81,0.81,0.81,1.00,0.66,0.66,1.00,1.00",27,0.94,0.01,"Instant answer, Video, Related searches",10
+translate into urdu,Informational,9900,"0.66,1.00,0.66,0.66,1.00,0.44,0.54,0.81,0.44,0.36,0.54,0.36",28,0.84,0.00,"Instant answer, Video, Video carousel, Related searches",10
+farsi persian translation,Informational,8100,"0.05,0.07,0.07,0.01,0.81,1.00,1.00,0.66,0.81,0.00,0.07,0.54",14,1.21,0.04,"Sitelinks, AI Overview, Instant answer, Video, Related searches",9
+haitian creole translator,Informational,8100,"0.54,0.44,0.44,0.54,0.44,0.66,0.44,1.00,0.54,0.44,0.36,0.44",17,1.17,0.09,"Sitelinks, Instant answer, Video, People also ask, Related searches",10
+korean translate to english,Informational,8100,"0.55,0.55,0.82,1.00,0.55,0.55,0.67,0.55,0.67,0.82,0.55,0.55",29,0.91,0.04,"Instant answer, Image pack, Video, Related searches",8
+translate english to latin,Informational,8100,"1.00,0.83,0.83,0.83,0.83,0.83,0.83,0.83,0.66,0.66,0.66,0.83",25,0.87,0.00,"Sitelinks, Instant answer, Video, People also ask, Related searches",10
+translate english to punjabi,Informational,8100,"0.81,0.54,1.00,0.81,0.66,0.66,0.54,0.66,0.66,0.66,0.66,0.66",27,0.77,0.01,"Instant answer, Video, Related searches",8
+translate haitian creole to english,Informational,8100,"1.00,1.00,1.00,1.00,0.81,1.00,1.00,1.00,0.81,0.81,1.00,1.00",18,0.97,0.05,"Sitelinks, Instant answer, Image pack, Video, People also ask, Related searches",10
+translate pst to est,"Informational, Commercial",8100,"0.00,0.00,0.01,0.00,0.01,0.36,1.00,0.00,0.00,0.00,0.02,0.00",24,3.00,0.00,"Video, People also ask, Related searches",9
+ai translation earbuds,Commercial,6600,"0.00,0.10,1.00,0.19,0.10,0.13,0.19,0.10,0.10,0.10,0.08,0.10",29,0.71,1.00,"Sitelinks, AI Overview, Video, Related searches, Popular products",10
+english to ukrainian translation,Informational,6600,"1.00,1.00,1.00,0.81,1.00,1.00,0.81,0.81,0.81,0.81,0.81,1.00",18,0.76,0.02,"Instant answer, Video, Related searches",195000000
+hmong translation,"Informational, Commercial",6600,"0.81,1.00,0.81,0.81,0.67,0.81,1.00,0.81,0.81,0.67,0.67,0.67",12,1.09,0.01,"Video, Related searches",47400000
+mein kampf translation,Informational,6600,"0.07,1.00,0.81,0.66,0.81,0.19,0.10,0.13,0.03,0.02,0.01,0.00",14,0.51,0.16,"Sitelinks, Video, People also ask, Knowledge panel, Related searches",1010000
+telugu to english translation,Informational,6600,"0.81,0.67,0.54,1.00,0.67,0.81,0.67,0.67,0.54,0.67,0.67,0.54",25,1.28,0.00,"Instant answer, Video, People also ask, Related searches",9
+translate caterpillar,Informational,6600,"0.54,0.66,0.81,0.81,0.54,0.54,0.54,0.54,1.00,0.00,0.08,0.01",25,0.35,0.30,"AI Overview, Video, People also ask, Related searches",4140000
+translate english to romanian,Informational,6600,"1.00,0.81,0.81,0.81,0.67,1.00,0.81,0.81,0.81,1.00,0.81,0.81",18,0.68,0.01,"Instant answer, Image pack, Video, Related searches",9
+translate from english to arabic,Informational,6600,"1.00,0.81,0.67,0.81,0.81,0.67,0.67,0.81,0.54,0.67,0.54,0.81",27,0.82,0.02,"Instant answer, Video, Related searches",9
+vietnamese to english translation,Informational,6600,"0.55,0.55,0.43,1.00,0.66,0.55,0.66,0.55,0.66,0.66,0.43,0.82",18,0.72,0.04,"Instant answer, Image pack, Video, People also ask, Related searches",9
+best bible translation,Commercial,5400,"1.00,0.81,0.81,1.00,0.35,0.66,0.44,0.54,0.54,0.44,0.54,0.81",24,0.29,0.21,"Sitelinks, AI Overview, Image, Image pack, Video, Video carousel, People also ask, Discussions and forums, Related searches",9
+bible translation chart,Informational,5400,"0.67,0.67,0.67,1.00,0.54,0.54,0.54,0.54,0.67,0.67,0.67,0.81",21,0.93,0.01,"Sitelinks, Image, Image pack, Video, People also ask, Related searches, Ads middle",137000000
+creole translator,Informational,5400,"0.67,0.67,0.67,0.67,0.54,0.81,0.67,0.67,0.67,0.67,1.00,0.81",25,1.04,0.06,"Instant answer, Image, Video, Video carousel, Related searches",63100000
+english language translate to tagalog,Informational,5400,"1.00,1.00,1.00,1.00,0.81,0.00,0.00,0.00,0.00,0.00,0.10,0.81",29,0.69,0.01,"Instant answer, Video, Related searches",10
+english to hindi translate,Informational,5400,"1.00,0.67,0.67,0.81,0.20,0.36,0.54,0.44,0.67,0.23,0.23,0.23",29,0.72,0.00,"Instant answer, Video, Related searches",10
+jamaican patois translator,Informational,5400,"0.08,0.82,1.00,0.55,0.36,0.67,0.55,0.29,0.44,0.44,0.82,0.55",15,1.21,0.01,"Sitelinks, Instant answer, Image, Video, People also ask, Related searches",10
+most accurate bible translation,Informational,5400,"0.54,0.54,0.54,0.81,0.66,0.54,0.66,0.54,0.54,0.66,0.81,1.00",19,0.53,0.03,"Sitelinks, AI Overview, Image pack, Video, People also ask, Related searches",9
+old norse translator,"Informational, Transactional",5400,"0.81,0.66,0.81,1.00,0.66,0.66,0.66,0.66,0.81,0.66,0.54,0.81",26,1.35,0.00,"Sitelinks, Image, Video, People also ask, Related searches",6840000
+translate from english to portuguese,Informational,5400,"0.44,0.35,1.00,0.54,0.44,0.54,1.00,1.00,0.67,0.44,0.67,0.67",27,0.81,0.01,"Instant answer, Video, People also ask, Related searches",9
+translate ukrainian to english,Informational,5400,"0.79,0.79,1.00,0.79,0.79,1.00,1.00,0.79,0.67,0.79,1.00,0.79",25,0.96,0.06,"Instant answer, Video, People also ask, Related searches",9
+translating asl,"Informational, Transactional",5400,"0.00,0.00,0.08,0.01,1.00,0.81,0.66,0.81,1.00,0.00,0.08,0.16",24,1.14,0.07,"Sitelinks, Video, Video carousel, People also ask, Related searches, See results about",1710000
+urdu to english translation,Informational,5400,"0.82,0.82,0.82,1.00,0.67,1.00,1.00,0.82,0.82,0.82,0.82,0.82",28,0.97,0.02,"Instant answer, Video, People also ask, Related searches",10

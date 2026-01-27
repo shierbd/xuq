@@ -1,0 +1,92 @@
+======================================================================
+Phase 2C DeepSeek语义标注报告
+======================================================================
+
+【标注概况】
+  待标注聚类数: 68
+  标注成功数: 68
+  标注失败数: 0
+  成功率: 100.0%
+
+【需求类型分布】
+  content: 47 (69.1%)
+  tool: 17 (25.0%)
+  education: 3 (4.4%)
+  service: 1 (1.5%)
+
+【置信度统计】
+  最低: 85
+  最高: 95
+  平均: 86.6
+  中位数: 85
+
+【Top 10 最大聚类标注结果】
+
+1. 聚类 10 (size=7980)
+   标签: Books and Reading Materials
+   描述: Users are searching for specific books, book series, authors, and reading-related content across various genres and purposes, including fiction, non-fiction, children's books, and specialized topics.
+   需求类型: content
+   置信度: 95
+
+2. 聚类 42 (size=5936)
+   标签: Music and Audio Content
+   描述: Users are searching for various music-related content including song lyrics, audio equipment, live events, and music services, with a mix of informational, transactional, and entertainment needs.
+   需求类型: content
+   置信度: 85
+
+3. 聚类 66 (size=5866)
+   标签: Digital Media Tools & Content
+   描述: Users are searching for tools and resources related to digital media creation, editing, and management, including cameras, photo editing software, file conversion, and image content, with some queries about specific products and services.
+   需求类型: tool
+   置信度: 85
+
+4. 聚类 8 (size=4470)
+   标签: Calculation Tools and Resources
+   描述: Users are seeking various calculators, converters, and reference tools to perform specific calculations across diverse domains including education, finance, health, and daily tasks.
+   需求类型: tool
+   置信度: 95
+
+5. 聚类 44 (size=4382)
+   标签: Calendar Information and Access
+   描述: Users are searching for specific calendar data across various contexts including academic institutions, schools, holidays, and personal planning, with some queries focused on accessing or managing calendar tools.
+   需求类型: content
+   置信度: 85
+
+6. 聚类 21 (size=3781)
+   标签: Career and Management Information
+   描述: Users are searching for information about management roles, career opportunities, job descriptions, and educational requirements across various industries, with a focus on understanding responsibilities, qualifications, and advancement paths.
+   需求类型: content
+   置信度: 85
+
+7. 聚类 11 (size=3722)
+   标签: Mobile Apps and Software
+   描述: Users are searching for mobile applications, software tools, and related information across iOS and Android platforms, including app downloads, troubleshooting, development, and specific app functionalities.
+   需求类型: tool
+   置信度: 85
+
+8. 聚类 3 (size=3711)
+   标签: Video Content Tools and Information
+   描述: Users are searching for tools and information related to video content creation, editing, downloading, and management across platforms like YouTube, with additional queries about channel guides and technical issues.
+   需求类型: tool
+   置信度: 85
+
+9. 聚类 35 (size=3619)
+   标签: Beginner tutorials and patterns
+   描述: Users are searching for introductory guides, step-by-step instructions, and downloadable resources across various hobbies and activities, with a strong focus on crafts like crochet and knitting, but also extending to other beginner interests.
+   需求类型: content
+   置信度: 85
+
+10. 聚类 19 (size=3604)
+   标签: Simulation and Gaming Queries
+   描述: Users are searching for information about simulation games across various platforms, seeking recommendations, downloads, and discussions, while also exploring broader gaming topics like jobs, AI impact, and online platforms.
+   需求类型: content
+   置信度: 85
+
+======================================================================
+✅ 语义标注完成！
+
+下一步:
+  1. 检查标注质量，修正明显错误
+  2. 在UI中筛选高价值聚类
+  3. 运行Phase 3: 人工筛选和评分
+======================================================================

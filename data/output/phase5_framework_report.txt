@@ -1,0 +1,96 @@
+======================================================================
+Phase 5 需求框架词库分析报告
+======================================================================
+
+【数据概况】
+  输入短语数: 500
+  最小频次阈值: 5
+  提取n-gram数: 26
+
+【Token分类统计】
+  object: 21 个 (80.8%)
+  intent: 2 个 (7.7%)
+  other: 2 个 (7.7%)
+  action: 1 个 (3.8%)
+
+【各类型高频Token Top 10】
+
+  INTENT:
+     1. best                 -    35次
+     2. near                 -     8次
+
+  ACTION:
+     1. check                -     7次
+
+  OBJECT:
+     1. code                 -   201次
+     2. area code            -   181次
+     3. area                 -   181次
+     4. calculator           -    19次
+     5. list                 -    16次
+     6. chart                -    14次
+     7. ideas                -    12次
+     8. tattoo               -     9次
+     9. promo code           -     6次
+    10. video                -     6次
+
+  OTHER:
+     1. youtube              -     9次
+     2. online               -     8次
+
+【高频N-gram Top 20】
+   1. [2-gram]   area code                 -   181次 [object]
+   2. [2-gram]   promo code                -     6次 [object]
+   3. [2-gram]   blood test                -     5次 [object]
+   4. [2-gram]   depth chart               -     5次 [object]
+   5. [2-gram]   card list                 -     5次 [object]
+   6. [1-gram]   code                      -   201次 [object]
+   7. [1-gram]   area                      -   181次 [object]
+   8. [1-gram]   best                      -    35次 [intent]
+   9. [1-gram]   calculator                -    19次 [object]
+  10. [1-gram]   list                      -    16次 [object]
+  11. [1-gram]   chart                     -    14次 [object]
+  12. [1-gram]   ideas                     -    12次 [object]
+  13. [1-gram]   youtube                   -     9次 [other]
+  14. [1-gram]   tattoo                    -     9次 [object]
+  15. [1-gram]   online                    -     8次 [other]
+  16. [1-gram]   near                      -     8次 [intent]
+  17. [1-gram]   check                     -     7次 [action]
+  18. [1-gram]   video                     -     6次 [object]
+  19. [1-gram]   anime                     -     6次 [object]
+  20. [1-gram]   generator                 -     6次 [object]
+
+【高频需求模式 Top 20】
+   1. [object] [object]                                  -   181次
+      示例: 213 area code
+   2. [other] [other]                                    -    65次
+      示例: how to change a tire
+   3. [other] [other] [other]                            -    56次
+      示例: image search techniques
+   4. [other] [other] [object]                           -    50次
+      示例: download youtube video
+   5. [other] [object]                                   -    29次
+      示例: hi anime
+   6. [intent] [other] [other]                           -    17次
+      示例: best time to visit japan
+   7. [other] [other] [other] [object]                   -    17次
+      示例: portable solar power generator
+   8. [other] [other] [other] [other]                    -    15次
+      示例: radio city music hall
+   9. [intent] [other] [other] [other]                   -    10次
+      示例: best black friday deals
+  10. [other] [object] [object]                          -     6次
+      示例: youtube to mp3 converter
+  11. [other] [other] [other] [other] [other]            -     6次
+      示例: valabasas online clothing bbb complaints
+  12. [other] [object] [other]                           -     6次
+      示例: physician assistant salary
+  13. [object] [other]                                   -     5次
+      示例: list crawler
+  14. [other]                                            -     5次
+      示例: x ideos
+
+======================================================================
+输出文件:
+  - Token CSV: D:\xiangmu\词根聚类需求挖掘\data\output\tokens_extracted.csv
+======================================================================

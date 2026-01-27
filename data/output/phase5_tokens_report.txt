@@ -1,0 +1,48 @@
+======================================================================
+Phase 5 Token提取与分类报告
+======================================================================
+
+【数据概况】
+  输入短语数: 1,000
+  最小频次阈值: 5
+  提取token数: 79
+  提取bigram数: 15
+
+【高频Token Top 20】
+   1. code                 -   266次 [other]
+   2. area                 -   216次 [other]
+   3. best                 -    65次 [other]
+   4. calculator           -    34次 [other]
+   5. list                 -    30次 [other]
+   6. test                 -    26次 [other]
+   7. chart                -    26次 [other]
+   8. ideas                -    23次 [other]
+   9. tattoo               -    23次 [other]
+  10. video                -    22次 [other]
+  11. text                 -    19次 [other]
+  12. online               -    18次 [other]
+  13. check                -    17次 [other]
+  14. youtube              -    16次 [other]
+  15. promo                -    15次 [other]
+  16. zip                  -    15次 [other]
+  17. videos               -    15次 [other]
+  18. tattoos              -    14次 [other]
+  19. downloader           -    13次 [other]
+  20. near                 -    13次 [other]
+
+【高频Bigram Top 10】
+   1. area code                      -   215次
+   2. zip code                       -    14次
+   3. promo code                     -    13次
+   4. card list                      -    12次
+   5. tattoo ideas                   -     8次
+   6. blood test                     -     7次
+   7. discount code                  -     7次
+   8. youtube mp3                    -     5次
+   9. depth chart                    -     5次
+  10. stimulus check                 -     5次
+
+======================================================================
+输出文件:
+  - Token CSV: D:\xiangmu\词根聚类需求挖掘\data\output\tokens_extracted.csv
+======================================================================
