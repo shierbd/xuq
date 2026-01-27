@@ -12,7 +12,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ```bash
 # 每次对话开始时，必须先读取需求文档
-cat docs/USER_REQUIREMENTS.md
+cat docs/需求文档.md
 ```
 
 ### 第二步：需求对齐检查
@@ -44,7 +44,7 @@ cat docs/USER_REQUIREMENTS.md
 
 ### 需求文档位置
 
-**主需求文档**: `docs/USER_REQUIREMENTS.md`
+**主需求文档**: `docs/需求文档.md`
 
 ---
 
@@ -200,14 +200,13 @@ cat docs/USER_REQUIREMENTS.md
 ## 📚 核心文档
 
 ### 必读文档（开始前）
-1. **docs/USER_REQUIREMENTS.md** - 用户需求文档（必读）
-2. **docs/01_需求挖掘方法论.md** - 完整的方法论
-3. **docs/02_字段命名规范.md** - 字段命名标准
-4. **docs/03_实施优先级指南.md** - Phase 1/2/3规划
+1. **docs/需求文档.md** - 统一需求文档（必读）
+2. **docs/使用手册.md** - 完整使用说明
+3. **docs/04_快速开始指南.md** - 快速上手
 
 ### 开发文档
 1. **README.md** - 项目说明
-2. **docs/04_快速开始指南.md** - 快速上手
+2. **docs/API使用示例.md** - API使用指南
 
 ---
 
