@@ -382,3 +382,119 @@ def get_cluster_quality(db: Session = Depends(get_db)):
     report = clustering_service.get_cluster_quality_report()
 
     return report
+
+# [REQ-006] 聚类结果展示 - API 路由扩展
+
+from backend.services.cluster_view_service import ClusterViewService
+
+@router.get("/clusters/overview")
+def get_clusters_overview(
+    min_size: Optional[int] = None,
+    max_size: Optional[int] = None,
+    exclude_noise: bool = True,
+    db: Session = Depends(get_db)
+):
+    """
+    [REQ-006] 获取所有簇的概览信息
+
+    参数：
+    - min_size: 最小簇大小
+    - max_size: 最大簇大小
+    - exclude_noise: 是否排除噪音点（默认 True）
+    """
+    view_service = ClusterViewService(db)
+    clusters = view_service.get_clusters_overview(
+        min_size=min_size,
+        max_size=max_size,
+        exclude_noise=exclude_noise
+    )
+
+    return {
+        "success": True,
+        "total": len(clusters),
+        "data": clusters
+    }
+
+@router.get("/clusters/search")
+def search_clusters(
+    keyword: str,
+    min_size: Optional[int] = None,
+    max_size: Optional[int] = None,
+    db: Session = Depends(get_db)
+):
+    """
+    [REQ-006] 搜索包含关键词的簇
+
+    参数：
+    - keyword: 搜索关键词（在商品名称中搜索）
+    - min_size: 最小簇大小
+    - max_size: 最大簇大小
+    """
+    if not keyword:
+        raise HTTPException(status_code=400, detail="请提供搜索关键词")
+
+    view_service = ClusterViewService(db)
+    clusters = view_service.search_clusters(
+        keyword=keyword,
+        min_size=min_size,
+        max_size=max_size
+    )
+
+    return {
+        "success": True,
+        "keyword": keyword,
+        "total": len(clusters),
+        "data": clusters
+    }
+
+@router.get("/clusters/statistics")
+def get_cluster_statistics(db: Session = Depends(get_db)):
+    """
+    [REQ-006] 获取整体聚类统计信息
+
+    返回聚类的整体统计数据
+    """
+    view_service = ClusterViewService(db)
+    stats = view_service.get_cluster_statistics()
+
+    return {
+        "success": True,
+        "data": stats
+    }
+
+@router.get("/clusters/noise")
+def get_noise_products(db: Session = Depends(get_db)):
+    """
+    [REQ-006] 获取所有噪音点商品
+
+    返回 cluster_id=-1 的所有商品
+    """
+    view_service = ClusterViewService(db)
+    noise_products = view_service.get_noise_products()
+
+    return {
+        "success": True,
+        "total": len(noise_products),
+        "data": noise_products
+    }
+
+@router.get("/clusters/{cluster_id}")
+def get_cluster_detail(
+    cluster_id: int,
+    db: Session = Depends(get_db)
+):
+    """
+    [REQ-006] 获取单个簇的详细信息
+
+    返回簇内所有商品和统计信息
+    """
+    view_service = ClusterViewService(db)
+    cluster = view_service.get_cluster_detail(cluster_id)
+
+    if not cluster:
+        raise HTTPException(status_code=404, detail="簇不存在或无商品")
+
+    return {
+        "success": True,
+        "data": cluster
+    }
