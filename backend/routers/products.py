@@ -106,3 +106,124 @@ def get_product_count(db: Session = Depends(get_db)):
             "total": total
         }
     }
+
+# [REQ-002] 数据管理功能 - API 路由扩展
+
+from backend.services.product_service import ProductService
+from backend.schemas.product_schema import (
+    ProductResponse, ProductListResponse, ProductUpdate, ProductQueryParams
+)
+from typing import List
+
+@router.get("/", response_model=ProductListResponse)
+def get_products(
+    page: int = 1,
+    page_size: int = 50,
+    search: Optional[str] = None,
+    shop_name: Optional[str] = None,
+    min_rating: Optional[float] = None,
+    max_rating: Optional[float] = None,
+    min_price: Optional[float] = None,
+    max_price: Optional[float] = None,
+    sort_by: str = "import_time",
+    sort_order: str = "desc",
+    db: Session = Depends(get_db)
+):
+    """
+    [REQ-002] 获取商品列表
+    
+    支持分页、搜索、筛选、排序
+    """
+    # 构建查询参数
+    params = ProductQueryParams(
+        page=page,
+        page_size=page_size,
+        search=search,
+        shop_name=shop_name,
+        min_rating=min_rating,
+        max_rating=max_rating,
+        min_price=min_price,
+        max_price=max_price,
+        sort_by=sort_by,
+        sort_order=sort_order
+    )
+    
+    # 查询商品
+    product_service = ProductService(db)
+    products, total = product_service.get_products(params)
+    
+    return ProductListResponse(
+        total=total,
+        page=page,
+        page_size=page_size,
+        items=[ProductResponse.from_orm(p) for p in products]
+    )
+
+@router.get("/{product_id}", response_model=ProductResponse)
+def get_product(
+    product_id: int,
+    db: Session = Depends(get_db)
+):
+    """
+    [REQ-002] 获取单个商品详情
+    """
+    product_service = ProductService(db)
+    product = product_service.get_product_by_id(product_id)
+    
+    if not product:
+        raise HTTPException(status_code=404, detail="商品不存在")
+    
+    return ProductResponse.from_orm(product)
+
+@router.put("/{product_id}", response_model=ProductResponse)
+def update_product(
+    product_id: int,
+    update_data: ProductUpdate,
+    db: Session = Depends(get_db)
+):
+    """
+    [REQ-002] 更新商品信息
+    """
+    product_service = ProductService(db)
+    product = product_service.update_product(product_id, update_data)
+    
+    if not product:
+        raise HTTPException(status_code=404, detail="商品不存在")
+    
+    return ProductResponse.from_orm(product)
+
+@router.delete("/{product_id}")
+def delete_product(
+    product_id: int,
+    db: Session = Depends(get_db)
+):
+    """
+    [REQ-002] 删除商品（软删除）
+    """
+    product_service = ProductService(db)
+    success = product_service.delete_product(product_id)
+    
+    if not success:
+        raise HTTPException(status_code=404, detail="商品不存在")
+    
+    return {
+        "success": True,
+        "message": "商品删除成功"
+    }
+
+@router.post("/batch-delete")
+def batch_delete_products(
+    product_ids: List[int],
+    db: Session = Depends(get_db)
+):
+    """
+    [REQ-002] 批量删除商品（软删除）
+    """
+    product_service = ProductService(db)
+    count = product_service.batch_delete_products(product_ids)
+    
+    return {
+        "success": True,
+        "message": f"成功删除 {count} 个商品",
+        "deleted_count": count
+    }
