@@ -23,12 +23,40 @@ class ClusteringService:
         self.cache_dir = "data/cache/embeddings"
         os.makedirs(self.cache_dir, exist_ok=True)
 
+        # 配置国内镜像和代理
+        self._setup_mirror_and_proxy()
+
+    def _setup_mirror_and_proxy(self):
+        """配置国内镜像源和代理"""
+        # 直接设置代理环境变量（优先使用代理）
+        os.environ['HTTP_PROXY'] = 'http://127.0.0.1:1080'
+        os.environ['HTTPS_PROXY'] = 'http://127.0.0.1:1080'
+        os.environ['http_proxy'] = 'http://127.0.0.1:1080'
+        os.environ['https_proxy'] = 'http://127.0.0.1:1080'
+
+        # 设置 HuggingFace 镜像（作为备选）
+        os.environ['HF_ENDPOINT'] = 'https://hf-mirror.com'
+
+        print(f"Proxy configured: http://127.0.0.1:1080")
+        print(f"HuggingFace mirror: {os.environ.get('HF_ENDPOINT')}")
+
     def load_model(self):
         """加载 Sentence Transformers 模型"""
         if self.model is None:
             print(f"Loading model: {self.model_name}...")
-            self.model = SentenceTransformer(self.model_name)
-            print("Model loaded successfully")
+            print("Using proxy: http://127.0.0.1:1080")
+
+            try:
+                self.model = SentenceTransformer(self.model_name)
+                print("Model loaded successfully!")
+            except Exception as e:
+                print(f"Failed to load model: {e}")
+                raise Exception(
+                    "Failed to load model. Please check:\n"
+                    "1. Proxy is running on port 1080\n"
+                    "2. Network connection is available\n"
+                    "3. Or manually download the model to ~/.cache/torch/sentence_transformers/"
+                )
         return self.model
 
     def _get_cache_key(self, text: str) -> str:
