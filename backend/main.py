@@ -1,17 +1,17 @@
 """
-[REQ-001] 数据导入功能 - FastAPI 主应用
-应用入口，配置路由和中间件
+需求挖掘系统 - FastAPI 主应用
+统一的后端服务，包含词根聚类和商品管理两大模块
 """
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from backend.database import init_db
-from backend.routers import products
+from backend.routers import products, keywords
 
 # 创建 FastAPI 应用
 app = FastAPI(
     title="需求挖掘系统 API",
-    description="基于 Etsy 商品数据的需求挖掘与分析平台",
-    version="1.0.0"
+    description="统一的需求挖掘与分析平台，包含词根聚类和商品管理功能",
+    version="2.0.0"
 )
 
 # 配置 CORS
@@ -24,20 +24,32 @@ app.add_middleware(
 )
 
 # 注册路由
-app.include_router(products.router)
+app.include_router(keywords.router)  # 词根聚类模块
+app.include_router(products.router)  # 商品管理模块
 
 @app.on_event("startup")
 async def startup_event():
     """应用启动时初始化数据库"""
     init_db()
+    print("Database initialized successfully")
     print("Application started successfully")
+    print("=" * 50)
+    print("需求挖掘系统 v2.0")
+    print("包含模块：")
+    print("  - 词根聚类模块: /api/keywords/*")
+    print("  - 商品管理模块: /api/products/*")
+    print("=" * 50)
 
 @app.get("/")
 async def root():
     """根路径"""
     return {
         "message": "需求挖掘系统 API",
-        "version": "1.0.0",
+        "version": "2.0.0",
+        "modules": {
+            "keywords": "词根聚类模块",
+            "products": "商品管理模块"
+        },
         "docs": "/docs"
     }
 

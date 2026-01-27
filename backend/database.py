@@ -40,9 +40,10 @@ def get_db() -> Session:
 def init_db():
     """
     [REQ-001] 初始化数据库
-    
+
     创建所有表
     """
     from backend.models.product import Product
+    from backend.models.keyword import Keyword, ClusterSummary
     Base.metadata.create_all(bind=engine)
     print("Database initialized successfully")

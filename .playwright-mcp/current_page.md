@@ -1,0 +1,361 @@
+- generic [ref=e3]:
+  - generic:
+    - img
+  - generic [ref=e4]:
+    - generic [ref=e7]:
+      - generic [ref=e8]:
+        - heading "需求挖掘系统 API 1.0.0 OAS 3.1" [level=2] [ref=e9]:
+          - text: 需求挖掘系统 API
+          - generic [ref=e10]:
+            - generic [ref=e12]: 1.0.0
+            - generic [ref=e14]: OAS 3.1
+        - link "/openapi.json" [ref=e15] [cursor=pointer]:
+          - /url: /openapi.json
+          - generic [ref=e16]: /openapi.json
+      - paragraph [ref=e19]: 基于 Etsy 商品数据的需求挖掘与分析平台
+    - generic [ref=e22]:
+      - generic [ref=e24]:
+        - heading "products Collapse operation" [level=3] [ref=e25] [cursor=pointer]:
+          - link "products" [ref=e26]:
+            - /url: "#/products"
+          - button "Collapse operation" [expanded] [ref=e27]:
+            - img [ref=e28]
+        - generic [ref=e31]:
+          - generic [ref=e34] [cursor=pointer]:
+            - button "post /api/products/import" [ref=e35]:
+              - generic [ref=e36]: POST
+              - link "/api/products/import" [ref=e38]:
+                - /url: "#/products/import_products_api_products_import_post"
+                - generic [ref=e39]:
+                  - text: /api
+                  - text: /products
+                  - text: /import
+              - generic [ref=e40]: Import Products
+            - generic "Copy to clipboard"
+            - button "post /api/products/import" [ref=e43]:
+              - img [ref=e44]
+          - generic [ref=e48] [cursor=pointer]:
+            - button "post /api/products/preview" [ref=e49]:
+              - generic [ref=e50]: POST
+              - link "/api/products/preview" [ref=e52]:
+                - /url: "#/products/preview_import_api_products_preview_post"
+                - generic [ref=e53]:
+                  - text: /api
+                  - text: /products
+                  - text: /preview
+              - generic [ref=e54]: Preview Import
+            - generic "Copy to clipboard"
+            - button "post /api/products/preview" [ref=e59]:
+              - img [ref=e60]
+          - generic [ref=e64] [cursor=pointer]:
+            - button "get /api/products/count" [ref=e65]:
+              - generic [ref=e66]: GET
+              - link "/api/products/count" [ref=e68]:
+                - /url: "#/products/get_product_count_api_products_count_get"
+                - generic [ref=e69]:
+                  - text: /api
+                  - text: /products
+                  - text: /count
+              - generic [ref=e70]: Get Product Count
+            - generic "Copy to clipboard"
+            - button "get /api/products/count" [ref=e73]:
+              - img [ref=e74]
+          - generic [ref=e78] [cursor=pointer]:
+            - button "get /api/products/" [ref=e79]:
+              - generic [ref=e80]: GET
+              - link /api/products/ [ref=e82]:
+                - /url: "#/products/get_products_api_products__get"
+                - generic [ref=e83]:
+                  - text: /api
+                  - text: /products
+                  - text: /
+              - generic [ref=e84]: Get Products
+            - generic "Copy to clipboard"
+            - button "get /api/products/" [ref=e87]:
+              - img [ref=e88]
+          - generic [ref=e92] [cursor=pointer]:
+            - 'button "get /api/products/{product_id}" [ref=e93]':
+              - generic [ref=e94]: GET
+              - 'link "/api/products/{product_id}" [ref=e96]':
+                - /url: "#/products/get_product_api_products__product_id__get"
+                - generic [ref=e97]:
+                  - text: /api
+                  - text: /products
+                  - text: "/{product_id}"
+              - generic [ref=e98]: Get Product
+            - generic "Copy to clipboard"
+            - 'button "get /api/products/{product_id}" [ref=e101]':
+              - img [ref=e102]
+          - generic [ref=e106] [cursor=pointer]:
+            - 'button "put /api/products/{product_id}" [ref=e107]':
+              - generic [ref=e108]: PUT
+              - 'link "/api/products/{product_id}" [ref=e110]':
+                - /url: "#/products/update_product_api_products__product_id__put"
+                - generic [ref=e111]:
+                  - text: /api
+                  - text: /products
+                  - text: "/{product_id}"
+              - generic [ref=e112]: Update Product
+            - generic "Copy to clipboard"
+            - 'button "put /api/products/{product_id}" [ref=e115]':
+              - img [ref=e116]
+          - generic [ref=e120] [cursor=pointer]:
+            - 'button "delete /api/products/{product_id}" [ref=e121]':
+              - generic [ref=e122]: DELETE
+              - 'link "/api/products/{product_id}" [ref=e124]':
+                - /url: "#/products/delete_product_api_products__product_id__delete"
+                - generic [ref=e125]:
+                  - text: /api
+                  - text: /products
+                  - text: "/{product_id}"
+              - generic [ref=e126]: Delete Product
+            - generic "Copy to clipboard"
+            - 'button "delete /api/products/{product_id}" [ref=e129]':
+              - img [ref=e130]
+          - generic [ref=e134] [cursor=pointer]:
+            - button "post /api/products/batch-delete" [ref=e135]:
+              - generic [ref=e136]: POST
+              - link "/api/products/batch-delete" [ref=e138]:
+                - /url: "#/products/batch_delete_products_api_products_batch_delete_post"
+                - generic [ref=e139]:
+                  - text: /api
+                  - text: /products
+                  - text: /batch-delete
+              - generic [ref=e140]: Batch Delete Products
+            - generic "Copy to clipboard"
+            - button "post /api/products/batch-delete" [ref=e143]:
+              - img [ref=e144]
+          - generic [ref=e148] [cursor=pointer]:
+            - button "get /api/products/export/products" [ref=e149]:
+              - generic [ref=e150]: GET
+              - link "/api/products/export/products" [ref=e152]:
+                - /url: "#/products/export_products_api_products_export_products_get"
+                - generic [ref=e153]:
+                  - text: /api
+                  - text: /products
+                  - text: /export
+                  - text: /products
+              - generic [ref=e154]: Export Products
+            - generic "Copy to clipboard"
+            - button "get /api/products/export/products" [ref=e157]:
+              - img [ref=e158]
+          - generic [ref=e162] [cursor=pointer]:
+            - button "get /api/products/export/clustered" [ref=e163]:
+              - generic [ref=e164]: GET
+              - link "/api/products/export/clustered" [ref=e166]:
+                - /url: "#/products/export_clustered_products_api_products_export_clustered_get"
+                - generic [ref=e167]:
+                  - text: /api
+                  - text: /products
+                  - text: /export
+                  - text: /clustered
+              - generic [ref=e168]: Export Clustered Products
+            - generic "Copy to clipboard"
+            - button "get /api/products/export/clustered" [ref=e171]:
+              - img [ref=e172]
+          - generic [ref=e176] [cursor=pointer]:
+            - button "get /api/products/export/cluster-summary" [ref=e177]:
+              - generic [ref=e178]: GET
+              - link "/api/products/export/cluster-summary" [ref=e180]:
+                - /url: "#/products/export_cluster_summary_api_products_export_cluster_summary_get"
+                - generic [ref=e181]:
+                  - text: /api
+                  - text: /products
+                  - text: /export
+                  - text: /cluster-summary
+              - generic [ref=e182]: Export Cluster Summary
+            - generic "Copy to clipboard"
+            - button "get /api/products/export/cluster-summary" [ref=e185]:
+              - img [ref=e186]
+          - generic [ref=e190] [cursor=pointer]:
+            - button "post /api/products/cluster" [active] [ref=e191]:
+              - generic [ref=e192]: POST
+              - link "/api/products/cluster" [ref=e194]:
+                - /url: "#/products/cluster_products_api_products_cluster_post"
+                - generic [ref=e195]:
+                  - text: /api
+                  - text: /products
+                  - text: /cluster
+              - generic [ref=e196]: Cluster Products
+            - generic "Copy to clipboard" [ref=e419]:
+              - img [ref=e420]
+            - button "post /api/products/cluster" [ref=e199]:
+              - img [ref=e421]
+          - generic [ref=e209] [cursor=pointer]:
+            - button "get /api/products/cluster/summary" [ref=e210]:
+              - generic [ref=e211]: GET
+              - link "/api/products/cluster/summary" [ref=e213]:
+                - /url: "#/products/get_cluster_summary_api_products_cluster_summary_get"
+                - generic [ref=e214]:
+                  - text: /api
+                  - text: /products
+                  - text: /cluster
+                  - text: /summary
+              - generic [ref=e215]: Get Cluster Summary
+            - generic "Copy to clipboard"
+            - button "get /api/products/cluster/summary" [ref=e218]:
+              - img [ref=e219]
+          - generic [ref=e223] [cursor=pointer]:
+            - button "get /api/products/cluster/quality" [ref=e224]:
+              - generic [ref=e225]: GET
+              - link "/api/products/cluster/quality" [ref=e227]:
+                - /url: "#/products/get_cluster_quality_api_products_cluster_quality_get"
+                - generic [ref=e228]:
+                  - text: /api
+                  - text: /products
+                  - text: /cluster
+                  - text: /quality
+              - generic [ref=e229]: Get Cluster Quality
+            - generic "Copy to clipboard"
+            - button "get /api/products/cluster/quality" [ref=e232]:
+              - img [ref=e233]
+          - generic [ref=e237] [cursor=pointer]:
+            - button "get /api/products/clusters/overview" [ref=e238]:
+              - generic [ref=e239]: GET
+              - link "/api/products/clusters/overview" [ref=e241]:
+                - /url: "#/products/get_clusters_overview_api_products_clusters_overview_get"
+                - generic [ref=e242]:
+                  - text: /api
+                  - text: /products
+                  - text: /clusters
+                  - text: /overview
+              - generic [ref=e243]: Get Clusters Overview
+            - generic "Copy to clipboard"
+            - button "get /api/products/clusters/overview" [ref=e246]:
+              - img [ref=e247]
+          - generic [ref=e251] [cursor=pointer]:
+            - button "get /api/products/clusters/search" [ref=e252]:
+              - generic [ref=e253]: GET
+              - link "/api/products/clusters/search" [ref=e255]:
+                - /url: "#/products/search_clusters_api_products_clusters_search_get"
+                - generic [ref=e256]:
+                  - text: /api
+                  - text: /products
+                  - text: /clusters
+                  - text: /search
+              - generic [ref=e257]: Search Clusters
+            - generic "Copy to clipboard"
+            - button "get /api/products/clusters/search" [ref=e260]:
+              - img [ref=e261]
+          - generic [ref=e265] [cursor=pointer]:
+            - button "get /api/products/clusters/statistics" [ref=e266]:
+              - generic [ref=e267]: GET
+              - link "/api/products/clusters/statistics" [ref=e269]:
+                - /url: "#/products/get_cluster_statistics_api_products_clusters_statistics_get"
+                - generic [ref=e270]:
+                  - text: /api
+                  - text: /products
+                  - text: /clusters
+                  - text: /statistics
+              - generic [ref=e271]: Get Cluster Statistics
+            - generic "Copy to clipboard"
+            - button "get /api/products/clusters/statistics" [ref=e274]:
+              - img [ref=e275]
+          - generic [ref=e279] [cursor=pointer]:
+            - button "get /api/products/clusters/noise" [ref=e280]:
+              - generic [ref=e281]: GET
+              - link "/api/products/clusters/noise" [ref=e283]:
+                - /url: "#/products/get_noise_products_api_products_clusters_noise_get"
+                - generic [ref=e284]:
+                  - text: /api
+                  - text: /products
+                  - text: /clusters
+                  - text: /noise
+              - generic [ref=e285]: Get Noise Products
+            - generic "Copy to clipboard"
+            - button "get /api/products/clusters/noise" [ref=e288]:
+              - img [ref=e289]
+          - generic [ref=e293] [cursor=pointer]:
+            - 'button "get /api/products/clusters/{cluster_id}" [ref=e294]':
+              - generic [ref=e295]: GET
+              - 'link "/api/products/clusters/{cluster_id}" [ref=e297]':
+                - /url: "#/products/get_cluster_detail_api_products_clusters__cluster_id__get"
+                - generic [ref=e298]:
+                  - text: /api
+                  - text: /products
+                  - text: /clusters
+                  - text: "/{cluster_id}"
+              - generic [ref=e299]: Get Cluster Detail
+            - generic "Copy to clipboard"
+            - 'button "get /api/products/clusters/{cluster_id}" [ref=e302]':
+              - img [ref=e303]
+      - generic [ref=e306]:
+        - heading "default Collapse operation" [level=3] [ref=e307] [cursor=pointer]:
+          - link "default" [ref=e308]:
+            - /url: "#/default"
+          - button "Collapse operation" [expanded] [ref=e309]:
+            - img [ref=e310]
+        - generic [ref=e313]:
+          - generic [ref=e316] [cursor=pointer]:
+            - button "get /" [ref=e317]:
+              - generic [ref=e318]: GET
+              - link / [ref=e320]:
+                - /url: "#/default/root__get"
+              - generic [ref=e321]: Root
+            - generic "Copy to clipboard"
+            - button "get /" [ref=e324]:
+              - img [ref=e325]
+          - generic [ref=e329] [cursor=pointer]:
+            - button "get /health" [ref=e330]:
+              - generic [ref=e331]: GET
+              - link "/health" [ref=e333]:
+                - /url: "#/default/health_check_health_get"
+              - generic [ref=e334]: Health Check
+            - generic "Copy to clipboard"
+            - button "get /health" [ref=e337]:
+              - img [ref=e338]
+    - generic [ref=e342]:
+      - heading "Schemas" [level=4] [ref=e343] [cursor=pointer]:
+        - button "Schemas" [expanded] [ref=e344]:
+          - generic [ref=e345]: Schemas
+          - img [ref=e346]
+      - generic [ref=e348]:
+        - article [ref=e349]:
+          - generic [ref=e350]:
+            - button "Body_import_products_api_products_import_post" [ref=e351] [cursor=pointer]:
+              - generic [ref=e353]: Body_import_products_api_products_import_post
+              - img [ref=e355]
+            - button "Expand all" [ref=e357] [cursor=pointer]
+            - strong [ref=e358]: object
+        - article [ref=e359]:
+          - generic [ref=e360]:
+            - button "Body_preview_import_api_products_preview_post" [ref=e361] [cursor=pointer]:
+              - generic [ref=e363]: Body_preview_import_api_products_preview_post
+              - img [ref=e365]
+            - button "Expand all" [ref=e367] [cursor=pointer]
+            - strong [ref=e368]: object
+        - article [ref=e369]:
+          - generic [ref=e370]:
+            - button "HTTPValidationError" [ref=e371] [cursor=pointer]:
+              - generic [ref=e373]: HTTPValidationError
+              - img [ref=e375]
+            - button "Expand all" [ref=e377] [cursor=pointer]
+            - strong [ref=e378]: object
+        - article [ref=e379]:
+          - generic [ref=e380]:
+            - button "ProductListResponse" [ref=e381] [cursor=pointer]:
+              - generic [ref=e383]: ProductListResponse
+              - img [ref=e385]
+            - button "Expand all" [ref=e387] [cursor=pointer]
+            - strong [ref=e388]: object
+        - article [ref=e389]:
+          - generic [ref=e390]:
+            - button "ProductResponse" [ref=e391] [cursor=pointer]:
+              - generic [ref=e393]: ProductResponse
+              - img [ref=e395]
+            - button "Expand all" [ref=e397] [cursor=pointer]
+            - strong [ref=e398]: object
+        - article [ref=e399]:
+          - generic [ref=e400]:
+            - button "ProductUpdate" [ref=e401] [cursor=pointer]:
+              - generic [ref=e403]: ProductUpdate
+              - img [ref=e405]
+            - button "Expand all" [ref=e407] [cursor=pointer]
+            - strong [ref=e408]: object
+        - article [ref=e409]:
+          - generic [ref=e410]:
+            - button "ValidationError" [ref=e411] [cursor=pointer]:
+              - generic [ref=e413]: ValidationError
+              - img [ref=e415]
+            - button "Expand all" [ref=e417] [cursor=pointer]
+            - strong [ref=e418]: object

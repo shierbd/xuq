@@ -1,74 +1,81 @@
-# 词根聚类需求挖掘系统
+# 需求挖掘系统 v2.0
 
 ## 📋 项目简介
 
-这是一个基于语义聚类的需求挖掘方法论系统，用于从英文单词种子（word roots）发现产品机会方向。
+这是一个统一的需求挖掘与分析平台，包含**词根聚类**和**商品管理**两大模块。
 
 **核心理念**：从单词 → 短语 → 语义簇 → 需求方向 → MVP验证
+
+### 系统架构
+
+```
+需求挖掘系统 v2.0
+├── 词根聚类模块 - 基于语义聚类的需求挖掘
+└── 商品管理模块 - Etsy商品数据分析
+```
 
 ---
 
 ## 🚀 快速开始
 
-### 第一次使用（3步上手）
+### 启动系统（2步上手）
 
-1. **阅读快速指南**
+1. **启动后端服务**
    ```bash
-   打开：docs/04_快速开始指南.md
+   python -m uvicorn backend.main:app --reload --port 8000
    ```
 
-2. **运行聚类分析**
+2. **启动前端界面**
    ```bash
-   cd scripts
-   python step_A3_clustering.py
+   cd frontend
+   npm run dev
    ```
 
-3. **查看质量报告**
-   ```bash
-   python cluster_stats.py
-   ```
+3. **访问系统**
+   - 前端界面: http://localhost:5173
+   - 后端 API: http://127.0.0.1:8000
+   - API 文档: http://127.0.0.1:8000/docs
 
 ---
 
 ## 📁 项目结构
 
 ```
-词根聚类需求挖掘/
+需求挖掘系统/
 │
-├── 📂 scripts/              # 可执行脚本
-│   ├── step_A2_merge_csv.py      # 合并CSV文件
-│   ├── step_A3_clustering.py     # 聚类分析（核心）
-│   ├── cluster_stats.py          # 结果统计分析
-│   ├── validation.py             # 字段验证工具
-│   ├── config.py                 # 全局配置
-│   └── utils.py                  # 工具函数
+├── 📂 backend/              # 统一后端服务
+│   ├── main.py             # FastAPI 应用入口
+│   ├── database.py         # 数据库配置
+│   ├── models/             # 数据模型
+│   │   ├── product.py     # 商品模型
+│   │   └── keyword.py     # 关键词模型
+│   └── routers/            # API 路由
+│       ├── products.py    # 商品管理 API
+│       └── keywords.py    # 词根聚类 API
 │
-├── 📂 docs/                 # 方法论文档
-│   ├── 01_需求挖掘方法论.md       # 完整方法论（必读）
-│   ├── 02_字段命名规范.md         # 字段命名标准
-│   ├── 03_实施优先级指南.md       # Phase 1/2/3规划
-│   ├── 04_快速开始指南.md         # 新手教程
-│   │
-│   ├── 📂 tutorials/        # 操作教程
-│   │   ├── step_A2_使用说明.md
-│   │   └── step_A3_使用说明.md
-│   │
-│   ├── 📂 analysis/         # 历史分析记录
-│   │   ├── 第一次聚类分析.md
-│   │   ├── GPT原始反馈.md
-│   │   ├── GPT反馈总结.md
-│   │   └── 修复记录.md
-│   │
-│   └── 📂 technical/        # 技术文档
-│       ├── 聚类原理讲解.md
-│       └── 长度影响分析.md
+├── 📂 frontend/             # Vue 3 前端
+│   ├── src/
+│   │   ├── components/    # 组件
+│   │   ├── views/         # 页面
+│   │   └── stores/        # 状态管理
+│   └── package.json
 │
 ├── 📂 data/                 # 数据文件
-│   ├── merged_keywords_all.csv
-│   ├── stageA_clusters.csv
-│   └── cluster_summary_A3.csv
+│   ├── products.db        # 统一数据库（SQLite）
+│   ├── merged_keywords_all.csv  # 关键词数据
+│   └── stageA_clusters.csv      # 聚类结果
 │
-└── 📂 output/               # 输出结果
+├── 📂 docs/                 # 文档
+│   ├── USER_REQUIREMENTS.md     # 用户需求文档
+│   ├── 01_需求挖掘方法论.md      # 完整方法论
+│   ├── 02_字段命名规范.md        # 字段规范
+│   ├── 03_实施优先级指南.md      # 实施指南
+│   ├── 04_快速开始指南.md        # 快速开始
+│   └── 项目合并完成总结.md       # 合并总结
+│
+└── 📂 scripts/              # 聚类分析脚本
+    ├── step_A3_clustering.py   # 聚类分析
+    └── cluster_stats.py        # 质量分析
 ```
 
 ---
@@ -77,142 +84,146 @@
 
 ### ⭐⭐⭐ 必读（开始前）
 
-1. **[需求挖掘方法论](docs/01_需求挖掘方法论.md)** - 完整的A1-A5, B1-B8流程
-2. **[实施优先级指南](docs/03_实施优先级指南.md)** - Phase 1/2/3分阶段计划
-3. **[字段命名规范](docs/02_字段命名规范.md)** - CSV字段标准
+1. **[用户需求文档](docs/USER_REQUIREMENTS.md)** - 系统需求和功能说明
+2. **[项目合并总结](docs/项目合并完成总结.md)** - 系统架构和技术实现
+3. **[快速开始指南](docs/04_快速开始指南.md)** - 快速上手教程
 
-### ⭐⭐ 重要（第一次使用）
+### ⭐⭐ 重要（深入使用）
 
-4. **[快速开始指南](docs/04_快速开始指南.md)** - 快速上手教程
-5. **[step_A3使用说明](docs/tutorials/step_A3_使用说明.md)** - 聚类脚本教程
-
-### ⭐ 可选（深入理解）
-
-6. **[聚类原理讲解](docs/technical/聚类原理讲解.md)** - HDBSCAN算法原理
-7. **[GPT反馈总结](docs/analysis/GPT反馈总结.md)** - GPT的方法论反馈
+4. **[需求挖掘方法论](docs/01_需求挖掘方法论.md)** - 完整的A1-A5, B1-B8流程
+5. **[实施优先级指南](docs/03_实施优先级指南.md)** - Phase 1/2/3分阶段计划
+6. **[字段命名规范](docs/02_字段命名规范.md)** - CSV字段标准
 
 ---
 
-## 🎯 使用场景指南
+## 🎯 功能模块
 
-### 场景1：我想运行聚类分析
+### 1. 词根聚类模块
+
+**功能**：基于语义聚类的需求挖掘
+
+**API 端点**：
+- `POST /api/keywords/import` - 导入关键词数据
+- `GET /api/keywords/` - 获取关键词列表
+- `GET /api/keywords/count` - 获取关键词总数
+- `GET /api/keywords/clusters/overview` - 获取簇概览
+- `GET /api/keywords/clusters/{cluster_id}` - 获取簇详情
+- `GET /api/keywords/seed-words` - 获取种子词列表
+
+**数据表**：
+- `keywords` - 关键词数据表
+- `cluster_summaries` - 簇汇总表
+
+### 2. 商品管理模块
+
+**功能**：Etsy商品数据分析
+
+**API 端点**：
+- `POST /api/products/import` - 导入商品数据
+- `GET /api/products/` - 获取商品列表
+- `GET /api/products/count` - 获取商品总数
+- `GET /api/products/{product_id}` - 获取商品详情
+- `PUT /api/products/{product_id}` - 更新商品信息
+- `DELETE /api/products/{product_id}` - 删除商品（软删除）
+
+**数据表**：
+- `products` - 商品数据表
+
+---
+
+## 🔧 技术栈
+
+### 后端
+- **框架**: FastAPI 0.104+
+- **数据库**: SQLite 3
+- **ORM**: SQLAlchemy 2.0+
+- **服务器**: Uvicorn
+
+### 前端
+- **框架**: Vue 3
+- **构建工具**: Vite
+- **UI 库**: Element Plus
+- **状态管理**: Pinia
+
+### AI/ML
+- **嵌入模型**: Sentence Transformers (all-MiniLM-L6-v2)
+- **聚类算法**: HDBSCAN
+- **大模型**: Claude API
+
+---
+
+## 🚀 使用场景
+
+### 场景1：导入并分析关键词数据
 
 ```bash
-# Step 1: 查看配置
-cd scripts
-cat config.py
+# 1. 启动后端
+python -m uvicorn backend.main:app --reload --port 8000
 
-# Step 2: 运行聚类
+# 2. 通过 API 导入数据
+curl -X POST "http://127.0.0.1:8000/api/keywords/import" \
+  -F "file=@data/merged_keywords_all.csv"
+
+# 3. 查看导入结果
+curl "http://127.0.0.1:8000/api/keywords/count"
+
+# 4. 查看簇概览
+curl "http://127.0.0.1:8000/api/keywords/clusters/overview"
+```
+
+### 场景2：运行聚类分析
+
+```bash
+# 使用脚本进行聚类分析
+cd scripts
 python step_A3_clustering.py
 
-# Step 3: 分析结果质量
-python cluster_stats.py
-
-# Step 4: 验证字段规范
-python validation.py
-```
-
-**预期结果**：
-- 生成 `data/stageA_clusters.csv`（带簇标签的短语）
-- 生成 `data/cluster_summary_A3.csv`（簇级汇总）
-- 簇数量：60-100个
-- 噪音比例：15-25%
-
----
-
-### 场景2：我想了解完整方法论
-
-```
-阅读顺序：
-1. docs/01_需求挖掘方法论.md（完整流程）
-2. docs/03_实施优先级指南.md（分阶段实施）
-3. docs/02_字段命名规范.md（开发规范）
-```
-
----
-
-### 场景3：我想开发新功能
-
-```
-参考文档：
-1. docs/02_字段命名规范.md（必读）
-2. docs/03_实施优先级指南.md（了解Phase）
-3. scripts/step_A3_clustering.py（代码示例）
-4. scripts/config.py（配置规范）
-```
-
----
-
-## 🔧 核心工具说明
-
-### 1. step_A3_clustering.py（核心聚类脚本）
-
-**功能**：对短语进行语义聚类
-
-**输入**：`data/merged_keywords_all.csv`
-
-**输出**：
-- `data/stageA_clusters.csv`（短语级，带cluster_id）
-- `data/cluster_summary_A3.csv`（簇级汇总）
-
-**关键参数**（在config.py中配置）：
-- `min_cluster_size`: 15（最小簇大小）
-- `min_samples`: 3（最小邻居数）
-
----
-
-### 2. cluster_stats.py（质量分析工具）
-
-**功能**：分析聚类结果质量，提供调优建议
-
-**使用**：
-```bash
-cd scripts
+# 分析结果质量
 python cluster_stats.py
 ```
 
-**输出**：
-- ✅ 簇数量是否合理（60-100）
-- ✅ 噪音比例是否合理（<25%）
-- ✅ 簇大小分布统计
-- 💡 参数调优建议
+### 场景3：管理商品数据
 
----
-
-### 3. validation.py（字段验证工具）
-
-**功能**：验证CSV文件是否符合字段命名规范
-
-**使用**：
 ```bash
-cd scripts
-python validation.py
-```
+# 查看商品总数
+curl "http://127.0.0.1:8000/api/products/count"
 
-**检查**：
-- 必需字段是否存在
-- 字段名是否符合规范
-- 是否有冗余字段
+# 获取商品列表
+curl "http://127.0.0.1:8000/api/products/?page=1&page_size=20"
+```
 
 ---
 
 ## ⚙️ 配置说明
 
-所有配置在 `scripts/config.py` 中管理：
+### 环境变量
+
+创建 `.env` 文件：
+
+```bash
+# Claude API 配置
+CLAUDE_API_KEY=your_api_key_here
+
+# 数据库配置
+DATABASE_URL=sqlite:///./data/products.db
+
+# 服务器配置
+HOST=127.0.0.1
+PORT=8000
+```
+
+### 聚类参数
+
+在 `scripts/config.py` 中配置：
 
 ```python
 A3_CONFIG = {
     "min_cluster_size": 15,  # 最小簇大小
     "min_samples": 3,        # 最小邻居数
-    "embedding_model": "all-MiniLM-L6-v2",  # Embedding模型
-    "clustering_method": "hdbscan",  # 聚类算法
+    "embedding_model": "all-MiniLM-L6-v2",
+    "clustering_method": "hdbscan",
 }
 ```
-
-**参数调优指南**：
-- 簇太多（>100）→ 增大 `min_cluster_size` 到 20-25
-- 簇太少（<40）→ 减小 `min_cluster_size` 到 10-12
-- 噪音太多（>30%）→ 考虑按seed_group分组聚类
 
 ---
 
@@ -250,7 +261,36 @@ MVP实验
 
 ## 🚨 常见问题
 
-### Q1: 聚类结果簇太多（>100个）怎么办？
+### Q1: 如何启动统一系统？
+
+**解决方案**：
+```bash
+# 终端1：启动后端
+python -m uvicorn backend.main:app --reload --port 8000
+
+# 终端2：启动前端
+cd frontend
+npm run dev
+```
+
+访问 http://localhost:5173 即可使用系统。
+
+---
+
+### Q2: 如何导入关键词数据？
+
+**方法1：通过 API**
+```bash
+curl -X POST "http://127.0.0.1:8000/api/keywords/import" \
+  -F "file=@data/merged_keywords_all.csv"
+```
+
+**方法2：通过前端界面**
+访问前端界面，使用文件上传功能。
+
+---
+
+### Q3: 聚类结果簇太多（>100个）怎么办？
 
 **解决方案**：
 ```python
@@ -269,53 +309,44 @@ python step_A3_clustering.py
 
 ---
 
-### Q2: 噪音点比例很高（>40%）正常吗？
+### Q4: 两个模块的数据是否互通？
 
-**回答**：如果使用了46个跨度很大的种子词，40-60%的噪音是正常的。
-
-**关键问题**：56个有效簇的质量如何？
-
-**验证方法**：
-1. 运行 `python cluster_stats.py`
-2. 查看 Top 10 最大的簇
-3. 人工审查 `data/cluster_summary_A3.csv`
-4. 如果能找到5-10个清晰的方向 → 成功
+**回答**：是的。两个模块使用同一个数据库（`data/products.db`），数据完全互通。未来可以实现：
+- 从关键词簇中发现商品机会
+- 从商品数据中提取关键词
+- 交叉分析需求和供给
 
 ---
 
-### Q3: 如何人工筛选方向？
+### Q5: 如何查看 API 文档？
 
-**推荐流程**（轻量版）：
-1. 打开 `data/cluster_summary_A3.csv`
-2. 查看 `seed_words_in_cluster` 列
-3. 人工挑选5-10个语义清晰的簇
-4. 手动创建 `data/direction_keywords.csv`
-5. 进入阶段B
-
-**完整版**：参考 `docs/01_需求挖掘方法论.md` 的A4-A5步骤
+访问 http://127.0.0.1:8000/docs 可以查看完整的 Swagger API 文档，包括：
+- 所有 API 端点
+- 请求参数说明
+- 响应格式示例
+- 在线测试功能
 
 ---
 
 ## 📚 学习路径
 
-### 新手路径（1-2小时）
+### 新手路径（1小时）
 
 ```
-1. 阅读：docs/04_快速开始指南.md（10分钟）
-2. 阅读：docs/tutorials/step_A3_使用说明.md（10分钟）
-3. 运行：python scripts/step_A3_clustering.py（20分钟）
-4. 分析：python scripts/cluster_stats.py（5分钟）
-5. 人工筛选：从cluster_summary_A3.csv挑5个方向（30分钟）
+1. 阅读：README.md（本文档）（15分钟）
+2. 阅读：docs/项目合并完成总结.md（15分钟）
+3. 启动：后端 + 前端服务（10分钟）
+4. 测试：通过 API 文档测试接口（20分钟）
 ```
 
-### 深入理解路径（半天）
+### 开发者路径（半天）
 
 ```
-1. 完整方法论：docs/01_需求挖掘方法论.md（1小时）
-2. 实施规划：docs/03_实施优先级指南.md（30分钟）
-3. 技术原理：docs/technical/聚类原理讲解.md（30分钟）
+1. 系统架构：docs/项目合并完成总结.md（30分钟）
+2. 需求文档：docs/USER_REQUIREMENTS.md（30分钟）
+3. 方法论：docs/01_需求挖掘方法论.md（1小时）
 4. 字段规范：docs/02_字段命名规范.md（20分钟）
-5. 历史总结：docs/analysis/GPT反馈总结.md（30分钟）
+5. 代码阅读：backend/ 和 frontend/ 目录（1小时）
 ```
 
 ---
@@ -346,15 +377,24 @@ python step_A3_clustering.py
 
 ## 🔗 相关资源
 
-- **HDBSCAN官方文档**: https://hdbscan.readthedocs.io/
+- **FastAPI 文档**: https://fastapi.tiangolo.com/
+- **Vue 3 文档**: https://vuejs.org/
+- **HDBSCAN 文档**: https://hdbscan.readthedocs.io/
 - **Sentence Transformers**: https://www.sbert.net/
-- **影刀RPA**: https://www.yingdao.com/
 
 ---
 
 ## 📝 更新日志
 
-### 2025-12-15
+### v2.0.0 (2026-01-27)
+- ✅ 项目合并完成（词根聚类 + 商品管理）
+- ✅ 统一后端架构（FastAPI）
+- ✅ 统一数据库（SQLite）
+- ✅ 创建 Keywords 模型和 API
+- ✅ 创建 ClusterSummary 模型
+- ✅ 更新项目文档
+
+### v1.0.0 (2025-12-15)
 - ✅ 项目结构重组（代码与文档分离）
 - ✅ 创建6个核心脚本（scripts目录）
 - ✅ 整理4类文档（方法论、教程、分析、技术）
@@ -366,13 +406,14 @@ python step_A3_clustering.py
 
 ## 💬 需要帮助？
 
-- **快速问题**：查看 `docs/04_快速开始指南.md`
+- **快速问题**：查看本 README.md
+- **系统架构**：查看 `docs/项目合并完成总结.md`
 - **方法论问题**：查看 `docs/01_需求挖掘方法论.md`
+- **API 文档**：访问 http://127.0.0.1:8000/docs
 - **技术问题**：查看 `docs/technical/`
-- **历史参考**：查看 `docs/analysis/`
 
 ---
 
-**开始使用**：`docs/04_快速开始指南.md`
+**开始使用**：启动后端和前端服务，访问 http://localhost:5173
 
 **祝你挖掘出好需求！** 🚀
