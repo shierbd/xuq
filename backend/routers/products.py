@@ -113,7 +113,7 @@ from backend.services.product_service import ProductService
 from backend.schemas.product_schema import (
     ProductResponse, ProductListResponse, ProductUpdate, ProductQueryParams
 )
-from typing import List
+from typing import List, Optional
 
 @router.get("/", response_model=ProductListResponse)
 def get_products(
@@ -323,3 +323,62 @@ def export_cluster_summary(
         media_type=media_type,
         headers={"Content-Disposition": f"attachment; filename={filename}"}
     )
+
+# [REQ-003] 语义聚类分析 - API 路由扩展
+
+from backend.services.clustering_service import ClusteringService
+
+@router.post("/cluster")
+def cluster_products(
+    min_cluster_size: int = 15,
+    min_samples: int = 5,
+    use_cache: bool = True,
+    db: Session = Depends(get_db)
+):
+    """
+    [REQ-003] 执行语义聚类分析
+
+    参数：
+    - min_cluster_size: 最小簇大小（默认 15）
+    - min_samples: 最小样本数（默认 5）
+    - use_cache: 是否使用向量缓存（默认 True）
+    """
+    clustering_service = ClusteringService(db)
+    result = clustering_service.cluster_all_products(
+        min_cluster_size=min_cluster_size,
+        min_samples=min_samples,
+        use_cache=use_cache
+    )
+
+    return {
+        "success": result["success"],
+        "message": "聚类分析完成" if result["success"] else result.get("message", "聚类失败"),
+        "data": result
+    }
+
+@router.get("/cluster/summary")
+def get_cluster_summary(db: Session = Depends(get_db)):
+    """
+    [REQ-003] 获取簇级汇总
+
+    返回所有簇的统计信息
+    """
+    clustering_service = ClusteringService(db)
+    summary = clustering_service.generate_cluster_summary()
+
+    return {
+        "success": True,
+        "data": summary
+    }
+
+@router.get("/cluster/quality")
+def get_cluster_quality(db: Session = Depends(get_db)):
+    """
+    [REQ-003] 获取聚类质量报告
+
+    返回聚类质量指标
+    """
+    clustering_service = ClusteringService(db)
+    report = clustering_service.get_cluster_quality_report()
+
+    return report
