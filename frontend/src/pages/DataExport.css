@@ -1,0 +1,32 @@
+/* 数据导出页面样式 */
+.data-export {
+  padding: 24px;
+}
+
+.export-card {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.export-config {
+  margin-bottom: 24px;
+}
+
+.field-selection {
+  margin-top: 16px;
+}
+
+.field-group {
+  margin-bottom: 16px;
+}
+
+.field-group-title {
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #1890ff;
+}
+
+.export-actions {
+  margin-top: 24px;
+  text-align: right;
+}

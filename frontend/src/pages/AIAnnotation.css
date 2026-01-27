@@ -1,0 +1,34 @@
+/* AI标注页面样式 */
+.ai-annotation {
+  padding: 24px;
+}
+
+.annotation-card {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.status-section {
+  margin-bottom: 24px;
+}
+
+.config-section {
+  margin-bottom: 24px;
+}
+
+.prompt-editor {
+  margin-top: 16px;
+}
+
+.action-section {
+  margin-top: 24px;
+}
+
+.progress-section {
+  padding: 40px 0;
+  text-align: center;
+}
+
+.result-section {
+  margin-top: 24px;
+}

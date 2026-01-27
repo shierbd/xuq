@@ -1,0 +1,9 @@
+/* 导入历史页面样式 */
+.import-history {
+  padding: 24px;
+}
+
+.history-card {
+  max-width: 1400px;
+  margin: 0 auto;
+}
