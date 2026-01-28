@@ -26,6 +26,7 @@ import {
 } from '@ant-design/icons';
 import ProductTable from '../../components/ProductTable';
 import ProductVisualization from '../../components/ProductVisualization';
+import ClusterOverview from '../../components/ClusterOverview';
 import {
   getProducts,
   getStatistics,
@@ -34,6 +35,7 @@ import {
   translateProductsSync,
 } from '../../api/products';
 import './ProductManagement.css';
+import axios from 'axios';
 
 const { Option } = Select;
 
@@ -68,6 +70,47 @@ const ProductManagement = () => {
 
   // [REQ-013] P6.1: Tab切换状态
   const [activeTab, setActiveTab] = useState('list');
+
+  // [REQ-003] P2.1: 聚类状态
+  const [clusterLoading, setClusterLoading] = useState(false);
+
+  // [REQ-003] P2.1: 开始聚类
+  const handleStartClustering = async () => {
+    Modal.confirm({
+      title: '确认聚类',
+      content: '确定要对所有商品进行语义聚类分析吗？这可能需要几分钟时间。',
+      onOk: async () => {
+        try {
+          setClusterLoading(true);
+          message.loading({ content: '正在进行聚类分析...', key: 'clustering', duration: 0 });
+
+          const response = await axios.post('http://localhost:8000/api/products/cluster', {
+            min_cluster_size: 15,
+            min_samples: 5,
+            use_cache: true,
+          });
+
+          message.destroy('clustering');
+
+          if (response.data.success) {
+            message.success('聚类分析完成！');
+            // 刷新数据
+            refetchProducts();
+            // 切换到聚类结果Tab
+            setActiveTab('clusters');
+          } else {
+            message.error(response.data.message || '聚类分析失败');
+          }
+        } catch (error) {
+          message.destroy('clustering');
+          console.error('聚类失败:', error);
+          message.error('聚类分析失败: ' + (error.response?.data?.detail || error.message));
+        } finally {
+          setClusterLoading(false);
+        }
+      },
+    });
+  };
 
   // 获取商品列表
   const {
@@ -362,6 +405,15 @@ const ProductManagement = () => {
             >
               翻译未完成
             </Button>
+
+            <Button
+              type="primary"
+              danger
+              onClick={handleStartClustering}
+              loading={clusterLoading}
+            >
+              开始聚类
+            </Button>
           </Space>
 
           {/* 高级筛选 */}
@@ -504,6 +556,16 @@ const ProductManagement = () => {
                   </span>
                 ),
                 children: <ProductVisualization />,
+              },
+              {
+                key: 'clusters',
+                label: (
+                  <span>
+                    <BarChartOutlined />
+                    聚类结果
+                  </span>
+                ),
+                children: <ClusterOverview />,
               },
             ]}
           />
