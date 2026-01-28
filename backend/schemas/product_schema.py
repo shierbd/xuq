@@ -34,6 +34,7 @@ class ProductResponse(ProductBase):
     delivery_type: Optional[str] = None
     delivery_format: Optional[str] = None
     delivery_platform: Optional[str] = None
+    user_need: Optional[str] = None
     import_time: datetime
     is_deleted: bool
 

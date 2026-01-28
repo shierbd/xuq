@@ -505,6 +505,80 @@ def get_extraction_statistics(db: Session = Depends(get_db)):
     }
 
 
+# [REQ-011] P5.2: Top商品AI深度分析 - API 路由扩展
+
+from backend.services.ai_analysis_service import AIAnalysisService
+
+@router.post("/analyze-top-products")
+async def analyze_top_products(
+    cluster_ids: Optional[List[int]] = None,
+    top_n: int = 3,
+    db: Session = Depends(get_db)
+):
+    """
+    [REQ-011] P5.2: 分析簇的Top商品
+
+    使用AI分析每个簇的Top商品，提取用户需求等信息
+
+    参数：
+    - cluster_ids: 可选，指定簇ID列表，不传则处理所有簇
+    - top_n: 每个簇分析的Top商品数量（默认3）
+    """
+    analysis_service = AIAnalysisService(db)
+
+    if cluster_ids:
+        # 处理指定簇
+        processed = 0
+        failed = 0
+        results = []
+
+        for cluster_id in cluster_ids:
+            success, message, analysis = analysis_service.analyze_cluster_top_products(cluster_id, top_n)
+            if success:
+                processed += 1
+                results.append({
+                    "cluster_id": cluster_id,
+                    "analysis": analysis
+                })
+            else:
+                failed += 1
+
+        return {
+            "success": True,
+            "message": f"成功分析 {processed} 个簇",
+            "data": {
+                "total": len(cluster_ids),
+                "processed": processed,
+                "failed": failed,
+                "results": results
+            }
+        }
+    else:
+        # 处理所有簇
+        result = analysis_service.analyze_all_clusters(top_n=top_n)
+
+        return {
+            "success": True,
+            "message": f"批量AI分析完成，成功率 {round(result['processed'] / result['total_clusters'] * 100, 2)}%",
+            "data": result
+        }
+
+@router.get("/analysis-statistics")
+def get_analysis_statistics(db: Session = Depends(get_db)):
+    """
+    [REQ-011] P5.2: 获取AI分析统计信息
+
+    返回AI分析的覆盖率和完成情况
+    """
+    analysis_service = AIAnalysisService(db)
+    stats = analysis_service.get_analysis_statistics()
+
+    return {
+        "success": True,
+        "data": stats
+    }
+
+
 @router.get("/{product_id}", response_model=ProductResponse)
 def get_product(
     product_id: int,

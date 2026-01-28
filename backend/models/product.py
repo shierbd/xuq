@@ -33,6 +33,9 @@ class Product(Base):
     delivery_type = Column(String(100), nullable=True, comment="交付类型")
     delivery_format = Column(String(100), nullable=True, comment="交付格式")
     delivery_platform = Column(String(100), nullable=True, comment="交付平台")
+
+    # [REQ-011] AI分析字段
+    user_need = Column(Text, nullable=True, comment="用户需求（AI分析）")
     
     # [REQ-001] 系统字段
     import_time = Column(DateTime, nullable=False, default=datetime.utcnow, comment="导入时间")
@@ -55,6 +58,7 @@ class Product(Base):
             "delivery_type": self.delivery_type,
             "delivery_format": self.delivery_format,
             "delivery_platform": self.delivery_platform,
+            "user_need": self.user_need,
             "import_time": self.import_time.isoformat() if self.import_time else None,
             "is_deleted": self.is_deleted
         }
