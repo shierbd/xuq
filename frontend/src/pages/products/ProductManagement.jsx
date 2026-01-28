@@ -15,13 +15,17 @@ import {
   Col,
   message,
   Modal,
+  Tabs,
 } from 'antd';
 import {
   ReloadOutlined,
   TranslationOutlined,
   FilterOutlined,
+  BarChartOutlined,
+  TableOutlined,
 } from '@ant-design/icons';
 import ProductTable from '../../components/ProductTable';
+import ProductVisualization from '../../components/ProductVisualization';
 import {
   getProducts,
   getStatistics,
@@ -61,6 +65,9 @@ const ProductManagement = () => {
 
   // 选中的商品
   const [selectedProductIds, setSelectedProductIds] = useState([]);
+
+  // [REQ-013] P6.1: Tab切换状态
+  const [activeTab, setActiveTab] = useState('list');
 
   // 获取商品列表
   const {
@@ -449,28 +456,57 @@ const ProductManagement = () => {
           )}
         </Card>
 
-        {/* 商品表格 */}
+        {/* [REQ-013] P6.1: Tab切换 - 商品列表 / 数据可视化 */}
         <Card>
-          <ProductTable
-            data={productsData?.items || []}
-            loading={productsLoading}
-            onSelectionChange={handleSelectionChange}
-            selectedRows={selectedProductIds}
-          />
+          <Tabs
+            activeKey={activeTab}
+            onChange={setActiveTab}
+            items={[
+              {
+                key: 'list',
+                label: (
+                  <span>
+                    <TableOutlined />
+                    商品列表
+                  </span>
+                ),
+                children: (
+                  <>
+                    <ProductTable
+                      data={productsData?.items || []}
+                      loading={productsLoading}
+                      onSelectionChange={handleSelectionChange}
+                      selectedRows={selectedProductIds}
+                    />
 
-          {/* 分页 */}
-          <div style={{ marginTop: 16, textAlign: 'right' }}>
-            <Pagination
-              current={filters.page}
-              pageSize={filters.page_size}
-              total={productsData?.total || 0}
-              onChange={handlePageChange}
-              showSizeChanger
-              showQuickJumper
-              showTotal={(total) => `共 ${total} 条`}
-              pageSizeOptions={[10, 20, 50, 100, 200]}
-            />
-          </div>
+                    {/* 分页 */}
+                    <div style={{ marginTop: 16, textAlign: 'right' }}>
+                      <Pagination
+                        current={filters.page}
+                        pageSize={filters.page_size}
+                        total={productsData?.total || 0}
+                        onChange={handlePageChange}
+                        showSizeChanger
+                        showQuickJumper
+                        showTotal={(total) => `共 ${total} 条`}
+                        pageSizeOptions={[10, 20, 50, 100, 200]}
+                      />
+                    </div>
+                  </>
+                ),
+              },
+              {
+                key: 'visualization',
+                label: (
+                  <span>
+                    <BarChartOutlined />
+                    数据可视化
+                  </span>
+                ),
+                children: <ProductVisualization />,
+              },
+            ]}
+          />
         </Card>
       </div>
     </div>
