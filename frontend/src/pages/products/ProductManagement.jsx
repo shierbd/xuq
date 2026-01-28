@@ -43,7 +43,7 @@ const ProductManagement = () => {
     platform: null,
     ai_status: null,
     translation_status: null,
-    keyword: '',
+    search: '',
     min_price: null,
     max_price: null,
     min_review_count: null,
@@ -286,8 +286,8 @@ const ProductManagement = () => {
             <Input
               placeholder="搜索商品名称"
               style={{ width: 200 }}
-              value={filters.keyword}
-              onChange={(e) => handleFilterChange('keyword', e.target.value)}
+              value={filters.search}
+              onChange={(e) => handleFilterChange('search', e.target.value)}
               allowClear
             />
 
@@ -296,7 +296,9 @@ const ProductManagement = () => {
               style={{ width: 150 }}
               value={`${filters.sort_by}_${filters.sort_order}`}
               onChange={(value) => {
-                const [sort_by, sort_order] = value.split('_');
+                const lastUnderscoreIndex = value.lastIndexOf('_');
+                const sort_by = value.substring(0, lastUnderscoreIndex);
+                const sort_order = value.substring(lastUnderscoreIndex + 1);
                 setFilters(prev => ({ ...prev, sort_by, sort_order, page: 1 }));
               }}
             >
