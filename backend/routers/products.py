@@ -496,28 +496,6 @@ async def generate_cluster_names(
         }
     }
 
-@router.get("/clusters/{cluster_id}")
-def get_cluster_detail(
-    cluster_id: int,
-    db: Session = Depends(get_db)
-):
-    """
-    [REQ-006] 获取单个簇的详细信息
-
-    返回簇内所有商品和统计信息
-    """
-    view_service = ClusterViewService(db)
-    cluster = view_service.get_cluster_detail(cluster_id)
-
-    if not cluster:
-        raise HTTPException(status_code=404, detail="簇不存在或无商品")
-
-    return {
-        "success": True,
-        "data": cluster
-    }
-
-
 def generate_simple_cluster_name(product_names: TypingList[str]) -> str:
     """
     基于商品名称生成简单的类别名称
@@ -1048,6 +1026,28 @@ def get_noise_products(db: Session = Depends(get_db)):
         "total": len(noise_products),
         "data": noise_products
     }
+
+@router.get("/clusters/{cluster_id}")
+def get_cluster_detail(
+    cluster_id: int,
+    db: Session = Depends(get_db)
+):
+    """
+    [REQ-006] 获取单个簇的详细信息
+
+    返回簇内所有商品和统计信息
+    """
+    view_service = ClusterViewService(db)
+    cluster = view_service.get_cluster_detail(cluster_id)
+
+    if not cluster:
+        raise HTTPException(status_code=404, detail="簇不存在或无商品")
+
+    return {
+        "success": True,
+        "data": cluster
+    }
+
 # [REQ-010] P5.1: 商品属性提取 - API 路由扩展
 
 from backend.services.attribute_extraction_service import AttributeExtractionService
