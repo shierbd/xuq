@@ -198,6 +198,123 @@ def get_unique_tags(db: Session = Depends(get_db)):
         }
     }
 
+@router.get("/visualization/data")
+def get_visualization_data(db: Session = Depends(get_db)):
+    """
+    [REQ-013] P6.1: 获取数据可视化所需的数据
+
+    返回用于图表展示的统计数据
+    """
+    from backend.models.product import Product
+    from sqlalchemy import func
+
+    # 1. 类别大小分布（簇大小分布）
+    cluster_distribution = db.query(
+        Product.cluster_name,
+        func.count(Product.product_id).label('count')
+    ).filter(
+        Product.is_deleted == False,
+        Product.cluster_name.isnot(None)
+    ).group_by(Product.cluster_name).order_by(func.count(Product.product_id).desc()).limit(20).all()
+
+    # 2. 评分分布
+    rating_distribution = db.query(
+        Product.rating,
+        func.count(Product.product_id).label('count')
+    ).filter(
+        Product.is_deleted == False,
+        Product.rating.isnot(None)
+    ).group_by(Product.rating).order_by(Product.rating).all()
+
+    # 3. 价格分布（分段统计）
+    price_ranges = [
+        (0, 10, "$0-10"),
+        (10, 20, "$10-20"),
+        (20, 30, "$20-30"),
+        (30, 50, "$30-50"),
+        (50, 100, "$50-100"),
+        (100, float('inf'), "$100+")
+    ]
+
+    price_distribution = []
+    for min_price, max_price, label in price_ranges:
+        if max_price == float('inf'):
+            count = db.query(Product).filter(
+                Product.is_deleted == False,
+                Product.price >= min_price
+            ).count()
+        else:
+            count = db.query(Product).filter(
+                Product.is_deleted == False,
+                Product.price >= min_price,
+                Product.price < max_price
+            ).count()
+
+        if count > 0:
+            price_distribution.append({
+                'range': label,
+                'count': count
+            })
+
+    # 4. 交付形式分布
+    delivery_type_distribution = db.query(
+        Product.delivery_type,
+        func.count(Product.product_id).label('count')
+    ).filter(
+        Product.is_deleted == False,
+        Product.delivery_type.isnot(None)
+    ).group_by(Product.delivery_type).order_by(func.count(Product.product_id).desc()).limit(15).all()
+
+    # 5. 评价数分布（分段统计）
+    review_ranges = [
+        (0, 100, "0-100"),
+        (100, 500, "100-500"),
+        (500, 1000, "500-1K"),
+        (1000, 5000, "1K-5K"),
+        (5000, 10000, "5K-10K"),
+        (10000, float('inf'), "10K+")
+    ]
+
+    review_distribution = []
+    for min_reviews, max_reviews, label in review_ranges:
+        if max_reviews == float('inf'):
+            count = db.query(Product).filter(
+                Product.is_deleted == False,
+                Product.review_count >= min_reviews
+            ).count()
+        else:
+            count = db.query(Product).filter(
+                Product.is_deleted == False,
+                Product.review_count >= min_reviews,
+                Product.review_count < max_reviews
+            ).count()
+
+        if count > 0:
+            review_distribution.append({
+                'range': label,
+                'count': count
+            })
+
+    return {
+        "success": True,
+        "data": {
+            "cluster_distribution": [
+                {"name": name or "未分类", "value": count}
+                for name, count in cluster_distribution
+            ],
+            "rating_distribution": [
+                {"rating": float(rating), "count": count}
+                for rating, count in rating_distribution
+            ],
+            "price_distribution": price_distribution,
+            "delivery_type_distribution": [
+                {"type": dtype, "count": count}
+                for dtype, count in delivery_type_distribution
+            ],
+            "review_distribution": review_distribution
+        }
+    }
+
 # [REQ-002] 数据管理功能 - API 路由扩展
 
 from backend.services.product_service import ProductService
