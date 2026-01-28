@@ -6,7 +6,8 @@ from fastapi import APIRouter, UploadFile, File, Depends, HTTPException
 from sqlalchemy.orm import Session
 from backend.database import get_db
 from backend.services.import_service import ImportService
-from typing import Dict
+from typing import Dict, Optional, List as TypingList
+from pydantic import BaseModel
 import io
 
 router = APIRouter(prefix="/api/products", tags=["products"])
@@ -248,6 +249,188 @@ def get_products(
         page_size=page_size,
         items=[ProductResponse.from_orm(p) for p in products]
     )
+
+
+class GenerateNamesRequest(BaseModel):
+    cluster_ids: Optional[TypingList[int]] = None
+    force_regenerate: bool = False
+
+@router.post("/generate-cluster-names")
+async def generate_cluster_names(
+    request: GenerateNamesRequest,
+    db: Session = Depends(get_db)
+):
+    """
+    [REQ-008] P4.1: 为簇生成类别名称（AI）
+
+    参数：
+    - cluster_ids: 可选，指定簇ID列表，不传则处理所有簇
+    - force_regenerate: 是否强制重新生成（覆盖已有的）
+    """
+    from backend.models.product import Product
+    from sqlalchemy import func, desc
+    import logging
+
+    logger = logging.getLogger(__name__)
+
+    # 获取需要处理的簇
+    if request.cluster_ids:
+        # 获取指定的簇
+        cluster_query = db.query(Product.cluster_id).filter(
+            Product.cluster_id.in_(request.cluster_ids),
+            Product.cluster_id.isnot(None),
+            Product.cluster_id != -1,  # 排除噪音点
+            Product.is_deleted == False
+        ).group_by(Product.cluster_id)
+    else:
+        if request.force_regenerate:
+            # 处理所有簇
+            cluster_query = db.query(Product.cluster_id).filter(
+                Product.cluster_id.isnot(None),
+                Product.cluster_id != -1,  # 排除噪音点
+                Product.is_deleted == False
+            ).group_by(Product.cluster_id)
+        else:
+            # 只处理没有类别名的簇
+            cluster_query = db.query(Product.cluster_id).filter(
+                Product.cluster_id.isnot(None),
+                Product.cluster_id != -1,  # 排除噪音点
+                Product.cluster_name.is_(None),
+                Product.is_deleted == False
+            ).group_by(Product.cluster_id)
+
+    clusters = [row[0] for row in cluster_query.all()]
+
+    if not clusters:
+        return {
+            "success": True,
+            "message": "没有需要处理的簇",
+            "data": {
+                "total_clusters": 0,
+                "processed": 0,
+                "failed": 0,
+                "cost_usd": 0,
+                "results": []
+            }
+        }
+
+    results = []
+    failed = 0
+    total_cost = 0
+
+    for cluster_id in clusters:
+        try:
+            # 获取Top 5商品
+            top_products = db.query(Product).filter(
+                Product.cluster_id == cluster_id,
+                Product.is_deleted == False
+            ).order_by(desc(Product.review_count)).limit(5).all()
+
+            if not top_products:
+                logger.warning(f"Cluster {cluster_id} has no products")
+                failed += 1
+                continue
+
+            # 简单生成类别名（基于商品名称的关键词）
+            # TODO: 后续可以接入AI API
+            product_names = [p.product_name for p in top_products]
+            cluster_name = generate_simple_cluster_name(product_names)
+
+            # 获取簇大小
+            cluster_size = db.query(func.count(Product.product_id)).filter(
+                Product.cluster_id == cluster_id,
+                Product.is_deleted == False
+            ).scalar()
+
+            # 更新数据库 - 更新该簇的所有商品
+            db.query(Product).filter(
+                Product.cluster_id == cluster_id
+            ).update({"cluster_name": cluster_name})
+            db.commit()
+
+            results.append({
+                "cluster_id": cluster_id,
+                "cluster_name": cluster_name,
+                "cluster_size": cluster_size,
+                "top_products": [p.product_name for p in top_products[:3]]
+            })
+
+        except Exception as e:
+            failed += 1
+            logger.error(f"Failed to generate name for cluster {cluster_id}: {e}")
+            db.rollback()
+
+    return {
+        "success": True,
+        "message": f"成功生成{len(results)}个簇的类别名称",
+        "data": {
+            "total_clusters": len(clusters),
+            "processed": len(results),
+            "failed": failed,
+            "cost_usd": round(total_cost, 2),
+            "results": results
+        }
+    }
+
+@router.get("/clusters/{cluster_id}")
+def get_cluster_detail(
+    cluster_id: int,
+    db: Session = Depends(get_db)
+):
+    """
+    [REQ-006] 获取单个簇的详细信息
+
+    返回簇内所有商品和统计信息
+    """
+    view_service = ClusterViewService(db)
+    cluster = view_service.get_cluster_detail(cluster_id)
+
+    if not cluster:
+        raise HTTPException(status_code=404, detail="簇不存在或无商品")
+
+    return {
+        "success": True,
+        "data": cluster
+    }
+
+
+def generate_simple_cluster_name(product_names: TypingList[str]) -> str:
+    """
+    基于商品名称生成简单的类别名称
+
+    提取最常见的关键词作为类别名
+    """
+    from collections import Counter
+    import re
+
+    # 提取所有单词
+    all_words = []
+    for name in product_names:
+        # 转小写，提取单词
+        words = re.findall(r'\b[a-zA-Z]{3,}\b', name.lower())
+        all_words.extend(words)
+
+    # 过滤常见停用词
+    stop_words = {'the', 'and', 'for', 'with', 'template', 'digital', 'printable',
+                  'download', 'pdf', 'instant', 'editable', 'customizable', 'bundle'}
+    filtered_words = [w for w in all_words if w not in stop_words]
+
+    # 统计词频
+    word_counts = Counter(filtered_words)
+
+    # 获取最常见的2-3个词
+    top_words = [word for word, count in word_counts.most_common(3)]
+
+    if not top_words:
+        return "Uncategorized"
+
+    # 首字母大写
+    cluster_name = " & ".join([w.capitalize() for w in top_words[:2]])
+
+    return cluster_name
+
+
+
 
 @router.get("/{product_id}", response_model=ProductResponse)
 def get_product(
@@ -567,26 +750,4 @@ def get_noise_products(db: Session = Depends(get_db)):
         "total": len(noise_products),
         "data": noise_products
     }
-
-@router.get("/clusters/{cluster_id}")
-def get_cluster_detail(
-    cluster_id: int,
-    db: Session = Depends(get_db)
-):
-    """
-    [REQ-006] 获取单个簇的详细信息
-
-    返回簇内所有商品和统计信息
-    """
-    view_service = ClusterViewService(db)
-    cluster = view_service.get_cluster_detail(cluster_id)
-
-    if not cluster:
-        raise HTTPException(status_code=404, detail="簇不存在或无商品")
-
-    return {
-        "success": True,
-        "data": cluster
-    }
-
-
+# [REQ-008] P4.1: 类别名称生成 - API 路由扩展
