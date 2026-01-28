@@ -1,8 +1,12 @@
 """
 [REQ-010] P5.1: 商品属性提取服务
 使用代码规则从商品名称中提取交付形式和关键词
+[REQ-012] P5.3: AI辅助兜底
+对代码规则无法提取的商品使用AI补充
 """
+import os
 import re
+import json
 from typing import Dict, List, Optional, Tuple
 from sqlalchemy.orm import Session
 from backend.models.product import Product
@@ -55,6 +59,9 @@ class AttributeExtractionService:
 
     def __init__(self, db: Session):
         self.db = db
+        # [REQ-012] P5.3: AI API配置
+        self.api_key = os.getenv('CLAUDE_API_KEY') or os.getenv('DEEPSEEK_API_KEY')
+        self.use_claude = bool(os.getenv('CLAUDE_API_KEY'))
 
     def extract_delivery_type(self, product_name: str) -> Optional[str]:
         """
@@ -336,4 +343,168 @@ class AttributeExtractionService:
             'delivery_type_distribution': [
                 {'type': dt, 'count': count} for dt, count in delivery_type_dist
             ]
+        }
+
+    # [REQ-012] P5.3: AI辅助兜底方法
+
+    def extract_delivery_type_with_ai(self, product_name: str) -> Optional[str]:
+        """
+        使用AI提取交付形式（用于代码规则无法识别的情况）
+
+        Args:
+            product_name: 商品名称
+
+        Returns:
+            Optional[str]: 交付形式，如果AI无法识别则返回None
+        """
+        if not self.api_key:
+            return None
+
+        try:
+            # 构建提示词
+            prompt = f"""请分析以下商品名称，识别其交付形式（Delivery Type）。
+
+商品名称: {product_name}
+
+可能的交付形式包括：
+- Template（模板）
+- Planner（计划表）
+- Tracker（追踪器）
+- Worksheet（工作表）
+- Printable（可打印文件）
+- Bundle（捆绑包）
+- Kit（工具包）
+- Guide（指南）
+- Checklist（清单）
+- Calendar（日历）
+- Ebook（电子书）
+- Workbook（练习册）
+- Journal（日记本）
+- Organizer（整理器）
+- Spreadsheet（电子表格）
+- Notion Template（Notion模板）
+- Canva Template（Canva模板）
+- Excel Template（Excel模板）
+- Google Sheets Template（Google Sheets模板）
+- PowerPoint Template（PowerPoint模板）
+- Word Template（Word模板）
+- PDF（PDF文件）
+- Figma Template（Figma模板）
+- Trello Template（Trello模板）
+
+请只返回最合适的一个交付形式，不要包含其他文字。如果无法确定，返回"Unknown"。"""
+
+            if self.use_claude:
+                # 调用Claude API
+                import anthropic
+                client = anthropic.Anthropic(api_key=self.api_key)
+
+                message = client.messages.create(
+                    model="claude-3-5-sonnet-20241022",
+                    max_tokens=100,
+                    messages=[
+                        {"role": "user", "content": prompt}
+                    ]
+                )
+
+                response_text = message.content[0].text.strip()
+            else:
+                # 调用DeepSeek API
+                import requests
+
+                response = requests.post(
+                    "https://api.deepseek.com/v1/chat/completions",
+                    headers={
+                        "Authorization": f"Bearer {self.api_key}",
+                        "Content-Type": "application/json"
+                    },
+                    json={
+                        "model": "deepseek-chat",
+                        "messages": [
+                            {"role": "user", "content": prompt}
+                        ],
+                        "max_tokens": 100
+                    }
+                )
+
+                response_text = response.json()['choices'][0]['message']['content'].strip()
+
+            # 验证返回结果
+            if response_text and response_text != "Unknown":
+                return response_text
+            else:
+                return None
+
+        except Exception as e:
+            print(f"AI提取失败: {e}")
+            return None
+
+    def process_missing_delivery_types(self, max_products: Optional[int] = None, batch_size: int = 10) -> Dict[str, any]:
+        """
+        批量处理缺失delivery_type的商品（使用AI辅助）
+
+        Args:
+            max_products: 最大处理数量（None表示处理所有）
+            batch_size: 批处理大小（默认10，避免API调用过快）
+
+        Returns:
+            Dict: 处理结果统计
+        """
+        if not self.api_key:
+            return {
+                'success': False,
+                'message': 'API密钥未配置',
+                'total': 0,
+                'processed': 0,
+                'filled': 0,
+                'failed': 0
+            }
+
+        # 获取所有delivery_type为NULL的商品
+        query = self.db.query(Product).filter(
+            Product.is_deleted == False,
+            Product.delivery_type.is_(None)
+        )
+
+        total_missing = query.count()
+
+        if max_products:
+            products = query.limit(max_products).all()
+        else:
+            products = query.all()
+
+        processed = 0
+        filled = 0
+        failed = 0
+
+        # 分批处理
+        for i in range(0, len(products), batch_size):
+            batch = products[i:i+batch_size]
+
+            for product in batch:
+                try:
+                    # 使用AI提取delivery_type
+                    delivery_type = self.extract_delivery_type_with_ai(product.product_name)
+
+                    if delivery_type:
+                        product.delivery_type = delivery_type
+                        filled += 1
+
+                    processed += 1
+
+                except Exception as e:
+                    failed += 1
+                    print(f"处理商品 {product.product_id} 失败: {e}")
+
+            # 提交批次
+            self.db.commit()
+
+        return {
+            'success': True,
+            'message': f'成功处理 {processed} 个商品，填充 {filled} 个',
+            'total_missing': total_missing,
+            'processed': processed,
+            'filled': filled,
+            'failed': failed,
+            'fill_rate': round(filled / processed * 100, 2) if processed > 0 else 0
         }

@@ -578,6 +578,40 @@ def get_analysis_statistics(db: Session = Depends(get_db)):
         "data": stats
     }
 
+@router.post("/extract-attributes-ai")
+async def extract_attributes_with_ai(
+    max_products: Optional[int] = None,
+    batch_size: int = 10,
+    db: Session = Depends(get_db)
+):
+    """
+    [REQ-012] P5.3: AI辅助兜底 - 提取缺失的delivery_type
+
+    对代码规则无法提取的商品使用AI补充提取delivery_type
+
+    参数：
+    - max_products: 最大处理数量（None表示处理所有缺失的商品）
+    - batch_size: 批处理大小（默认10，避免API调用过快）
+    """
+    extraction_service = AttributeExtractionService(db)
+    result = extraction_service.process_missing_delivery_types(
+        max_products=max_products,
+        batch_size=batch_size
+    )
+
+    if not result['success']:
+        return {
+            "success": False,
+            "message": result['message'],
+            "data": result
+        }
+
+    return {
+        "success": True,
+        "message": result['message'],
+        "data": result
+    }
+
 
 @router.get("/{product_id}", response_model=ProductResponse)
 def get_product(
