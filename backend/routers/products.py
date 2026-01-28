@@ -212,17 +212,21 @@ def get_products(
     page_size: int = 50,
     search: Optional[str] = None,
     shop_name: Optional[str] = None,
+    cluster_name: Optional[str] = None,
     min_rating: Optional[float] = None,
     max_rating: Optional[float] = None,
     min_price: Optional[float] = None,
     max_price: Optional[float] = None,
+    min_review_count: Optional[int] = None,
+    max_review_count: Optional[int] = None,
     sort_by: str = "import_time",
     sort_order: str = "desc",
     db: Session = Depends(get_db)
 ):
     """
     [REQ-002] 获取商品列表
-    
+    [REQ-009] P4.2: 支持复杂筛选（类别名称、评价数范围等）
+
     支持分页、搜索、筛选、排序
     """
     # 构建查询参数
@@ -231,10 +235,13 @@ def get_products(
         page_size=page_size,
         search=search,
         shop_name=shop_name,
+        cluster_name=cluster_name,
         min_rating=min_rating,
         max_rating=max_rating,
         min_price=min_price,
         max_price=max_price,
+        min_review_count=min_review_count,
+        max_review_count=max_review_count,
         sort_by=sort_by,
         sort_order=sort_order
     )

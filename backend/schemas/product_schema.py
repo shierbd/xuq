@@ -30,12 +30,13 @@ class ProductResponse(ProductBase):
     """[REQ-002] 商品响应"""
     product_id: int
     cluster_id: Optional[int] = None
+    cluster_name: Optional[str] = None
     delivery_type: Optional[str] = None
     delivery_format: Optional[str] = None
     delivery_platform: Optional[str] = None
     import_time: datetime
     is_deleted: bool
-    
+
     class Config:
         from_attributes = True
 
@@ -52,9 +53,12 @@ class ProductQueryParams(BaseModel):
     page_size: int = Field(50, ge=1, le=100, description="每页数量")
     search: Optional[str] = Field(None, description="搜索关键词")
     shop_name: Optional[str] = Field(None, description="店铺名称筛选")
+    cluster_name: Optional[str] = Field(None, description="类别名称筛选")
     min_rating: Optional[float] = Field(None, ge=0, le=5, description="最低评分")
     max_rating: Optional[float] = Field(None, ge=0, le=5, description="最高评分")
     min_price: Optional[float] = Field(None, ge=0, description="最低价格")
     max_price: Optional[float] = Field(None, ge=0, description="最高价格")
+    min_review_count: Optional[int] = Field(None, ge=0, description="最小评价数")
+    max_review_count: Optional[int] = Field(None, ge=0, description="最大评价数")
     sort_by: Optional[str] = Field("import_time", description="排序字段")
     sort_order: Optional[str] = Field("desc", description="排序方向 (asc/desc)")

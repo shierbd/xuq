@@ -35,18 +35,29 @@ class ProductService:
         # [REQ-002] 筛选功能
         if params.shop_name:
             query = query.filter(Product.shop_name == params.shop_name)
-        
+
+        # [REQ-009] P4.2: 类别名称筛选
+        if params.cluster_name:
+            query = query.filter(Product.cluster_name == params.cluster_name)
+
         if params.min_rating is not None:
             query = query.filter(Product.rating >= params.min_rating)
-        
+
         if params.max_rating is not None:
             query = query.filter(Product.rating <= params.max_rating)
-        
+
         if params.min_price is not None:
             query = query.filter(Product.price >= params.min_price)
-        
+
         if params.max_price is not None:
             query = query.filter(Product.price <= params.max_price)
+
+        # [REQ-009] P4.2: 评价数范围筛选
+        if params.min_review_count is not None:
+            query = query.filter(Product.review_count >= params.min_review_count)
+
+        if params.max_review_count is not None:
+            query = query.filter(Product.review_count <= params.max_review_count)
         
         # 获取总数
         total = query.count()
