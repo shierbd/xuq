@@ -437,6 +437,72 @@ def generate_simple_cluster_name(product_names: TypingList[str]) -> str:
     return cluster_name
 
 
+# [REQ-010] P5.1: 商品属性提取 - API 路由扩展
+
+from backend.services.attribute_extraction_service import AttributeExtractionService
+
+@router.post("/extract-attributes")
+async def extract_product_attributes(
+    product_ids: Optional[List[int]] = None,
+    batch_size: int = 100,
+    db: Session = Depends(get_db)
+):
+    """
+    [REQ-010] P5.1: 批量提取商品属性
+
+    从商品名称中提取交付形式、格式、平台等属性
+
+    参数：
+    - product_ids: 可选，指定商品ID列表，不传则处理所有商品
+    - batch_size: 批处理大小（默认100）
+    """
+    extraction_service = AttributeExtractionService(db)
+
+    if product_ids:
+        # 处理指定商品
+        processed = 0
+        failed = 0
+
+        for product_id in product_ids:
+            success, message = extraction_service.process_product(product_id)
+            if success:
+                processed += 1
+            else:
+                failed += 1
+
+        return {
+            "success": True,
+            "message": f"成功处理 {processed} 个商品",
+            "data": {
+                "total": len(product_ids),
+                "processed": processed,
+                "failed": failed
+            }
+        }
+    else:
+        # 处理所有商品
+        result = extraction_service.process_all_products(batch_size=batch_size)
+
+        return {
+            "success": True,
+            "message": f"批量属性提取完成，成功率 {result['success_rate']}%",
+            "data": result
+        }
+
+@router.get("/extraction-statistics")
+def get_extraction_statistics(db: Session = Depends(get_db)):
+    """
+    [REQ-010] P5.1: 获取属性提取统计信息
+
+    返回属性提取的覆盖率和分布情况
+    """
+    extraction_service = AttributeExtractionService(db)
+    stats = extraction_service.get_extraction_statistics()
+
+    return {
+        "success": True,
+        "data": stats
+    }
 
 
 @router.get("/{product_id}", response_model=ProductResponse)
@@ -757,4 +823,71 @@ def get_noise_products(db: Session = Depends(get_db)):
         "total": len(noise_products),
         "data": noise_products
     }
+# [REQ-010] P5.1: 商品属性提取 - API 路由扩展
+
+from backend.services.attribute_extraction_service import AttributeExtractionService
+
+@router.post("/extract-attributes")
+async def extract_product_attributes(
+    product_ids: Optional[List[int]] = None,
+    batch_size: int = 100,
+    db: Session = Depends(get_db)
+):
+    """
+    [REQ-010] P5.1: 批量提取商品属性
+
+    从商品名称中提取交付形���、格式、平台等属性
+
+    参数：
+    - product_ids: 可选，指定商品ID列表，不传则处理所有商品
+    - batch_size: 批处理大小（默认100）
+    """
+    extraction_service = AttributeExtractionService(db)
+
+    if product_ids:
+        # 处理指定商品
+        processed = 0
+        failed = 0
+
+        for product_id in product_ids:
+            success, message = extraction_service.process_product(product_id)
+            if success:
+                processed += 1
+            else:
+                failed += 1
+
+        return {
+            "success": True,
+            "message": f"成功处理 {processed} 个商品",
+            "data": {
+                "total": len(product_ids),
+                "processed": processed,
+                "failed": failed
+            }
+        }
+    else:
+        # 处理所有商品
+        result = extraction_service.process_all_products(batch_size=batch_size)
+
+        return {
+            "success": True,
+            "message": f"批量属性提取完成，成功率 {result['success_rate']}%",
+            "data": result
+        }
+
+@router.get("/extraction-statistics")
+def get_extraction_statistics(db: Session = Depends(get_db)):
+    """
+    [REQ-010] P5.1: 获取属性提取统计信息
+
+    返回属性提取的覆盖率和分布情况
+    """
+    extraction_service = AttributeExtractionService(db)
+    stats = extraction_service.get_extraction_statistics()
+
+    return {
+        "success": True,
+        "data": stats
+    }
+
 # [REQ-008] P4.1: 类别名称生成 - API 路由扩展
