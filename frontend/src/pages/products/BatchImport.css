@@ -1,0 +1,56 @@
+/* 批量导入页面样式 */
+.batch-import {
+  padding: 24px;
+  background: #f0f2f5;
+  min-height: calc(100vh - 64px);
+}
+
+.batch-import-card {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.folder-selection {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.mapping-section {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.field-mapping-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.field-mapping-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.field-mapping-item label {
+  font-weight: 500;
+  color: #262626;
+}
+
+.importing-section {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.complete-section {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+/* 响应式布局 */
+@media (max-width: 768px) {
+  .field-mapping-grid {
+    grid-template-columns: 1fr;
+  }
+}

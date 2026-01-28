@@ -1,0 +1,31 @@
+/**
+ * 关键词列表页面样式
+ */
+.keyword-list-container {
+  padding: 24px;
+  background-color: #f0f2f5;
+  min-height: 100vh;
+}
+
+.keyword-list-container .ant-card {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.keyword-list-container .ant-statistic-title {
+  font-size: 14px;
+  color: #666;
+}
+
+.keyword-list-container .ant-statistic-content {
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.keyword-list-container .ant-table {
+  background-color: #fff;
+}
+
+.keyword-list-container .ant-tag {
+  border-radius: 4px;
+}

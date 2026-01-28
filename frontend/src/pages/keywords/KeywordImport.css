@@ -1,0 +1,32 @@
+/**
+ * 关键词导入页面样式
+ */
+.keyword-import-container {
+  padding: 24px;
+  background-color: #f0f2f5;
+  min-height: 100vh;
+}
+
+.keyword-import-container .ant-card {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.keyword-import-container .ant-statistic-title {
+  font-size: 14px;
+  color: #666;
+}
+
+.keyword-import-container .ant-statistic-content {
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.keyword-import-container .ant-upload-drag {
+  border-radius: 8px;
+}
+
+.keyword-import-container .ant-steps {
+  max-width: 600px;
+  margin: 0 auto;
+}

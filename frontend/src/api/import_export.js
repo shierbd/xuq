@@ -13,7 +13,7 @@ export const importProducts = async (file, platform, fieldMapping, skipDuplicate
   formData.append('field_mapping', JSON.stringify(fieldMapping));
   formData.append('skip_duplicates', skipDuplicates);
 
-  return apiClient.post('/import/upload', formData, {
+  return apiClient.post('/products/import', formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },

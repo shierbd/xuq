@@ -5,7 +5,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from backend.database import init_db
-from backend.routers import products, keywords
+from backend.routers import products, keywords, batch_import
 
 # 创建 FastAPI 应用
 app = FastAPI(
@@ -26,6 +26,7 @@ app.add_middleware(
 # 注册路由
 app.include_router(keywords.router)  # 词根聚类模块
 app.include_router(products.router)  # 商品管理模块
+app.include_router(batch_import.router)  # 批量导入模块
 
 @app.on_event("startup")
 async def startup_event():

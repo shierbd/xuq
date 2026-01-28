@@ -1,0 +1,32 @@
+/**
+ * 簇概览页面样式
+ */
+.cluster-overview-container {
+  padding: 24px;
+  background-color: #f0f2f5;
+  min-height: 100vh;
+}
+
+.cluster-overview-container .ant-card {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.cluster-overview-container .ant-statistic-title {
+  font-size: 14px;
+  color: #666;
+}
+
+.cluster-overview-container .ant-statistic-content {
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.cluster-overview-container .ant-table {
+  background-color: #fff;
+}
+
+.cluster-overview-container .ant-tag {
+  margin: 2px;
+  border-radius: 4px;
+}

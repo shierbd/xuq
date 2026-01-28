@@ -18,8 +18,8 @@ import {
   FileTextOutlined,
 } from '@ant-design/icons';
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { exportProducts, getExportFields } from '../api/import_export';
-import { getStatistics } from '../api/products';
+import { exportProducts, getExportFields } from '../../api/import_export';
+import { getStatistics } from '../../api/products';
 import './DataExport.css';
 
 const DataExport = () => {

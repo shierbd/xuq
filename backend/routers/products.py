@@ -14,13 +14,16 @@ router = APIRouter(prefix="/api/products", tags=["products"])
 @router.post("/import", response_model=Dict)
 async def import_products(
     file: UploadFile = File(...),
+    platform: str = "etsy",
+    field_mapping: str = "{}",
+    skip_duplicates: bool = True,
     db: Session = Depends(get_db)
 ):
     """
     [REQ-001] 导入商品数据
-    
+
     支持 Excel (.xlsx, .xls) 和 CSV (.csv) 格式
-    文件结构：无表头，固定 5 列
+    支持自定义字段映射
     """
     # 验证文件格式
     if not file.filename.endswith(('.csv', '.xlsx', '.xls')):
@@ -28,24 +31,33 @@ async def import_products(
             status_code=400,
             detail="不支持的文件格式，请上传 Excel 或 CSV 文件"
         )
-    
+
     # 读取文件内容
     contents = await file.read()
     file_obj = io.BytesIO(contents)
-    
+
     try:
+        # 解析字段映射
+        import json
+        mapping = json.loads(field_mapping) if field_mapping else {}
+
         # 创建导入服务
         import_service = ImportService(db)
-        
+
         # 执行导入
-        result = import_service.import_from_file(file_obj, file.filename)
-        
+        result = import_service.import_from_file(
+            file_obj,
+            file.filename,
+            field_mapping=mapping,
+            skip_duplicates=skip_duplicates
+        )
+
         return {
             "success": True,
             "message": "数据导入成功",
             "data": result
         }
-    
+
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
@@ -97,13 +109,91 @@ def get_product_count(db: Session = Depends(get_db)):
     [REQ-001] 获取商品总数
     """
     from backend.models.product import Product
-    
+
     total = db.query(Product).filter(Product.is_deleted == False).count()
-    
+
     return {
         "success": True,
         "data": {
             "total": total
+        }
+    }
+
+@router.get("/stats/summary", response_model=Dict)
+def get_stats_summary(db: Session = Depends(get_db)):
+    """
+    获取商品统计摘要
+    """
+    from backend.models.product import Product
+    from sqlalchemy import func
+
+    # 基础统计
+    total_products = db.query(Product).filter(Product.is_deleted == False).count()
+
+    # 评分统计
+    rating_stats = db.query(
+        func.avg(Product.rating).label('avg_rating'),
+        func.min(Product.rating).label('min_rating'),
+        func.max(Product.rating).label('max_rating')
+    ).filter(
+        Product.is_deleted == False,
+        Product.rating.isnot(None)
+    ).first()
+
+    # 价格统计
+    price_stats = db.query(
+        func.avg(Product.price).label('avg_price'),
+        func.min(Product.price).label('min_price'),
+        func.max(Product.price).label('max_price')
+    ).filter(
+        Product.is_deleted == False,
+        Product.price.isnot(None)
+    ).first()
+
+    # 评价数统计
+    review_stats = db.query(
+        func.sum(Product.review_count).label('total_reviews'),
+        func.avg(Product.review_count).label('avg_reviews')
+    ).filter(
+        Product.is_deleted == False,
+        Product.review_count.isnot(None)
+    ).first()
+
+    return {
+        "success": True,
+        "data": {
+            "total_products": total_products,
+            "rating_stats": {
+                "avg": float(rating_stats.avg_rating) if rating_stats.avg_rating else 0,
+                "min": float(rating_stats.min_rating) if rating_stats.min_rating else 0,
+                "max": float(rating_stats.max_rating) if rating_stats.max_rating else 0
+            } if rating_stats else {},
+            "price_stats": {
+                "avg": float(price_stats.avg_price) if price_stats.avg_price else 0,
+                "min": float(price_stats.min_price) if price_stats.min_price else 0,
+                "max": float(price_stats.max_price) if price_stats.max_price else 0
+            } if price_stats else {},
+            "review_stats": {
+                "total": int(review_stats.total_reviews) if review_stats.total_reviews else 0,
+                "avg": float(review_stats.avg_reviews) if review_stats.avg_reviews else 0
+            } if review_stats else {}
+        }
+    }
+
+@router.get("/tags/unique", response_model=Dict)
+def get_unique_tags(db: Session = Depends(get_db)):
+    """
+    获取所有唯一的标签
+
+    注意：当前 Product 模型不包含 tags 字段，返回空列表
+    """
+    # Product 模型目前不包含 tags 字段
+    # 返回空列表，避免错误
+    return {
+        "success": True,
+        "data": {
+            "tags": [],
+            "message": "Product 模型当前不包含 tags 字段"
         }
     }
 
@@ -498,3 +588,5 @@ def get_cluster_detail(
         "success": True,
         "data": cluster
     }
+
+

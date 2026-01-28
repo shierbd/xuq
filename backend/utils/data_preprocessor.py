@@ -115,41 +115,41 @@ def clean_rating(rating: Union[str, float]) -> Optional[float]:
 def preprocess_etsy_data(df: pd.DataFrame) -> tuple:
     """
     [REQ-001] 预处理 Etsy 数据
-    
+
     Args:
         df: 原始数据框
-        
+
     Returns:
-        tuple: (处理后的数据框, 统计信息字典)
+        tuple: (处理后的数据框, 统计信息字典，所有数值转换为 Python 原生类型)
     """
     if len(df.columns) != 5:
         raise ValueError(f"文件列数不正确，期望 5 列，实际 {len(df.columns)} 列")
-    
+
     df.columns = ['product_name', 'rating', 'review_count', 'shop_name', 'price']
-    
+
     stats = {
-        'total': len(df),
+        'total': int(len(df)),
         'success': 0,
         'failed': 0,
         'warnings': []
     }
-    
+
     # 数据清洗
     df['product_name'] = df['product_name'].apply(clean_product_name)
     df['review_count'] = df['review_count'].apply(parse_review_count)
     df['price'] = df['price'].apply(clean_price)
     df['rating'] = df['rating'].apply(clean_rating)
     df['shop_name'] = df['shop_name'].apply(lambda x: str(x).strip() if pd.notna(x) else None)
-    
+
     # 数据验证
     valid_mask = df['product_name'].str.len() > 0
-    failed_count = (~valid_mask).sum()
-    
+    failed_count = int((~valid_mask).sum())
+
     if failed_count > 0:
         stats['warnings'].append(f"跳过 {failed_count} 条商品名称为空的数据")
         stats['failed'] = failed_count
-    
+
     df = df[valid_mask].copy()
-    stats['success'] = len(df)
-    
+    stats['success'] = int(len(df))
+
     return df, stats

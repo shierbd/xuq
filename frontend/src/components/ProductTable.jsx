@@ -29,8 +29,16 @@ const ProductTable = ({
         newSelection[index] = true;
       }
     });
-    setRowSelection(newSelection);
-  }, [selectedRows, data]);
+
+    // 只有当选中状态真正改变时才更新
+    const currentKeys = Object.keys(rowSelection).filter(k => rowSelection[k]);
+    const newKeys = Object.keys(newSelection).filter(k => newSelection[k]);
+
+    if (currentKeys.length !== newKeys.length ||
+        !currentKeys.every(k => newKeys.includes(k))) {
+      setRowSelection(newSelection);
+    }
+  }, [selectedRows]); // 只依赖 selectedRows，不依赖 data
 
   // 定义表格列
   const columns = useMemo(
@@ -196,7 +204,7 @@ const ProductTable = ({
     if (onSelectionChange) {
       onSelectionChange(selectedIds);
     }
-  }, [rowSelection, data, onSelectionChange]);
+  }, [rowSelection]); // 移除 data 和 onSelectionChange 依赖
 
   if (loading) {
     return <div className="loading">加载中...</div>;
@@ -212,7 +220,11 @@ const ProductTable = ({
                 {headerGroup.headers.map(header => (
                   <th
                     key={header.id}
-                    style={{ width: header.getSize() }}
+                    style={{
+                      width: `${header.getSize()}px`,
+                      minWidth: `${header.getSize()}px`,
+                      maxWidth: `${header.getSize()}px`
+                    }}
                   >
                     {header.isPlaceholder
                       ? null
@@ -243,12 +255,18 @@ const ProductTable = ({
                     width: '100%',
                     height: `${virtualRow.size}px`,
                     transform: `translateY(${virtualRow.start}px)`,
+                    display: 'flex', // 使用flex布局确保对齐
                   }}
                 >
                   {row.getVisibleCells().map(cell => (
                     <td
                       key={cell.id}
-                      style={{ width: cell.column.getSize() }}
+                      style={{
+                        width: `${cell.column.getSize()}px`,
+                        minWidth: `${cell.column.getSize()}px`,
+                        maxWidth: `${cell.column.getSize()}px`,
+                        flex: 'none' // 防止flex自动调整宽度
+                      }}
                     >
                       {flexRender(
                         cell.column.columnDef.cell,

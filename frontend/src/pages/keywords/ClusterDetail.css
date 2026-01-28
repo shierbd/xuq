@@ -1,0 +1,40 @@
+/**
+ * 簇详情页面样式
+ */
+.cluster-detail-container {
+  padding: 24px;
+  background-color: #f0f2f5;
+  min-height: 100vh;
+}
+
+.cluster-detail-container .ant-card {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.cluster-detail-container .ant-statistic-title {
+  font-size: 14px;
+  color: #666;
+}
+
+.cluster-detail-container .ant-statistic-content {
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.cluster-detail-container .ant-descriptions-item-label {
+  font-weight: 500;
+  color: #666;
+}
+
+.cluster-detail-container .ant-table {
+  background-color: #fff;
+}
+
+.cluster-detail-container .ant-tag {
+  border-radius: 4px;
+}
+
+.cluster-detail-container .ant-divider {
+  margin: 16px 0;
+}

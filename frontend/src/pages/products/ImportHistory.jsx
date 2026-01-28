@@ -18,7 +18,7 @@ import {
   CloseCircleOutlined,
 } from '@ant-design/icons';
 import { useQuery } from '@tanstack/react-query';
-import { getImportLogs, getImportLog } from '../api/import_export';
+import { getImportLogs, getImportLog } from '../../api/import_export';
 import './ImportHistory.css';
 
 const ImportHistory = () => {

@@ -17,6 +17,7 @@
   width: 100%;
   border-collapse: collapse;
   font-size: 14px;
+  table-layout: fixed;
 }
 
 .product-table thead {
@@ -26,18 +27,37 @@
   background: #fafafa;
 }
 
+.product-table thead tr {
+  display: flex;
+  width: 100%;
+}
+
 .product-table th {
   padding: 12px 8px;
   text-align: left;
   font-weight: 600;
   border-bottom: 2px solid #e8e8e8;
   white-space: nowrap;
+  box-sizing: border-box;
+  flex: none;
+}
+
+.product-table tbody {
+  display: block;
+}
+
+.product-table tbody tr {
+  display: flex;
+  width: 100%;
 }
 
 .product-table td {
   padding: 12px 8px;
   border-bottom: 1px solid #f0f0f0;
   vertical-align: middle;
+  box-sizing: border-box;
+  overflow: hidden;
+  flex: none;
 }
 
 .product-table tbody tr:hover {

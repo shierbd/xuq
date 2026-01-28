@@ -21,14 +21,14 @@ import {
   TranslationOutlined,
   FilterOutlined,
 } from '@ant-design/icons';
-import ProductTable from '../components/ProductTable';
+import ProductTable from '../../components/ProductTable';
 import {
   getProducts,
   getStatistics,
   getUniqueTags,
   translateProducts,
   translateProductsSync,
-} from '../api/products';
+} from '../../api/products';
 import './ProductManagement.css';
 
 const { Option } = Select;

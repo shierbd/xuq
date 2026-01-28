@@ -27,8 +27,8 @@ import {
   getAnnotationStatus,
   annotateProducts,
   annotateProductsSync,
-} from '../api/import_export';
-import { getProducts } from '../api/products';
+} from '../../api/import_export';
+import { getProducts } from '../../api/products';
 import './AIAnnotation.css';
 
 const { TextArea } = Input;
