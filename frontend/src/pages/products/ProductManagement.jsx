@@ -44,9 +44,13 @@ const ProductManagement = () => {
     ai_status: null,
     translation_status: null,
     search: '',
+    cluster_name: '',
     min_price: null,
     max_price: null,
+    min_rating: null,
+    max_rating: null,
     min_review_count: null,
+    max_review_count: null,
     tags: [],
     sort_by: 'product_id',
     sort_order: 'desc',
@@ -358,6 +362,13 @@ const ProductManagement = () => {
             <div style={{ marginTop: 16, paddingTop: 16, borderTop: '1px solid #f0f0f0' }}>
               <Space wrap>
                 <Input
+                  placeholder="类别名称"
+                  style={{ width: 150 }}
+                  value={filters.cluster_name}
+                  onChange={(e) => handleFilterChange('cluster_name', e.target.value)}
+                  allowClear
+                />
+                <Input
                   placeholder="最低价格"
                   type="number"
                   style={{ width: 120 }}
@@ -374,11 +385,38 @@ const ProductManagement = () => {
                   prefix="$"
                 />
                 <Input
+                  placeholder="最低评分"
+                  type="number"
+                  style={{ width: 120 }}
+                  value={filters.min_rating}
+                  onChange={(e) => handleFilterChange('min_rating', e.target.value ? parseFloat(e.target.value) : null)}
+                  min={0}
+                  max={5}
+                  step={0.1}
+                />
+                <Input
+                  placeholder="最高评分"
+                  type="number"
+                  style={{ width: 120 }}
+                  value={filters.max_rating}
+                  onChange={(e) => handleFilterChange('max_rating', e.target.value ? parseFloat(e.target.value) : null)}
+                  min={0}
+                  max={5}
+                  step={0.1}
+                />
+                <Input
                   placeholder="最低评价数"
                   type="number"
                   style={{ width: 120 }}
                   value={filters.min_review_count}
                   onChange={(e) => handleFilterChange('min_review_count', e.target.value ? parseInt(e.target.value) : null)}
+                />
+                <Input
+                  placeholder="最高评价数"
+                  type="number"
+                  style={{ width: 120 }}
+                  value={filters.max_review_count}
+                  onChange={(e) => handleFilterChange('max_review_count', e.target.value ? parseInt(e.target.value) : null)}
                 />
                 <Select
                   mode="multiple"
