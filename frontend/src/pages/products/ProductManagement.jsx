@@ -84,7 +84,7 @@ const ProductManagement = () => {
           setClusterLoading(true);
           message.loading({ content: '正在进行聚类分析...', key: 'clustering', duration: 0 });
 
-          const response = await axios.post('http://localhost:8000/api/products/cluster', {
+          const response = await axios.post('http://localhost:8001/api/products/cluster', {
             min_cluster_size: 15,
             min_samples: 5,
             use_cache: true,

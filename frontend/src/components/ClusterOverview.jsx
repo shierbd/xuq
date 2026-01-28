@@ -21,13 +21,13 @@ const ClusterOverview = () => {
             setLoading(true);
 
             // 获取簇汇总数据
-            const summaryResponse = await axios.get('http://localhost:8000/api/products/cluster/summary');
+            const summaryResponse = await axios.get('http://localhost:8001/api/products/cluster/summary');
             if (summaryResponse.data.success) {
                 setClusterData(summaryResponse.data.data);
             }
 
             // 获取聚类统计信息
-            const statsResponse = await axios.get('http://localhost:8000/api/products/clusters/statistics');
+            const statsResponse = await axios.get('http://localhost:8001/api/products/clusters/statistics');
             if (statsResponse.data.success) {
                 setStatistics(statsResponse.data.data);
             }
