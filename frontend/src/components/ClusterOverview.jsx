@@ -54,6 +54,24 @@ const ClusterOverview = () => {
             ),
         },
         {
+            title: '类别名称',
+            dataIndex: 'cluster_name_cn',
+            key: 'cluster_name_cn',
+            width: 200,
+            ellipsis: true,
+            render: (name_cn, record) => {
+                // 优先显示中文名称，如果没有则显示英文名称
+                const displayName = name_cn || record.cluster_name;
+                return displayName ? (
+                    <Tag color="cyan" style={{ maxWidth: '100%' }} title={record.cluster_name}>
+                        {displayName}
+                    </Tag>
+                ) : (
+                    <span style={{ color: '#999' }}>未命名</span>
+                );
+            },
+        },
+        {
             title: '簇大小',
             dataIndex: 'cluster_size',
             key: 'cluster_size',

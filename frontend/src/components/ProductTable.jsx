@@ -95,6 +95,22 @@ const ProductTable = ({
         ),
       },
       {
+        accessorKey: 'cluster_name_cn',
+        header: '类别名称',
+        size: 200,
+        cell: ({ row }) => {
+          // 优先显示中文名称，如果没有则显示英文名称
+          const clusterNameCn = row.original.cluster_name_cn;
+          const clusterName = row.original.cluster_name;
+          const displayName = clusterNameCn || clusterName;
+          return displayName ? (
+            <Tag color="cyan" title={clusterName}>
+              {displayName}
+            </Tag>
+          ) : '-';
+        },
+      },
+      {
         accessorKey: 'price',
         header: '价格',
         size: 100,

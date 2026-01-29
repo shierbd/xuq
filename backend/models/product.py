@@ -27,7 +27,8 @@ class Product(Base):
     
     # [REQ-003] 聚类相关字段
     cluster_id = Column(Integer, nullable=True, index=True, comment="簇ID（-1表示噪音点）")
-    cluster_name = Column(String(200), nullable=True, comment="簇类别名称")
+    cluster_name = Column(String(200), nullable=True, comment="簇类别名称（英文）")
+    cluster_name_cn = Column(String(200), nullable=True, comment="簇类别名称（中文）")
 
     # [REQ-005] 交付产品识别字段
     delivery_type = Column(String(100), nullable=True, comment="交付类型")
@@ -55,6 +56,7 @@ class Product(Base):
             "price": self.price,
             "cluster_id": self.cluster_id,
             "cluster_name": self.cluster_name,
+            "cluster_name_cn": self.cluster_name_cn,
             "delivery_type": self.delivery_type,
             "delivery_format": self.delivery_format,
             "delivery_platform": self.delivery_platform,

@@ -143,8 +143,8 @@ class ClusteringService:
     def perform_clustering(
         self,
         embeddings: np.ndarray,
-        min_cluster_size: int = 15,
-        min_samples: int = 5,
+        min_cluster_size: int = 8,
+        min_samples: int = 3,
         metric: str = 'euclidean'
     ) -> np.ndarray:
         """
@@ -186,8 +186,8 @@ class ClusteringService:
 
     def cluster_all_products(
         self,
-        min_cluster_size: int = 15,
-        min_samples: int = 5,
+        min_cluster_size: int = 8,
+        min_samples: int = 3,
         use_cache: bool = True
     ) -> Dict:
         """
@@ -269,6 +269,8 @@ class ClusteringService:
             if cluster_id not in cluster_data:
                 cluster_data[cluster_id] = {
                     'cluster_id': cluster_id,
+                    'cluster_name': product.cluster_name,  # 添加类别名称（英文）
+                    'cluster_name_cn': product.cluster_name_cn,  # 添加类别名称（中文）
                     'cluster_size': 0,
                     'ratings': [],
                     'prices': [],
@@ -296,6 +298,8 @@ class ClusteringService:
         for cluster_id, data in cluster_data.items():
             summary.append({
                 'cluster_id': cluster_id,
+                'cluster_name': data['cluster_name'],  # 添加类别名称（英文）
+                'cluster_name_cn': data['cluster_name_cn'],  # 添加类别名称（中文）
                 'cluster_size': data['cluster_size'],
                 'avg_rating': sum(data['ratings']) / len(data['ratings']) if data['ratings'] else None,
                 'avg_price': sum(data['prices']) / len(data['prices']) if data['prices'] else None,
