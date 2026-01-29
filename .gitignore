@@ -164,3 +164,7 @@ dmypy.json
 
 # Cython
 cython_debug/
+
+# Project-specific temporary files
+api_response.json
+nul
