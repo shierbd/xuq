@@ -36,9 +36,9 @@ class ProductService:
         if params.shop_name:
             query = query.filter(Product.shop_name == params.shop_name)
 
-        # [REQ-009] P4.2: 类别名称筛选
+        # [REQ-009] P4.2: 类别名称筛选（模糊匹配）
         if params.cluster_name:
-            query = query.filter(Product.cluster_name == params.cluster_name)
+            query = query.filter(Product.cluster_name.like(f'%{params.cluster_name}%'))
 
         if params.min_rating is not None:
             query = query.filter(Product.rating >= params.min_rating)

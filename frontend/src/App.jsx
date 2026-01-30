@@ -22,6 +22,7 @@ import {
   TagOutlined,
   RedditOutlined,
   FolderOpenOutlined,
+  SettingOutlined,
 } from '@ant-design/icons';
 // 商品管理模块页面
 import ProductManagement from './pages/products/ProductManagement';
@@ -44,6 +45,9 @@ import DirectionManagement from './pages/keywords/DirectionManagement';
 // Reddit模块页面
 import DataCollection from './pages/reddit/DataCollection';
 import DataAnalysis from './pages/reddit/DataAnalysis';
+
+// AI配置管理模块页面
+import UnifiedAIConfig from './pages/ai-config/UnifiedAIConfig';
 
 import './App.css';
 
@@ -158,6 +162,18 @@ const menuItems = [
       },
     ],
   },
+  {
+    key: 'ai-config-module',
+    label: 'AI配置管理',
+    icon: <SettingOutlined />,
+    children: [
+      {
+        key: '/ai-config',
+        icon: <SettingOutlined />,
+        label: 'AI配置',
+      },
+    ],
+  },
 ];
 
 function AppContent() {
@@ -252,6 +268,9 @@ function AppContent() {
             {/* Reddit模块 */}
             <Route path="/reddit/collection" element={<DataCollection />} />
             <Route path="/reddit/analysis" element={<DataAnalysis />} />
+
+            {/* AI配置管理模块 */}
+            <Route path="/ai-config" element={<UnifiedAIConfig />} />
           </Routes>
         </Content>
       </Layout>

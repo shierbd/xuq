@@ -1,0 +1,31 @@
+/**
+ * Reddit数据采集页面样式
+ */
+.data-collection-container {
+  padding: 24px;
+  background-color: #f0f2f5;
+  min-height: 100vh;
+}
+
+.data-collection-container .ant-card {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.data-collection-container .ant-statistic-title {
+  font-size: 14px;
+  color: #666;
+}
+
+.data-collection-container .ant-statistic-content {
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.data-collection-container .ant-table {
+  background-color: #fff;
+}
+
+.data-collection-container .ant-tag {
+  border-radius: 4px;
+}

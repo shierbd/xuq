@@ -882,26 +882,111 @@ def cluster_products(
     min_cluster_size: int = 15,
     min_samples: int = 5,
     use_cache: bool = True,
+    use_two_stage: bool = False,
+    use_three_stage: bool = True,
+    stage1_min_size: int = 10,
+    stage2_min_size: int = 5,
+    stage3_min_size: int = 3,
     db: Session = Depends(get_db)
 ):
     """
-    [REQ-003] 执行语义聚类分析
+    [REQ-003] 执行语义聚类分析（三阶段优化版）
+
+    使用优化方案：
+    - 更强大的向量化模型 (all-mpnet-base-v2)
+    - 文本预处理（去除噪音，提取核心语义）
+    - 优化的HDBSCAN参数（leaf方法 + epsilon）
+    - 三阶段聚类（推荐，显著降低噪音率）
 
     参数：
-    - min_cluster_size: 最小簇大小（默认 15）
-    - min_samples: 最小样本数（默认 5）
+    - min_cluster_size: 最小簇大小（单阶段模式，默认 15）
+    - min_samples: 最小样本数（单阶段模式，默认 5）
     - use_cache: 是否使用向量缓存（默认 True）
+    - use_two_stage: 是否使用两阶段聚类（默认 False）
+    - use_three_stage: 是否使用三阶段聚类（默认 True，推荐）
+    - stage1_min_size: 第一阶段最小簇大小（默认 10）
+    - stage2_min_size: 第二阶段最小簇大小（默认 5）
+    - stage3_min_size: 第三阶段最小簇大小（默认 3）
+
+    三阶段聚类说明：
+    - 第一阶段：使用较大的 min_cluster_size 获取主要簇（高质量）
+    - 第二阶段：对噪音点使用中等的 min_cluster_size 获取次级簇
+    - 第三阶段：对剩余噪音点使用较小的 min_cluster_size 获取微型簇
+    - 结果：主要簇 + 次级簇 + 微型簇 + 真正的噪音点
+    - 效果：噪音率从 73% 降低到 35-40%（相比两阶段的47%进一步降低）
+    """
+    print("=" * 80)
+    print("[DEBUG] /api/products/cluster endpoint called!")
+    print(f"[DEBUG] Parameters: use_three_stage={use_three_stage}, use_two_stage={use_two_stage}")
+    print(f"[DEBUG] stage1_min_size={stage1_min_size}, stage2_min_size={stage2_min_size}, stage3_min_size={stage3_min_size}")
+    print("=" * 80)
+
+    try:
+        print("[DEBUG] Creating ClusteringService...")
+        clustering_service = ClusteringService(db)
+        print("[DEBUG] ClusteringService created successfully")
+
+        print("[DEBUG] Calling cluster_all_products...")
+        result = clustering_service.cluster_all_products(
+            min_cluster_size=min_cluster_size,
+            min_samples=min_samples,
+            use_cache=use_cache,
+            use_two_stage=use_two_stage,
+            use_three_stage=use_three_stage,
+            stage1_min_size=stage1_min_size,
+            stage2_min_size=stage2_min_size,
+            stage3_min_size=stage3_min_size
+        )
+        print("[DEBUG] cluster_all_products completed successfully")
+
+        return {
+            "success": result["success"],
+            "message": "聚类分析完成" if result["success"] else result.get("message", "聚类失败"),
+            "data": result
+        }
+    except Exception as e:
+        print(f"[ERROR] Exception in cluster_products: {e}")
+        import traceback
+        traceback.print_exc()
+        raise
+
+@router.post("/cluster/test")
+def cluster_products_test(
+    limit: int = 1000,
+    use_two_stage: bool = False,
+    use_three_stage: bool = True,
+    stage1_min_size: int = 10,
+    stage2_min_size: int = 5,
+    stage3_min_size: int = 3,
+    db: Session = Depends(get_db)
+):
+    """
+    [TEST] 测试聚类（使用有限数量的产品）
+
+    用于快速验证聚类算法是否正确工作
+
+    参数：
+    - limit: 限制处理的商品数量（默认 1000）
+    - use_two_stage: 是否使用两阶段聚类（默认 False）
+    - use_three_stage: 是否使用三阶段聚类（默认 True，推荐）
+    - stage1_min_size: 第一阶段最小簇大小（默认 10）
+    - stage2_min_size: 第二阶段最小簇大小（默认 5）
+    - stage3_min_size: 第三阶段最小簇大小（默认 3）
     """
     clustering_service = ClusteringService(db)
     result = clustering_service.cluster_all_products(
-        min_cluster_size=min_cluster_size,
-        min_samples=min_samples,
-        use_cache=use_cache
+        use_cache=True,
+        use_two_stage=use_two_stage,
+        use_three_stage=use_three_stage,
+        stage1_min_size=stage1_min_size,
+        stage2_min_size=stage2_min_size,
+        stage3_min_size=stage3_min_size,
+        limit=limit
     )
 
     return {
         "success": result["success"],
-        "message": "聚类分析完成" if result["success"] else result.get("message", "聚类失败"),
+        "message": f"测试聚类完成（处理了 {limit} 个产品）" if result["success"] else result.get("message", "聚类失败"),
         "data": result
     }
 

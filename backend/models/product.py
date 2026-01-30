@@ -29,6 +29,7 @@ class Product(Base):
     cluster_id = Column(Integer, nullable=True, index=True, comment="簇ID（-1表示噪音点）")
     cluster_name = Column(String(200), nullable=True, comment="簇类别名称（英文）")
     cluster_name_cn = Column(String(200), nullable=True, comment="簇类别名称（中文）")
+    cluster_type = Column(String(50), nullable=True, comment="簇类型（primary=主要簇, secondary=次级簇）")
 
     # [REQ-005] 交付产品识别字段
     delivery_type = Column(String(100), nullable=True, comment="交付类型")
@@ -57,6 +58,7 @@ class Product(Base):
             "cluster_id": self.cluster_id,
             "cluster_name": self.cluster_name,
             "cluster_name_cn": self.cluster_name_cn,
+            "cluster_type": self.cluster_type,
             "delivery_type": self.delivery_type,
             "delivery_format": self.delivery_format,
             "delivery_platform": self.delivery_platform,

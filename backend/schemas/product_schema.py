@@ -31,6 +31,7 @@ class ProductResponse(ProductBase):
     product_id: int
     cluster_id: Optional[int] = None
     cluster_name: Optional[str] = None
+    cluster_name_cn: Optional[str] = None  # [REQ-008] P4.1: 类别名称中文翻译
     delivery_type: Optional[str] = None
     delivery_format: Optional[str] = None
     delivery_platform: Optional[str] = None

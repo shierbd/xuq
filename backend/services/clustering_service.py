@@ -1,10 +1,12 @@
 """
 [REQ-003] 语义聚类分析 - 聚类服务
 使用 Sentence Transformers + HDBSCAN 进行语义聚类
+优化版本：使用 all-mpnet-base-v2 模型 + 文本预处理
 """
 import os
 import pickle
 import hashlib
+import re
 from typing import List, Dict, Tuple, Optional
 from sqlalchemy.orm import Session
 from sentence_transformers import SentenceTransformer
@@ -16,14 +18,19 @@ from backend.models.product import Product
 class ClusteringService:
     """[REQ-003] 语义聚类服务"""
 
-    def __init__(self, db: Session, model_name: str = "all-MiniLM-L6-v2"):
+    def __init__(self, db: Session, model_name: str = "all-mpnet-base-v2"):
         self.db = db
         self.model_name = model_name
         self.model = None
         self.cache_dir = "data/cache/embeddings"
         os.makedirs(self.cache_dir, exist_ok=True)
 
-        # 配置国内镜像和代理
+        # 强制设置离线模式（在初始化时就设置，避免网络请求）
+        os.environ['TRANSFORMERS_OFFLINE'] = '1'
+        os.environ['HF_HUB_OFFLINE'] = '1'
+        os.environ['HF_DATASETS_OFFLINE'] = '1'
+
+        # 配置国内镜像和代理（作为备选）
         self._setup_mirror_and_proxy()
 
     def _setup_mirror_and_proxy(self):
@@ -44,18 +51,18 @@ class ClusteringService:
         """加载 Sentence Transformers 模型"""
         if self.model is None:
             print(f"Loading model: {self.model_name}...")
-            print("Using proxy: http://127.0.0.1:1080")
+            print("Loading from local cache (offline mode)...")
 
             try:
                 self.model = SentenceTransformer(self.model_name)
-                print("Model loaded successfully!")
+                print("Model loaded successfully from local cache!")
             except Exception as e:
                 print(f"Failed to load model: {e}")
                 raise Exception(
-                    "Failed to load model. Please check:\n"
-                    "1. Proxy is running on port 1080\n"
-                    "2. Network connection is available\n"
-                    "3. Or manually download the model to ~/.cache/torch/sentence_transformers/"
+                    "Failed to load model from local cache. Please check:\n"
+                    "1. Model exists in cache: ~/.cache/huggingface/hub/\n"
+                    "2. Model name is correct: all-mpnet-base-v2\n"
+                    f"3. Error details: {str(e)}"
                 )
         return self.model
 
@@ -81,6 +88,44 @@ class ClusteringService:
         with open(cache_path, 'wb') as f:
             pickle.dump(embedding, f)
 
+    def preprocess_text(self, text: str) -> str:
+        """
+        预处理商品名称文本
+
+        清洗步骤：
+        1. 转小写
+        2. 去除特殊字符
+        3. 去除尺寸信息
+        4. 去除常见停用词
+        5. 清理多余空格
+        """
+        if not text:
+            return ""
+
+        # 1. 转小写
+        text = text.lower()
+
+        # 2. 去除特殊字符（保留字母、数字、空格）
+        text = re.sub(r'[|/\\()\[\]{}<>]', ' ', text)
+
+        # 3. 去除尺寸信息
+        text = re.sub(r'\d+x\d+', '', text)  # 8x10, 5x7
+        text = re.sub(r'\d+\s*(mm|cm|inch|in|ft|px)', '', text)  # 50mm, 8in
+
+        # 4. 去除常见停用词（只移除真正的噪音词，保留产品类型标识符）
+        # 保留: template, digital, printable, editable（这些是重要的产品类型词）
+        stop_words = [
+            'instant', 'download',  # 时效性词汇
+            'file', 'files',  # 格式词汇
+        ]
+        for word in stop_words:
+            text = re.sub(rf'\b{word}\b', '', text, flags=re.IGNORECASE)
+
+        # 5. 清理多余空格
+        text = ' '.join(text.split())
+
+        return text.strip()
+
     def vectorize_products(
         self,
         products: List[Product],
@@ -98,7 +143,8 @@ class ClusteringService:
         """
         self.load_model()
 
-        embeddings = []
+        # 创建固定大小的列表，用None占位
+        embeddings = [None] * len(products)
         product_ids = []
         texts_to_encode = []
         indices_to_encode = []
@@ -106,17 +152,20 @@ class ClusteringService:
         for i, product in enumerate(products):
             product_ids.append(product.product_id)
 
+            # 预处理商品名称
+            processed_name = self.preprocess_text(product.product_name)
+
             if use_cache:
-                cache_key = self._get_cache_key(product.product_name)
+                cache_key = self._get_cache_key(processed_name)
                 cached_embedding = self._load_from_cache(cache_key)
 
                 if cached_embedding is not None:
-                    embeddings.append(cached_embedding)
+                    embeddings[i] = cached_embedding
                 else:
-                    texts_to_encode.append(product.product_name)
+                    texts_to_encode.append(processed_name)
                     indices_to_encode.append(i)
             else:
-                texts_to_encode.append(product.product_name)
+                texts_to_encode.append(processed_name)
                 indices_to_encode.append(i)
 
         # 批量编码未缓存的文本
@@ -134,9 +183,28 @@ class ClusteringService:
                     cache_key = self._get_cache_key(text)
                     self._save_to_cache(cache_key, embedding)
 
-            # 插入到正确的位置
+            # 放到正确的位置
             for idx, embedding in zip(indices_to_encode, new_embeddings):
-                embeddings.insert(idx, embedding)
+                embeddings[idx] = embedding
+
+        # 调试：检查是否有 None 值
+        none_count = sum(1 for e in embeddings if e is None)
+        if none_count > 0:
+            print(f"WARNING: Found {none_count} None values in embeddings!")
+            # 找出哪些索引是 None
+            none_indices = [i for i, e in enumerate(embeddings) if e is None]
+            print(f"None indices: {none_indices[:10]}...")  # 只打印前10个
+
+        # 调试：检查形状
+        if embeddings:
+            shapes = set()
+            for i, e in enumerate(embeddings):
+                if e is not None:
+                    if isinstance(e, np.ndarray):
+                        shapes.add(e.shape)
+                    else:
+                        print(f"WARNING: embeddings[{i}] is not ndarray, type: {type(e)}")
+            print(f"Unique embedding shapes: {shapes}")
 
         return np.array(embeddings), product_ids
 
@@ -148,7 +216,7 @@ class ClusteringService:
         metric: str = 'euclidean'
     ) -> np.ndarray:
         """
-        执行 HDBSCAN 聚类
+        执行 HDBSCAN 聚类（优化版）
 
         Args:
             embeddings: 向量矩阵
@@ -159,16 +227,20 @@ class ClusteringService:
         Returns:
             cluster_labels: 聚类标签数组
         """
-        print(f"Performing HDBSCAN clustering...")
+        print(f"Performing HDBSCAN clustering (optimized)...")
         print(f"  min_cluster_size: {min_cluster_size}")
         print(f"  min_samples: {min_samples}")
         print(f"  metric: {metric}")
+        print(f"  cluster_selection_method: leaf")
+        print(f"  cluster_selection_epsilon: 0.3")
 
         clusterer = hdbscan.HDBSCAN(
             min_cluster_size=min_cluster_size,
             min_samples=min_samples,
             metric=metric,
-            cluster_selection_method='eom'
+            cluster_selection_method='leaf',  # 使用leaf方法（更激进，减少噪点）
+            cluster_selection_epsilon=0.3,     # 允许距离在0.3内的簇合并
+            core_dist_n_jobs=-1                # 使用所有CPU核心加速
         )
 
         cluster_labels = clusterer.fit_predict(embeddings)
@@ -184,27 +256,361 @@ class ClusteringService:
 
         return cluster_labels
 
+    def perform_two_stage_clustering(
+        self,
+        embeddings: np.ndarray,
+        product_ids: List[int],
+        stage1_min_size: int = 10,
+        stage2_min_size: int = 5
+    ) -> Tuple[np.ndarray, Dict]:
+        """
+        执行两阶段聚类
+
+        第一阶段：使用较大的 min_cluster_size 获取主要簇
+        第二阶段：对噪音点使用较小的 min_cluster_size 获取次级簇
+
+        Args:
+            embeddings: 向量矩阵
+            product_ids: 产品ID列表
+            stage1_min_size: 第一阶段最小簇大小
+            stage2_min_size: 第二阶段最小簇大小
+
+        Returns:
+            (final_labels, cluster_types): 最终聚类标签和簇类型字典
+        """
+        print("\n" + "="*60)
+        print("[TWO-STAGE CLUSTERING] Starting two-stage clustering")
+        print("="*60)
+
+        # ============ 第一阶段 ============
+        print(f"\n[STAGE 1] Primary clustering (min_cluster_size={stage1_min_size})")
+        print("-" * 60)
+
+        stage1_labels = self.perform_clustering(
+            embeddings,
+            min_cluster_size=stage1_min_size,
+            min_samples=max(3, stage1_min_size // 2)
+        )
+
+        # 统计第一阶段结果
+        stage1_clusters = set(stage1_labels) - {-1}
+        stage1_noise_mask = stage1_labels == -1
+        stage1_noise_count = np.sum(stage1_noise_mask)
+
+        print(f"\n[STAGE 1 RESULTS]:")
+        print(f"  Primary clusters: {len(stage1_clusters)}")
+        print(f"  Noise points: {stage1_noise_count}")
+        print(f"  Noise ratio: {stage1_noise_count / len(stage1_labels) * 100:.2f}%")
+
+        # ============ 第二阶段 ============
+        if stage1_noise_count > 0:
+            print(f"\n[STAGE 2] Secondary clustering (min_cluster_size={stage2_min_size})")
+            print("-" * 60)
+
+            # 提取噪音点的向量
+            noise_embeddings = embeddings[stage1_noise_mask]
+            noise_indices = np.where(stage1_noise_mask)[0]
+
+            print(f"对 {len(noise_embeddings)} 个噪音点进行二次聚类...")
+
+            # 对噪音点重新聚类
+            stage2_labels = self.perform_clustering(
+                noise_embeddings,
+                min_cluster_size=stage2_min_size,
+                min_samples=max(2, stage2_min_size // 2)
+            )
+
+            # 统计第二阶段结果
+            stage2_clusters = set(stage2_labels) - {-1}
+            stage2_noise_count = np.sum(stage2_labels == -1)
+
+            print(f"\n[STAGE 2 RESULTS]:")
+            print(f"  Secondary clusters: {len(stage2_clusters)}")
+            print(f"  Remaining noise: {stage2_noise_count}")
+            print(f"  Noise ratio: {stage2_noise_count / len(stage2_labels) * 100:.2f}%")
+
+            # ============ 合并结果 ============
+            print(f"\n[MERGING] Merging two-stage results")
+            print("-" * 60)
+
+            # 创建最终标签数组
+            final_labels = stage1_labels.copy()
+
+            # 为第二阶段的簇分配新的ID（从第一阶段最大ID+1开始）
+            max_stage1_id = max(stage1_labels) if len(stage1_labels) > 0 else -1
+            next_cluster_id = max_stage1_id + 1
+
+            # 更新噪音点的标签
+            for i, noise_idx in enumerate(noise_indices):
+                if stage2_labels[i] != -1:
+                    # 这是一个次级簇，分配新ID
+                    final_labels[noise_idx] = next_cluster_id + stage2_labels[i]
+                # 否则保持为 -1（真正的噪音点）
+
+            # 统计簇类型
+            cluster_types = {}
+
+            # 主要簇（第一阶段）
+            for cluster_id in stage1_clusters:
+                cluster_size = np.sum(final_labels == cluster_id)
+                cluster_types[int(cluster_id)] = {
+                    'type': 'primary',
+                    'size': int(cluster_size),
+                    'stage': 1
+                }
+
+            # 次级簇（第二阶段）
+            for cluster_id in stage2_clusters:
+                final_cluster_id = next_cluster_id + cluster_id
+                cluster_size = np.sum(final_labels == final_cluster_id)
+                cluster_types[int(final_cluster_id)] = {
+                    'type': 'secondary',
+                    'size': int(cluster_size),
+                    'stage': 2
+                }
+
+        else:
+            print("\n[STAGE 1 COMPLETE] No noise points, skipping stage 2")
+            final_labels = stage1_labels
+            cluster_types = {}
+            for cluster_id in stage1_clusters:
+                cluster_size = np.sum(final_labels == cluster_id)
+                cluster_types[int(cluster_id)] = {
+                    'type': 'primary',
+                    'size': int(cluster_size),
+                    'stage': 1
+                }
+
+        # ============ 最终统计 ============
+        print("\n" + "="*60)
+        print("[FINAL RESULTS] Two-stage clustering summary")
+        print("="*60)
+
+        final_clusters = set(final_labels) - {-1}
+        final_noise_count = np.sum(final_labels == -1)
+        primary_clusters = [cid for cid, info in cluster_types.items() if info['type'] == 'primary']
+        secondary_clusters = [cid for cid, info in cluster_types.items() if info['type'] == 'secondary']
+
+        print(f"\nOverall statistics:")
+        print(f"  Total clusters: {len(final_clusters)}")
+        print(f"    - Primary clusters (>={stage1_min_size} products): {len(primary_clusters)}")
+        print(f"    - Secondary clusters ({stage2_min_size}-{stage1_min_size-1} products): {len(secondary_clusters)}")
+        print(f"  Final noise points: {final_noise_count}")
+        print(f"  Final noise ratio: {final_noise_count / len(final_labels) * 100:.2f}%")
+        print(f"  Noise reduction: {stage1_noise_count - final_noise_count} products re-clustered")
+
+        print("\n" + "="*60)
+
+        return final_labels, cluster_types
+
+    def perform_three_stage_clustering(
+        self,
+        embeddings: np.ndarray,
+        product_ids: List[int],
+        stage1_min_size: int = 10,
+        stage2_min_size: int = 5,
+        stage3_min_size: int = 3
+    ) -> Tuple[np.ndarray, Dict]:
+        """
+        执行三阶段聚类
+
+        第一阶段：使用较大的 min_cluster_size 获取主要簇
+        第二阶段：对噪音点使用中等的 min_cluster_size 获取次级簇
+        第三阶段：对剩余噪音点使用较小的 min_cluster_size 获取微型簇
+
+        Args:
+            embeddings: 向量矩阵
+            product_ids: 产品ID列表
+            stage1_min_size: 第一阶段最小簇大小
+            stage2_min_size: 第二阶段最小簇大小
+            stage3_min_size: 第三阶段最小簇大小
+
+        Returns:
+            (final_labels, cluster_types): 最终聚类标签和簇类型字典
+        """
+        print("\n" + "="*60)
+        print("[THREE-STAGE CLUSTERING] Starting three-stage clustering")
+        print("="*60)
+
+        # ============ 第一阶段 ============
+        print(f"\n[STAGE 1] Primary clustering (min_cluster_size={stage1_min_size})")
+        print("-" * 60)
+
+        stage1_labels = self.perform_clustering(
+            embeddings,
+            min_cluster_size=stage1_min_size,
+            min_samples=max(3, stage1_min_size // 2)
+        )
+
+        stage1_clusters = set(stage1_labels) - {-1}
+        stage1_noise_mask = stage1_labels == -1
+        stage1_noise_count = np.sum(stage1_noise_mask)
+
+        print(f"\n[STAGE 1 RESULTS]:")
+        print(f"  Primary clusters: {len(stage1_clusters)}")
+        print(f"  Noise points: {stage1_noise_count}")
+        print(f"  Noise ratio: {stage1_noise_count / len(stage1_labels) * 100:.2f}%")
+
+        # ============ 第二阶段 ============
+        final_labels = stage1_labels.copy()
+        cluster_types = {}
+
+        # 记录主要簇
+        for cluster_id in stage1_clusters:
+            cluster_size = np.sum(final_labels == cluster_id)
+            cluster_types[int(cluster_id)] = {
+                'type': 'primary',
+                'size': int(cluster_size),
+                'stage': 1
+            }
+
+        if stage1_noise_count > 0:
+            print(f"\n[STAGE 2] Secondary clustering (min_cluster_size={stage2_min_size})")
+            print("-" * 60)
+
+            noise_embeddings = embeddings[stage1_noise_mask]
+            noise_indices = np.where(stage1_noise_mask)[0]
+
+            print(f"Processing {len(noise_embeddings)} noise points from stage 1...")
+
+            stage2_labels = self.perform_clustering(
+                noise_embeddings,
+                min_cluster_size=stage2_min_size,
+                min_samples=max(2, stage2_min_size // 2)
+            )
+
+            stage2_clusters = set(stage2_labels) - {-1}
+            stage2_noise_mask = stage2_labels == -1
+            stage2_noise_count = np.sum(stage2_noise_mask)
+
+            print(f"\n[STAGE 2 RESULTS]:")
+            print(f"  Secondary clusters: {len(stage2_clusters)}")
+            print(f"  Remaining noise: {stage2_noise_count}")
+            print(f"  Noise ratio: {stage2_noise_count / len(stage2_labels) * 100:.2f}%")
+
+            # 分配次级簇ID
+            max_stage1_id = max(stage1_labels) if len(stage1_labels) > 0 else -1
+            next_cluster_id = max_stage1_id + 1
+
+            for i, noise_idx in enumerate(noise_indices):
+                if stage2_labels[i] != -1:
+                    final_labels[noise_idx] = next_cluster_id + stage2_labels[i]
+
+            # 记录次级簇
+            for cluster_id in stage2_clusters:
+                final_cluster_id = next_cluster_id + cluster_id
+                cluster_size = np.sum(final_labels == final_cluster_id)
+                cluster_types[int(final_cluster_id)] = {
+                    'type': 'secondary',
+                    'size': int(cluster_size),
+                    'stage': 2
+                }
+
+            # ============ 第三阶段 ============
+            if stage2_noise_count > 0:
+                print(f"\n[STAGE 3] Micro clustering (min_cluster_size={stage3_min_size})")
+                print("-" * 60)
+
+                # 获取第二阶段的噪音点
+                stage2_noise_indices_in_original = noise_indices[stage2_noise_mask]
+                stage2_noise_embeddings = embeddings[stage2_noise_indices_in_original]
+
+                print(f"Processing {len(stage2_noise_embeddings)} noise points from stage 2...")
+
+                stage3_labels = self.perform_clustering(
+                    stage2_noise_embeddings,
+                    min_cluster_size=stage3_min_size,
+                    min_samples=max(2, stage3_min_size // 2)
+                )
+
+                stage3_clusters = set(stage3_labels) - {-1}
+                stage3_noise_count = np.sum(stage3_labels == -1)
+
+                print(f"\n[STAGE 3 RESULTS]:")
+                print(f"  Micro clusters: {len(stage3_clusters)}")
+                print(f"  Final noise: {stage3_noise_count}")
+                print(f"  Noise ratio: {stage3_noise_count / len(stage3_labels) * 100:.2f}%")
+
+                # 分配微型簇ID
+                max_stage2_id = max(final_labels) if len(final_labels) > 0 else -1
+                next_cluster_id_stage3 = max_stage2_id + 1
+
+                for i, noise_idx in enumerate(stage2_noise_indices_in_original):
+                    if stage3_labels[i] != -1:
+                        final_labels[noise_idx] = next_cluster_id_stage3 + stage3_labels[i]
+
+                # 记录微型簇
+                for cluster_id in stage3_clusters:
+                    final_cluster_id = next_cluster_id_stage3 + cluster_id
+                    cluster_size = np.sum(final_labels == final_cluster_id)
+                    cluster_types[int(final_cluster_id)] = {
+                        'type': 'micro',
+                        'size': int(cluster_size),
+                        'stage': 3
+                    }
+
+        # ============ 最终统计 ============
+        print("\n" + "="*60)
+        print("[FINAL RESULTS] Three-stage clustering summary")
+        print("="*60)
+
+        final_clusters = set(final_labels) - {-1}
+        final_noise_count = np.sum(final_labels == -1)
+        primary_clusters = [cid for cid, info in cluster_types.items() if info['type'] == 'primary']
+        secondary_clusters = [cid for cid, info in cluster_types.items() if info['type'] == 'secondary']
+        micro_clusters = [cid for cid, info in cluster_types.items() if info.get('type') == 'micro']
+
+        print(f"\nOverall statistics:")
+        print(f"  Total clusters: {len(final_clusters)}")
+        print(f"    - Primary clusters (>={stage1_min_size} products): {len(primary_clusters)}")
+        print(f"    - Secondary clusters ({stage2_min_size}-{stage1_min_size-1} products): {len(secondary_clusters)}")
+        print(f"    - Micro clusters ({stage3_min_size}-{stage2_min_size-1} products): {len(micro_clusters)}")
+        print(f"  Final noise points: {final_noise_count}")
+        print(f"  Final noise ratio: {final_noise_count / len(final_labels) * 100:.2f}%")
+        print(f"  Noise reduction: {stage1_noise_count - final_noise_count} products re-clustered")
+
+        print("\n" + "="*60)
+
+        return final_labels, cluster_types
+
     def cluster_all_products(
         self,
         min_cluster_size: int = 8,
         min_samples: int = 3,
-        use_cache: bool = True
+        use_cache: bool = True,
+        use_two_stage: bool = False,
+        use_three_stage: bool = True,
+        stage1_min_size: int = 10,
+        stage2_min_size: int = 5,
+        stage3_min_size: int = 3,
+        limit: int = None
     ) -> Dict:
         """
         对所有商品进行聚类
 
         Args:
-            min_cluster_size: 最小簇大小
-            min_samples: 最小样本数
+            min_cluster_size: 最小簇大小（单阶段模式）
+            min_samples: 最小样本数（单阶段模式）
             use_cache: 是否使用缓存
+            use_two_stage: 是否使用两阶段聚类
+            use_three_stage: 是否使用三阶段聚类（推荐）
+            stage1_min_size: 第一阶段最小簇大小
+            stage2_min_size: 第二阶段最小簇大小
+            stage3_min_size: 第三阶段最小簇大小
+            limit: 限制处理的商品数量（用于测试，None表示处理所有）
 
         Returns:
             聚类结果统计
         """
         # 查询所有未删除的商品
-        products = self.db.query(Product).filter(
+        query = self.db.query(Product).filter(
             Product.is_deleted == False
-        ).all()
+        )
+
+        if limit is not None:
+            query = query.limit(limit)
+
+        products = query.all()
 
         if not products:
             return {
@@ -213,19 +619,44 @@ class ClusteringService:
             }
 
         print(f"Found {len(products)} products to cluster")
+        print(f"DEBUG: use_three_stage={use_three_stage}, use_two_stage={use_two_stage}")
+        print(f"DEBUG: stage1_min_size={stage1_min_size}, stage2_min_size={stage2_min_size}, stage3_min_size={stage3_min_size}")
 
         # 向量化
         embeddings, product_ids = self.vectorize_products(products, use_cache)
 
-        # 聚类
-        cluster_labels = self.perform_clustering(
-            embeddings,
-            min_cluster_size=min_cluster_size,
-            min_samples=min_samples
-        )
+        # 选择聚类模式
+        if use_three_stage:
+            # 三阶段聚类（推荐）
+            print(f"DEBUG: Using three-stage clustering")
+            cluster_labels, cluster_types = self.perform_three_stage_clustering(
+                embeddings,
+                product_ids,
+                stage1_min_size=stage1_min_size,
+                stage2_min_size=stage2_min_size,
+                stage3_min_size=stage3_min_size
+            )
+        elif use_two_stage:
+            # 两阶段聚类
+            print(f"DEBUG: Using two-stage clustering")
+            cluster_labels, cluster_types = self.perform_two_stage_clustering(
+                embeddings,
+                product_ids,
+                stage1_min_size=stage1_min_size,
+                stage2_min_size=stage2_min_size
+            )
+        else:
+            # 单阶段聚类
+            print(f"DEBUG: Using single-stage clustering")
+            cluster_labels = self.perform_clustering(
+                embeddings,
+                min_cluster_size=min_cluster_size,
+                min_samples=min_samples
+            )
+            cluster_types = {}
 
         # 更新数据库
-        print("Updating database...")
+        print("\nUpdating database...")
         for product_id, cluster_id in zip(product_ids, cluster_labels):
             product = self.db.query(Product).filter(
                 Product.product_id == product_id
@@ -234,20 +665,68 @@ class ClusteringService:
             if product:
                 product.cluster_id = int(cluster_id)
 
+                # 如果使用多阶段聚类，添加簇类型标记
+                if (use_three_stage or use_two_stage) and cluster_id != -1:
+                    cluster_info = cluster_types.get(int(cluster_id), {})
+                    cluster_type = cluster_info.get('type', 'unknown')
+
+                    # 设置簇类型
+                    if cluster_type == 'primary':
+                        product.cluster_type = 'primary'  # 主要簇
+                    elif cluster_type == 'secondary':
+                        product.cluster_type = 'secondary'  # 次级簇
+                    elif cluster_type == 'micro':
+                        product.cluster_type = 'micro'  # 微型簇
+                else:
+                    product.cluster_type = None
+
         self.db.commit()
-        print("Database updated successfully")
+        print("[DATABASE] Database updated successfully")
 
         # 生成统计信息
         n_clusters = len(set(cluster_labels)) - (1 if -1 in cluster_labels else 0)
         n_noise = list(cluster_labels).count(-1)
 
-        return {
+        result = {
             "success": True,
             "total_products": len(products),
             "n_clusters": n_clusters,
             "n_noise": n_noise,
             "noise_ratio": n_noise / len(products) * 100
         }
+
+        # 如果使用多阶段聚类，添加详细统计
+        if use_three_stage:
+            primary_clusters = [cid for cid, info in cluster_types.items() if info['type'] == 'primary']
+            secondary_clusters = [cid for cid, info in cluster_types.items() if info['type'] == 'secondary']
+            micro_clusters = [cid for cid, info in cluster_types.items() if info.get('type') == 'micro']
+
+            result.update({
+                "clustering_mode": "three_stage",
+                "n_primary_clusters": len(primary_clusters),
+                "n_secondary_clusters": len(secondary_clusters),
+                "n_micro_clusters": len(micro_clusters),
+                "stage1_min_size": stage1_min_size,
+                "stage2_min_size": stage2_min_size,
+                "stage3_min_size": stage3_min_size,
+                "cluster_types": cluster_types
+            })
+        elif use_two_stage:
+            primary_clusters = [cid for cid, info in cluster_types.items() if info['type'] == 'primary']
+            secondary_clusters = [cid for cid, info in cluster_types.items() if info['type'] == 'secondary']
+
+            result.update({
+                "clustering_mode": "two_stage",
+                "n_primary_clusters": len(primary_clusters),
+                "n_secondary_clusters": len(secondary_clusters),
+                "stage1_min_size": stage1_min_size,
+                "stage2_min_size": stage2_min_size,
+                "cluster_types": cluster_types
+            })
+        else:
+            result["clustering_mode"] = "single_stage"
+
+        return result
 
     def generate_cluster_summary(self) -> List[Dict]:
         """
@@ -357,3 +836,5 @@ class ClusteringService:
             "max_cluster_size": max(sizes) if sizes else 0,
             "cluster_size_distribution": cluster_sizes
         }
+
+# Trigger reload at 1769804077.8539455

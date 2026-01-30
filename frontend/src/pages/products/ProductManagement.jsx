@@ -34,6 +34,23 @@ import {
   translateProducts,
   translateProductsSync,
 } from '../../api/products';
+import {
+  analyzeDemands,
+  getDemandAnalysisStatistics,
+} from '../../api/demand_analysis';
+import {
+  identifyProducts,
+  getDeliveryIdentificationStatistics,
+} from '../../api/delivery_identification';
+import {
+  extractAllAttributes,
+  extractMissingAttributes,
+  getAttributeExtractionStatistics,
+} from '../../api/attribute_extraction';
+import {
+  analyzeAllTopProducts,
+  getAnalysisStatistics,
+} from '../../api/top_product_analysis';
 import './ProductManagement.css';
 import axios from 'axios';
 
@@ -74,6 +91,21 @@ const ProductManagement = () => {
   // [REQ-003] P2.1: 聚类状态
   const [clusterLoading, setClusterLoading] = useState(false);
 
+  // [REQ-004] P3.1: 需求分析状态
+  const [demandAnalysisLoading, setDemandAnalysisLoading] = useState(false);
+
+  // [REQ-005] P3.2: 交付产品识别状态
+  const [deliveryIdentificationLoading, setDeliveryIdentificationLoading] = useState(false);
+
+  // [REQ-010] P5.1: 属性提取状态
+  const [attributeExtractionLoading, setAttributeExtractionLoading] = useState(false);
+
+  // [REQ-011] P5.2: Top商品AI分析状态
+  const [topProductAnalysisLoading, setTopProductAnalysisLoading] = useState(false);
+
+  // [REQ-012] P5.3: AI辅助兜底状态
+  const [aiAssistLoading, setAiAssistLoading] = useState(false);
+
   // [REQ-003] P2.1: 开始聚类
   const handleStartClustering = async () => {
     Modal.confirm({
@@ -112,6 +144,181 @@ const ProductManagement = () => {
     });
   };
 
+  // [REQ-004] P3.1: 需求分析
+  const handleAnalyzeDemands = async () => {
+    Modal.confirm({
+      title: '确认需求分析',
+      content: '确定要对所有簇进行需求分析吗？这将使用AI分析每个簇的用户需求。',
+      onOk: async () => {
+        try {
+          setDemandAnalysisLoading(true);
+          message.loading({ content: '正在进行需求分析...', key: 'analyzing', duration: 0 });
+
+          const response = await analyzeDemands({
+            cluster_ids: null,
+            top_n: 10,
+            batch_size: 5,
+            ai_provider: 'deepseek'
+          });
+
+          message.destroy('analyzing');
+
+          if (response.success) {
+            message.success('需求分析完成！');
+            queryClient.invalidateQueries(['demandAnalysisStats']);
+            refetchProducts();
+          } else {
+            message.error(response.message || '需求分析失败');
+          }
+        } catch (error) {
+          message.destroy('analyzing');
+          console.error('需求分析失败:', error);
+          message.error('需求分析失败: ' + (error.response?.data?.detail || error.message));
+        } finally {
+          setDemandAnalysisLoading(false);
+        }
+      },
+    });
+  };
+
+  // [REQ-005] P3.2: 交付产品识别
+  const handleIdentifyDelivery = async () => {
+    Modal.confirm({
+      title: '确认交付产品识别',
+      content: '确定要识别所有商品的交付形式吗？这将使用关键词规则和AI识别。',
+      onOk: async () => {
+        try {
+          setDeliveryIdentificationLoading(true);
+          message.loading({ content: '正在识别交付产品...', key: 'identifying', duration: 0 });
+
+          const response = await identifyProducts({
+            product_ids: null,
+            use_ai_for_unmatched: false,
+            batch_size: 100,
+            ai_provider: 'deepseek'
+          });
+
+          message.destroy('identifying');
+
+          if (response.success) {
+            message.success('交付产品识别完成！');
+            queryClient.invalidateQueries(['deliveryIdentificationStats']);
+            refetchProducts();
+          } else {
+            message.error(response.message || '交付产品识别失败');
+          }
+        } catch (error) {
+          message.destroy('identifying');
+          console.error('交付产品识别失败:', error);
+          message.error('交付产品识别失败: ' + (error.response?.data?.detail || error.message));
+        } finally {
+          setDeliveryIdentificationLoading(false);
+        }
+      },
+    });
+  };
+
+  // [REQ-010] P5.1: 属性提取
+  const handleExtractAttributes = async () => {
+    Modal.confirm({
+      title: '确认属性提取',
+      content: '确定要提取所有商品的属性吗？这将使用代码规则提取交付形式和关键词。',
+      onOk: async () => {
+        try {
+          setAttributeExtractionLoading(true);
+          message.loading({ content: '正在提取商品属性...', key: 'extracting', duration: 0 });
+
+          const response = await extractAllAttributes({
+            batch_size: 100
+          });
+
+          message.destroy('extracting');
+
+          if (response.success) {
+            message.success('属性提取完成！');
+            queryClient.invalidateQueries(['attributeExtractionStats']);
+            refetchProducts();
+          } else {
+            message.error(response.message || '属性提取失败');
+          }
+        } catch (error) {
+          message.destroy('extracting');
+          console.error('属性提取失败:', error);
+          message.error('属性提取失败: ' + (error.response?.data?.detail || error.message));
+        } finally {
+          setAttributeExtractionLoading(false);
+        }
+      },
+    });
+  };
+
+  // [REQ-011] P5.2: Top商品AI深度分析
+  const handleAnalyzeTopProducts = async () => {
+    Modal.confirm({
+      title: '确认Top商品AI分析',
+      content: '确定要对所有簇的Top 3商品进行AI深度分析吗？这将调用AI分析用户需求、验证交付形式和补充关键词。预计成本：$1.5-3。',
+      onOk: async () => {
+        try {
+          setTopProductAnalysisLoading(true);
+          message.loading({ content: '正在分析Top商品...', key: 'analyzing', duration: 0 });
+
+          const response = await analyzeAllTopProducts(3, 'deepseek');
+
+          message.destroy('analyzing');
+
+          if (response.success) {
+            message.success('Top商品分析完成！');
+            queryClient.invalidateQueries(['topProductAnalysisStats']);
+            refetchProducts();
+          } else {
+            message.error(response.message || 'Top商品分析失败');
+          }
+        } catch (error) {
+          message.destroy('analyzing');
+          console.error('Top商品分析失败:', error);
+          message.error('Top商品分析失败: ' + (error.response?.data?.detail || error.message));
+        } finally {
+          setTopProductAnalysisLoading(false);
+        }
+      },
+    });
+  };
+
+  // [REQ-012] P5.3: AI辅助兜底
+  const handleAiAssist = async () => {
+    Modal.confirm({
+      title: '确认AI辅助兜底',
+      content: '确定要对代码规则无法识别的商品使用AI识别交付形式吗？这将处理所有delivery_type为空的商品。预计成本：$0.2-0.5。',
+      onOk: async () => {
+        try {
+          setAiAssistLoading(true);
+          message.loading({ content: '正在使用AI识别...', key: 'aiAssisting', duration: 0 });
+
+          const response = await extractMissingAttributes({
+            max_products: null,
+            batch_size: 10
+          });
+
+          message.destroy('aiAssisting');
+
+          if (response.success) {
+            message.success('AI辅助识别完成！');
+            queryClient.invalidateQueries(['attributeExtractionStats']);
+            refetchProducts();
+          } else {
+            message.error(response.message || 'AI辅助识别失败');
+          }
+        } catch (error) {
+          message.destroy('aiAssisting');
+          console.error('AI辅助识别失败:', error);
+          message.error('AI辅助识别失败: ' + (error.response?.data?.detail || error.message));
+        } finally {
+          setAiAssistLoading(false);
+        }
+      },
+    });
+  };
+
   // 获取商品列表
   const {
     data: productsData,
@@ -132,6 +339,30 @@ const ProductManagement = () => {
   const { data: tagsData } = useQuery({
     queryKey: ['tags'],
     queryFn: getUniqueTags,
+  });
+
+  // [REQ-004] P3.1: 获取需求分析统计
+  const { data: demandAnalysisStats } = useQuery({
+    queryKey: ['demandAnalysisStats'],
+    queryFn: getDemandAnalysisStatistics,
+  });
+
+  // [REQ-005] P3.2: 获取交付产品识别统计
+  const { data: deliveryIdentificationStats } = useQuery({
+    queryKey: ['deliveryIdentificationStats'],
+    queryFn: getDeliveryIdentificationStatistics,
+  });
+
+  // [REQ-010] P5.1: 获取属性提取统计
+  const { data: attributeExtractionStats } = useQuery({
+    queryKey: ['attributeExtractionStats'],
+    queryFn: getAttributeExtractionStatistics,
+  });
+
+  // [REQ-011] P5.2: 获取Top商品AI分析统计
+  const { data: topProductAnalysisStats } = useQuery({
+    queryKey: ['topProductAnalysisStats'],
+    queryFn: getAnalysisStatistics,
   });
 
   // 翻译Mutation
@@ -413,6 +644,51 @@ const ProductManagement = () => {
               loading={clusterLoading}
             >
               开始聚类
+            </Button>
+
+            <Button
+              type="primary"
+              onClick={handleAnalyzeDemands}
+              loading={demandAnalysisLoading}
+              style={{ backgroundColor: '#52c41a', borderColor: '#52c41a' }}
+            >
+              需求分析
+            </Button>
+
+            <Button
+              type="primary"
+              onClick={handleIdentifyDelivery}
+              loading={deliveryIdentificationLoading}
+              style={{ backgroundColor: '#1890ff', borderColor: '#1890ff' }}
+            >
+              识别交付产品
+            </Button>
+
+            <Button
+              type="primary"
+              onClick={handleExtractAttributes}
+              loading={attributeExtractionLoading}
+              style={{ backgroundColor: '#722ed1', borderColor: '#722ed1' }}
+            >
+              提取属性
+            </Button>
+
+            <Button
+              type="primary"
+              onClick={handleAnalyzeTopProducts}
+              loading={topProductAnalysisLoading}
+              style={{ backgroundColor: '#fa8c16', borderColor: '#fa8c16' }}
+            >
+              Top商品AI分析
+            </Button>
+
+            <Button
+              type="primary"
+              onClick={handleAiAssist}
+              loading={aiAssistLoading}
+              style={{ backgroundColor: '#eb2f96', borderColor: '#eb2f96' }}
+            >
+              AI辅助兜底
             </Button>
           </Space>
 

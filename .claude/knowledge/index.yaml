@@ -1,0 +1,138 @@
+# 项目知识库索引
+# 自动生成，请勿手动编辑
+
+metadata:
+  project: 词根聚类需求挖掘系统
+  created: 2026-01-29T00:00:00Z
+  last_updated: 2026-01-30T09:26:58Z
+  total_entries: 6
+  version: 1.0.0
+
+categories:
+  errors:
+    count: 6
+    description: 错误和问题记录
+    count: 5
+  solutions:
+    description: 功能实现方案
+    count: 0
+  patterns:
+    description: 代码模式和最佳实践
+    count: 0
+  decisions:
+    description: 技术决策记录
+    count: 0
+
+entries:
+  - id: KB-P-001
+    title: "API Schema 缺少字段导致数据不返回"
+    category: errors
+    keywords:
+      - "API Schema"
+      - "Pydantic"
+      - "FastAPI"
+      - "数据序列化"
+      - "字段缺失"
+    file: errors/api-schema-missing-field.md
+    created: 2026-01-29T17:30:00Z
+    updated: 2026-01-29T17:30:00Z
+    used_count: 1
+    last_used: 2026-01-29T17:30:00Z
+    related:
+      - KB-P-002
+
+  - id: KB-P-002
+    title: "后端服务模块缓存导致代码更新不生效"
+    category: errors
+    keywords:
+      - "模块缓存"
+      - "端口占用"
+      - "多进程"
+      - "uvicorn"
+      - "服务重启"
+    file: errors/backend-service-module-cache.md
+    created: 2026-01-29T17:30:00Z
+    updated: 2026-01-29T17:30:00Z
+    used_count: 1
+    last_used: 2026-01-29T17:30:00Z
+    related:
+      - KB-P-001
+      - KB-P-003
+
+  - id: KB-P-003
+    title: "Windows 命令编码问题"
+    category: errors
+    keywords:
+      - "Windows"
+      - "编码"
+      - "taskkill"
+      - "GBK"
+      - "UTF-8"
+      - "跨平台"
+    file: errors/windows-command-encoding.md
+    created: 2026-01-29T17:30:00Z
+    updated: 2026-01-29T17:30:00Z
+    used_count: 1
+    last_used: 2026-01-29T17:30:00Z
+    related:
+      - KB-P-002
+
+  - id: KB-P-004
+    title: "前端服务运行错误项目导致界面显示不正确"
+    category: errors
+    keywords:
+      - "前端服务"
+      - "端口冲突"
+      - "进程管理"
+      - "Vite"
+      - "项目启动"
+      - "React"
+    file: errors/frontend-wrong-project-running.md
+    created: 2026-01-29T18:00:00Z
+    updated: 2026-01-29T18:00:00Z
+    used_count: 0
+    last_used: 2026-01-29T18:00:00Z
+    related:
+      - KB-P-002
+      - KB-P-003
+
+  - id: KB-P-005
+    title: "Vite代理配置端口错误导致前端无法加载数据"
+    category: errors
+    keywords:
+      - "Vite代理"
+      - "端口配置"
+      - "ECONNREFUSED"
+      - "前后端通信"
+      - "API代理"
+      - "React"
+    file: errors/vite-proxy-port-mismatch.md
+    created: 2026-01-29T18:30:00Z
+    updated: 2026-01-29T18:30:00Z
+    used_count: 0
+    last_used: 2026-01-29T18:30:00Z
+    related:
+      - KB-P-002
+      - KB-P-004
+
+  - id: KB-P-006
+    title: "前后端API集成中的数据模型ID混淆错误"
+    category: errors
+    keywords:
+      - "API集成"
+      - "数据模型"
+      - "ID混淆"
+      - "FastAPI"
+      - "React"
+      - "Pydantic"
+      - "请求参数"
+      - "404错误"
+      - "400错误"
+    file: errors/frontend-backend-api-model-id-mismatch.md
+    created: 2026-01-30T08:00:00Z
+    updated: 2026-01-30T08:00:00Z
+    used_count: 1
+    last_used: 2026-01-30T08:00:00Z
+    related:
+      - KB-P-001
+      - KB-P-002
