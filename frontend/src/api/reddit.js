@@ -7,7 +7,7 @@ import client from './client';
  * 获取Reddit采集任务列表
  */
 export const getCollectionTasks = async (params = {}) => {
-  const response = await client.get('/api/reddit/tasks', { params });
+  const response = await client.get('/reddit/tasks', { params });
   return response.data;
 };
 
@@ -15,7 +15,7 @@ export const getCollectionTasks = async (params = {}) => {
  * 创建Reddit采集任务
  */
 export const createCollectionTask = async (data) => {
-  const response = await client.post('/api/reddit/tasks', data);
+  const response = await client.post('/reddit/tasks', data);
   return response.data;
 };
 
@@ -23,7 +23,7 @@ export const createCollectionTask = async (data) => {
  * 获取Reddit帖子列表
  */
 export const getRedditPosts = async (params = {}) => {
-  const response = await client.get('/api/reddit/posts', { params });
+  const response = await client.get('/reddit/posts', { params });
   return response.data;
 };
 
@@ -31,7 +31,7 @@ export const getRedditPosts = async (params = {}) => {
  * 获取Reddit帖子详情
  */
 export const getRedditPostDetail = async (postId) => {
-  const response = await client.get(`/api/reddit/posts/${postId}`);
+  const response = await client.get(`/reddit/posts/${postId}`);
   return response.data;
 };
 
@@ -39,7 +39,7 @@ export const getRedditPostDetail = async (postId) => {
  * 获取Reddit数据统计
  */
 export const getRedditStats = async (params = {}) => {
-  const response = await client.get('/api/reddit/stats', { params });
+  const response = await client.get('/reddit/stats', { params });
   return response.data;
 };
 
@@ -47,7 +47,7 @@ export const getRedditStats = async (params = {}) => {
  * 执行Reddit情感分析
  */
 export const analyzeSentiment = async (data) => {
-  const response = await client.post('/api/reddit/sentiment', data);
+  const response = await client.post('/reddit/sentiment', data);
   return response.data;
 };
 
@@ -55,7 +55,7 @@ export const analyzeSentiment = async (data) => {
  * 导出Reddit数据
  */
 export const exportRedditData = async (params = {}) => {
-  const response = await client.get('/api/reddit/export', {
+  const response = await client.get('/reddit/export', {
     params,
     responseType: 'blob',
   });

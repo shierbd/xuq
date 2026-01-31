@@ -10,7 +10,7 @@ import apiClient from './client';
  * @returns {Promise}
  */
 export const analyzeAllTopProducts = (topN = 3, aiProvider = 'deepseek') => {
-  return apiClient.post('/api/top-product-analysis/analyze', null, {
+  return apiClient.post('/top-product-analysis/analyze', null, {
     params: {
       top_n: topN,
       ai_provider: aiProvider
@@ -26,7 +26,7 @@ export const analyzeAllTopProducts = (topN = 3, aiProvider = 'deepseek') => {
  * @returns {Promise}
  */
 export const analyzeSingleCluster = (clusterId, topN = 3, aiProvider = 'deepseek') => {
-  return apiClient.post(`/api/top-product-analysis/analyze/${clusterId}`, null, {
+  return apiClient.post(`/top-product-analysis/analyze/${clusterId}`, null, {
     params: {
       top_n: topN,
       ai_provider: aiProvider
@@ -39,7 +39,7 @@ export const analyzeSingleCluster = (clusterId, topN = 3, aiProvider = 'deepseek
  * @returns {Promise}
  */
 export const getAnalysisStatistics = () => {
-  return apiClient.get('/api/top-product-analysis/statistics');
+  return apiClient.get('/top-product-analysis/statistics');
 };
 
 /**
@@ -48,7 +48,7 @@ export const getAnalysisStatistics = () => {
  * @returns {Promise}
  */
 export const getTopProductsByCluster = (topN = 3) => {
-  return apiClient.get('/api/top-product-analysis/top-products', {
+  return apiClient.get('/top-product-analysis/top-products', {
     params: {
       top_n: topN
     }
