@@ -111,6 +111,21 @@ const ProductTable = ({
         },
       },
       {
+        accessorKey: 'user_need',
+        header: '用户需求',
+        size: 300,
+        cell: ({ getValue }) => {
+          const userNeed = getValue();
+          return userNeed ? (
+            <div className="user-need" title={userNeed}>
+              {userNeed}
+            </div>
+          ) : (
+            <span style={{ color: '#999' }}>未分析</span>
+          );
+        },
+      },
+      {
         accessorKey: 'price',
         header: '价格',
         size: 100,

@@ -18,6 +18,9 @@ class AnalyzeDemandRequest(BaseModel):
     top_n: int = 10  # 使用 Top N 商品
     batch_size: int = 5  # 批次大小
     ai_provider: str = "deepseek"  # AI 提供商
+    max_clusters: Optional[int] = None  # 最多分析的簇数量（None 表示不限制）
+    skip_analyzed: bool = True  # 是否跳过已分析的簇（默认 True）
+    force_reanalyze: bool = False  # 是否强制重新分析已分析的簇（默认 False）
 
 
 @router.post("/analyze", response_model=Dict)
@@ -45,7 +48,10 @@ async def analyze_cluster_demands(
         result = await service.analyze_all_clusters(
             cluster_ids=request.cluster_ids,
             top_n=request.top_n,
-            batch_size=request.batch_size
+            batch_size=request.batch_size,
+            max_clusters=request.max_clusters,
+            skip_analyzed=request.skip_analyzed,
+            force_reanalyze=request.force_reanalyze
         )
 
         return {

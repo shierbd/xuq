@@ -11,6 +11,9 @@ import apiClient from './client';
  * @param {number} params.top_n - 使用 Top N 商品（默认10）
  * @param {number} params.batch_size - 批次大小（默认5）
  * @param {string} params.ai_provider - AI 提供商（默认 "deepseek"）
+ * @param {number} params.max_clusters - 最多分析的簇数量（可选，不传则不限制）
+ * @param {boolean} params.skip_analyzed - 是否跳过已分析的簇（默认 true）
+ * @param {boolean} params.force_reanalyze - 是否强制重新分析已分析的簇（默认 false）
  * @returns {Promise} 分析结果
  */
 export const analyzeDemands = async (params = {}) => {
@@ -18,7 +21,10 @@ export const analyzeDemands = async (params = {}) => {
     cluster_ids: params.cluster_ids || null,
     top_n: params.top_n || 10,
     batch_size: params.batch_size || 5,
-    ai_provider: params.ai_provider || 'deepseek'
+    ai_provider: params.ai_provider || 'deepseek',
+    max_clusters: params.max_clusters || null,
+    skip_analyzed: params.skip_analyzed !== undefined ? params.skip_analyzed : true,
+    force_reanalyze: params.force_reanalyze || false
   });
 };
 

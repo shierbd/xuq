@@ -322,7 +322,10 @@ class DemandAnalysisService:
         self,
         cluster_ids: Optional[List[int]] = None,
         top_n: int = 10,
-        batch_size: int = 5
+        batch_size: int = 5,
+        max_clusters: Optional[int] = None,
+        skip_analyzed: bool = True,
+        force_reanalyze: bool = False
     ) -> Dict:
         """
         批量分析所有簇的用户需求
@@ -331,32 +334,54 @@ class DemandAnalysisService:
             cluster_ids: 簇ID列表（None 表示处理所有簇）
             top_n: 使用 Top N 商品
             batch_size: 批次大小（用于进度显示）
+            max_clusters: 最多分析的簇数量（None 表示不限制）
+            skip_analyzed: 是否跳过已分析的簇（默认 True）
+            force_reanalyze: 是否强制重新分析已分析的簇（默认 False）
 
         Returns:
             批量分析结果
         """
-        # 1. 获取所有簇ID
+        # 1. 获取所有簇ID（排除噪音点和未聚类商品）
         if cluster_ids is None:
-            cluster_ids = [
-                row[0] for row in self.db.query(Product.cluster_id).filter(
-                    Product.cluster_id != -1,
-                    Product.is_deleted == False
-                ).distinct().all()
-            ]
+            # 构建基础查询
+            query = self.db.query(Product.cluster_id).filter(
+                Product.cluster_id > 0,  # 只处理有效簇（cluster_id > 0）
+                Product.is_deleted == False
+            )
+
+            # 根据参数决定是否过滤已分析的簇
+            if force_reanalyze:
+                # 强制重新分析：只选择已分析的簇
+                query = query.filter(
+                    Product.user_need.isnot(None),
+                    Product.user_need != ""
+                )
+            elif skip_analyzed:
+                # 跳过已分析：只选择未分析的簇
+                query = query.filter(
+                    (Product.user_need.is_(None)) | (Product.user_need == "")
+                )
+            # 如果两个参数都是 False，则不过滤，处理所有簇
+
+            cluster_ids = [row[0] for row in query.distinct().all()]
+
+            # 限制分析数量
+            if max_clusters is not None and max_clusters > 0:
+                cluster_ids = cluster_ids[:max_clusters]
 
         total_clusters = len(cluster_ids)
         results = []
         success_count = 0
         failed_count = 0
 
-        print(f"开始需求分析...")
-        print(f"总簇数: {total_clusters}")
-        print(f"AI 提供商: {self.ai_provider}")
+        print(f"Starting demand analysis...")
+        print(f"Total clusters: {total_clusters}")
+        print(f"AI provider: {self.ai_provider}")
         print()
 
         # 2. 逐个处理
         for i, cluster_id in enumerate(cluster_ids, 1):
-            print(f"进度: {i}/{total_clusters} ({i/total_clusters*100:.1f}%) - 簇ID: {cluster_id}")
+            print(f"Progress: {i}/{total_clusters} ({i/total_clusters*100:.1f}%) - Cluster ID: {cluster_id}")
 
             result = await self.analyze_cluster_demand(cluster_id, top_n)
             results.append(result)
@@ -364,10 +389,10 @@ class DemandAnalysisService:
             if result["success"]:
                 success_count += 1
                 summary = result["analysis"].get("summary", "N/A")
-                print(f"  ✓ 成功: {summary}")
+                print(f"  [OK] Success: {summary}")
             else:
                 failed_count += 1
-                print(f"  ✗ 失败: {result['error']}")
+                print(f"  [FAIL] Failed: {result['error']}")
 
             print()
 
@@ -388,15 +413,15 @@ class DemandAnalysisService:
         Returns:
             统计信息
         """
-        # 总簇数（不包括噪音点）
+        # 总簇数（只统计有效簇，cluster_id > 0）
         total_clusters = self.db.query(func.count(func.distinct(Product.cluster_id))).filter(
-            Product.cluster_id != -1,
+            Product.cluster_id > 0,  # 只统计有效簇
             Product.is_deleted == False
         ).scalar()
 
         # 已分析簇数
         analyzed_clusters = self.db.query(func.count(func.distinct(Product.cluster_id))).filter(
-            Product.cluster_id != -1,
+            Product.cluster_id > 0,  # 只统计有效簇
             Product.user_need.isnot(None),
             Product.user_need != "",
             Product.is_deleted == False

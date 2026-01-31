@@ -65,11 +65,17 @@
 }
 
 .product-name,
-.product-name-cn {
+.product-name-cn,
+.user-need {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   max-width: 100%;
+}
+
+.user-need {
+  color: #52c41a;
+  font-size: 13px;
 }
 
 .tags-container {

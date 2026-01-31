@@ -146,9 +146,44 @@ const ProductManagement = () => {
 
   // [REQ-004] P3.1: 需求分析
   const handleAnalyzeDemands = async () => {
+    // 创建自定义对话框
+    let maxClusters = null;
+    let skipAnalyzed = true;
+
     Modal.confirm({
-      title: '确认需求分析',
-      content: '确定要对所有簇进行需求分析吗？这将使用AI分析每个簇的用户需求。',
+      title: '需求分析配置',
+      content: (
+        <div style={{ marginTop: 16 }}>
+          <div style={{ marginBottom: 12 }}>
+            <label style={{ display: 'block', marginBottom: 4 }}>分析数量（留空表示不限制）：</label>
+            <Input
+              type="number"
+              placeholder="例如：10、50、100"
+              onChange={(e) => {
+                maxClusters = e.target.value ? parseInt(e.target.value) : null;
+              }}
+              style={{ width: '100%' }}
+            />
+          </div>
+          <div style={{ marginBottom: 12 }}>
+            <label style={{ display: 'flex', alignItems: 'center' }}>
+              <input
+                type="checkbox"
+                defaultChecked={true}
+                onChange={(e) => {
+                  skipAnalyzed = e.target.checked;
+                }}
+                style={{ marginRight: 8 }}
+              />
+              只分析未分析的簇（节省成本）
+            </label>
+          </div>
+          <div style={{ color: '#666', fontSize: '12px', marginTop: 12 }}>
+            提示：每个簇分析成本约 $0.0001，预计总成本约 $0.14
+          </div>
+        </div>
+      ),
+      width: 500,
       onOk: async () => {
         try {
           setDemandAnalysisLoading(true);
@@ -158,7 +193,10 @@ const ProductManagement = () => {
             cluster_ids: null,
             top_n: 10,
             batch_size: 5,
-            ai_provider: 'deepseek'
+            ai_provider: 'deepseek',
+            max_clusters: maxClusters,
+            skip_analyzed: skipAnalyzed,
+            force_reanalyze: false
           });
 
           message.destroy('analyzing');
@@ -174,6 +212,68 @@ const ProductManagement = () => {
           message.destroy('analyzing');
           console.error('需求分析失败:', error);
           message.error('需求分析失败: ' + (error.response?.data?.detail || error.message));
+        } finally {
+          setDemandAnalysisLoading(false);
+        }
+      },
+    });
+  };
+
+  // [REQ-004] P3.1: 重新分析已分析的簇
+  const handleReanalyzeDemands = async () => {
+    let maxClusters = null;
+
+    Modal.confirm({
+      title: '重新分析已分析的簇',
+      content: (
+        <div style={{ marginTop: 16 }}>
+          <div style={{ marginBottom: 12 }}>
+            <label style={{ display: 'block', marginBottom: 4 }}>重新分析数量（留空表示全部）：</label>
+            <Input
+              type="number"
+              placeholder="例如：10、50、100"
+              onChange={(e) => {
+                maxClusters = e.target.value ? parseInt(e.target.value) : null;
+              }}
+              style={{ width: '100%' }}
+            />
+          </div>
+          <div style={{ color: '#ff4d4f', fontSize: '12px', marginTop: 12 }}>
+            ⚠️ 警告：这将覆盖已有的分析结果！
+          </div>
+        </div>
+      ),
+      width: 500,
+      okText: '确认重新分析',
+      okType: 'danger',
+      onOk: async () => {
+        try {
+          setDemandAnalysisLoading(true);
+          message.loading({ content: '正在重新分析...', key: 'reanalyzing', duration: 0 });
+
+          const response = await analyzeDemands({
+            cluster_ids: null,
+            top_n: 10,
+            batch_size: 5,
+            ai_provider: 'deepseek',
+            max_clusters: maxClusters,
+            skip_analyzed: false,
+            force_reanalyze: true
+          });
+
+          message.destroy('reanalyzing');
+
+          if (response.success) {
+            message.success('重新分析完成！');
+            queryClient.invalidateQueries(['demandAnalysisStats']);
+            refetchProducts();
+          } else {
+            message.error(response.message || '重新分析失败');
+          }
+        } catch (error) {
+          message.destroy('reanalyzing');
+          console.error('重新分析失败:', error);
+          message.error('重新分析失败: ' + (error.response?.data?.detail || error.message));
         } finally {
           setDemandAnalysisLoading(false);
         }
@@ -653,6 +753,14 @@ const ProductManagement = () => {
               style={{ backgroundColor: '#52c41a', borderColor: '#52c41a' }}
             >
               需求分析
+            </Button>
+
+            <Button
+              onClick={handleReanalyzeDemands}
+              loading={demandAnalysisLoading}
+              style={{ borderColor: '#52c41a', color: '#52c41a' }}
+            >
+              重新分析
             </Button>
 
             <Button
