@@ -168,3 +168,6 @@ cython_debug/
 # Project-specific temporary files
 api_response.json
 nul
+
+# Claude Code GitHub 配置（包含敏感信息）
+.claude/github.yaml

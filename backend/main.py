@@ -3,11 +3,16 @@
 统一的后端服务，包含词根聚类和商品管理两大模块
 Updated: 2026-01-29 - Added cluster_name_cn field support
 Updated: 2026-01-31 - Added three-stage clustering support
+Updated: 2026-01-31 - Added debug logging for API key issues
 """
+from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from backend.database import init_db
 from backend.routers import products, keywords, batch_import, clusters, demand_analysis, delivery_identification, attribute_extraction, top_product_analysis, ai_config
+
+# 加载环境变量
+load_dotenv()
 
 # 创建 FastAPI 应用
 app = FastAPI(

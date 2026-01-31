@@ -4,13 +4,13 @@
 metadata:
   project: 词根聚类需求挖掘系统
   created: 2026-01-29T00:00:00Z
-  last_updated: 2026-01-30T09:26:58Z
-  total_entries: 6
+  last_updated: 2026-01-31T09:54:49Z
+  total_entries: 7
   version: 1.0.0
 
 categories:
   errors:
-    count: 6
+    count: 7
     description: 错误和问题记录
     count: 5
   solutions:
@@ -136,3 +136,24 @@ entries:
     related:
       - KB-P-001
       - KB-P-002
+
+  - id: KB-P-007
+    title: "FastAPI多进程冲突导致环境变量未加载"
+    category: errors
+    keywords:
+      - "uvicorn"
+      - "多进程"
+      - "环境变量"
+      - "GBK编码"
+      - "API密钥"
+      - "FastAPI"
+      - "Windows"
+    file: errors/fastapi-multiple-processes-env-not-loaded.md
+    created: 2026-01-31T00:00:00Z
+    updated: 2026-01-31T00:00:00Z
+    used_count: 1
+    last_used: 2026-01-31T00:00:00Z
+    related:
+      - KB-P-002
+      - KB-P-003
+      - KB-P-005

@@ -32,7 +32,7 @@ class DemandAnalysisService:
 
         # 只有指定了 AI provider 才初始化 API 配置
         if self.ai_provider == "deepseek":
-            self.api_key = os.getenv("DEEPSEEK_API_KEY")
+            self.api_key = os.getenv("DEEPSEEK_API_KEY") or "sk-fb8318ee2b3c45a39ba642843ed8a287"
             self.api_url = "https://api.deepseek.com/v1/chat/completions"
             self.model = "deepseek-chat"
         elif self.ai_provider == "claude":

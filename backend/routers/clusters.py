@@ -81,10 +81,14 @@ async def generate_single_category_name(
     """
     try:
         # 创建服务
+        print(f"[DEBUG ROUTER] Creating CategoryNamingService with ai_provider={ai_provider}")
         service = CategoryNamingService(db, ai_provider=ai_provider)
+        print(f"[DEBUG ROUTER] CategoryNamingService created successfully")
 
         # 生成单个类别名称
+        print(f"[DEBUG ROUTER] Calling generate_category_name for cluster {cluster_id}")
         result = await service.generate_category_name(cluster_id, top_n)
+        print(f"[DEBUG ROUTER] Result: {result}")
 
         if not result["success"]:
             raise HTTPException(status_code=400, detail=result.get("error", "生成失败"))
@@ -96,8 +100,14 @@ async def generate_single_category_name(
         }
 
     except ValueError as e:
+        print(f"[DEBUG ROUTER] ValueError caught: {e}")
+        import traceback
+        traceback.print_exc()
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
+        print(f"[DEBUG ROUTER] Exception caught: {e}")
+        import traceback
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"生成失败: {str(e)}")
 
 

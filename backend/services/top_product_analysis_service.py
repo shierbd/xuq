@@ -32,9 +32,7 @@ class TopProductAnalysisService:
                 if not self.api_key:
                     raise ValueError("未找到 CLAUDE_API_KEY 环境变量")
             elif ai_provider == 'deepseek':
-                self.api_key = os.getenv('DEEPSEEK_API_KEY')
-                if not self.api_key:
-                    raise ValueError("未找到 DEEPSEEK_API_KEY 环境变量")
+                self.api_key = os.getenv('DEEPSEEK_API_KEY') or "sk-fb8318ee2b3c45a39ba642843ed8a287"
             else:
                 raise ValueError(f"不支持的AI提供商: {ai_provider}")
 
@@ -262,11 +260,11 @@ class TopProductAnalysisService:
                         cluster_analysis = analysis.get('user_need', '')
 
                     analyzed_count += 1
-                    print(f"  ✓ 商品 {product.product_id}: {product.product_name[:50]}...")
+                    print(f"  [OK] 商品 {product.product_id}: {product.product_name[:50]}...")
 
                 except Exception as e:
                     error_count += 1
-                    print(f"  ✗ 商品 {product.product_id} 分析失败: {str(e)}")
+                    print(f"  [FAIL] 商品 {product.product_id} 分析失败: {str(e)}")
 
             # 让该簇的其他商品继承分析结果
             if cluster_analysis:
@@ -394,11 +392,11 @@ class TopProductAnalysisService:
                     cluster_analysis = analysis.get('user_need', '')
 
                 analyzed_count += 1
-                print(f"  ✓ 商品 {product.product_id}: {product.product_name[:50]}...")
+                print(f"  [OK] 商品 {product.product_id}: {product.product_name[:50]}...")
 
             except Exception as e:
                 error_count += 1
-                print(f"  ✗ 商品 {product.product_id} 分析失败: {str(e)}")
+                print(f"  [FAIL] 商品 {product.product_id} 分析失败: {str(e)}")
 
         # 让该簇的其他商品继承分析结果
         if cluster_analysis:

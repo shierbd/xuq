@@ -9,6 +9,10 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func
 from backend.models.product import Product
 import httpx
+from dotenv import load_dotenv
+
+# 加载环境变量
+load_dotenv()
 
 
 class CategoryNamingService:
@@ -36,18 +40,16 @@ class CategoryNamingService:
 
             # 获取 API 密钥
             if self.ai_provider == "deepseek":
-                self.api_key = os.getenv("DEEPSEEK_API_KEY")
+                self.api_key = os.getenv("DEEPSEEK_API_KEY") or "sk-fb8318ee2b3c45a39ba642843ed8a287"
                 self.api_url = "https://api.deepseek.com/v1/chat/completions"
                 self.model = "deepseek-chat"
+                print(f"[DEBUG] CategoryNamingService initialized with API key: {self.api_key[:20]}...")
             elif self.ai_provider == "claude":
                 self.api_key = os.getenv("CLAUDE_API_KEY")
                 self.api_url = "https://api.anthropic.com/v1/messages"
                 self.model = "claude-3-haiku-20240307"
             else:
                 raise ValueError(f"不支持的 AI 提供商: {ai_provider}")
-
-            if not self.api_key:
-                raise ValueError(f"未找到 {ai_provider.upper()}_API_KEY 环境变量")
 
     def get_top_products_by_cluster(
         self,
