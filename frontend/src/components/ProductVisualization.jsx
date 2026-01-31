@@ -18,7 +18,7 @@ const ProductVisualization = () => {
     const fetchVisualizationData = async () => {
         try {
             setLoading(true);
-            const response = await axios.get('http://localhost:8001/api/products/visualization/data');
+            const response = await axios.get('/api/products/visualization/data');
             if (response.data.success) {
                 setData(response.data.data);
             } else {
