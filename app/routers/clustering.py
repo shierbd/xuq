@@ -1,12 +1,19 @@
 """
 聚类管理路由
 """
-from fastapi import APIRouter, Request, Query, Depends
+from fastapi import APIRouter, Request, Query, Depends, Form
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse, JSONResponse
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 from typing import Optional
+import sys
+from pathlib import Path
+
+# 添加 backend 到路径以导入 ClusteringService
+backend_path = Path(__file__).parent.parent.parent / "backend"
+if str(backend_path) not in sys.path:
+    sys.path.insert(0, str(backend_path))
 
 from app.database import get_db, ClusterSummary, Product
 
@@ -172,3 +179,87 @@ async def clustering_chart_data(db: Session = Depends(get_db)):
     }
 
     return chart_data
+
+@router.post("/execute", response_class=JSONResponse)
+async def execute_clustering(
+    request: Request,
+    db: Session = Depends(get_db),
+    min_cluster_size: int = Form(10),
+    use_three_stage: bool = Form(True),
+    stage1_min_size: int = Form(10),
+    stage2_min_size: int = Form(5),
+    stage3_min_size: int = Form(3)
+):
+    """
+    执行聚类分析
+
+    使用 Sentence Transformers + HDBSCAN 进行语义聚类
+    """
+    try:
+        # 导入 ClusteringService
+        from services.clustering_service import ClusteringService
+
+        # 创建聚类服务
+        clustering_service = ClusteringService(db, model_name="all-mpnet-base-v2")
+
+        # 执行聚类
+        result = clustering_service.cluster_all_products(
+            min_cluster_size=min_cluster_size,
+            use_three_stage=use_three_stage,
+            stage1_min_size=stage1_min_size,
+            stage2_min_size=stage2_min_size,
+            stage3_min_size=stage3_min_size
+        )
+
+        if result["success"]:
+            # 生成簇级汇总
+            summary = clustering_service.generate_cluster_summary()
+
+            # 保存到 cluster_summaries 表
+            # 先清空旧数据
+            db.query(ClusterSummary).delete()
+
+            # 插入新数据
+            for item in summary:
+                cluster_summary = ClusterSummary(
+                    cluster_id=item['cluster_id'],
+                    stage='P',  # Product clustering stage
+                    cluster_size=item['cluster_size'],
+                    cluster_label=item.get('cluster_name_cn') or item.get('cluster_name'),
+                    top_keywords=', '.join(item['example_products'][:3]),
+                    example_phrases=', '.join(item['example_products'][:5]),
+                    avg_volume=item.get('total_reviews', 0),
+                    total_volume=item.get('total_reviews', 0),
+                    is_direction=True if item['cluster_size'] >= 20 else False,
+                    priority='high' if item['cluster_size'] >= 50 else 'medium' if item['cluster_size'] >= 20 else 'low'
+                )
+                db.add(cluster_summary)
+
+            db.commit()
+
+            return {
+                "success": True,
+                "message": f"聚类完成！生成了 {result['n_clusters']} 个簇",
+                "data": {
+                    "total_products": result['total_products'],
+                    "n_clusters": result['n_clusters'],
+                    "n_noise": result['n_noise'],
+                    "noise_ratio": round(result['noise_ratio'], 2),
+                    "clustering_mode": result.get('clustering_mode', 'single_stage')
+                }
+            }
+        else:
+            return {
+                "success": False,
+                "message": result.get("message", "聚类失败")
+            }
+
+    except Exception as e:
+        import traceback
+        error_detail = traceback.format_exc()
+        print(f"Clustering error: {error_detail}")
+        return {
+            "success": False,
+            "message": f"聚类执行失败: {str(e)}",
+            "error": error_detail
+        }
