@@ -36,15 +36,15 @@ async def products_list(
     """获取商品列表（HTMX）"""
 
     # 构建查询
-    query = db.query(Product)
+    query = db.query(Product).filter(Product.is_deleted == False)
 
     # 搜索
     if search:
-        query = query.filter(Product.name.contains(search))
+        query = query.filter(Product.product_name.contains(search))
 
     # 分类筛选
     if category:
-        query = query.filter(Product.category == category)
+        query = query.filter(Product.cluster_name_cn == category)
 
     # 价格筛选
     if min_price is not None:
@@ -57,7 +57,7 @@ async def products_list(
     total = query.count()
 
     # 分页
-    total_pages = (total + per_page - 1) // per_page
+    total_pages = max(1, (total + per_page - 1) // per_page)
     products = query.offset((page - 1) * per_page).limit(per_page).all()
 
     return templates.TemplateResponse("products_table.html", {
@@ -66,7 +66,10 @@ async def products_list(
         "page": page,
         "per_page": per_page,
         "total": total,
-        "total_pages": total_pages
+        "total_pages": total_pages,
+        "min": min,
+        "max": max,
+        "range": range
     })
 
 @router.delete("/{product_id}", response_class=HTMLResponse)

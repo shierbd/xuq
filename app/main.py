@@ -33,6 +33,14 @@ app.mount("/static", StaticFiles(directory="app/static"), name="static")
 # 配置模板
 templates = Jinja2Templates(directory="app/templates")
 
+# 添加Jinja2全局函数
+templates.env.globals.update({
+    'min': min,
+    'max': max,
+    'len': len,
+    'range': range,
+})
+
 # 注册路由
 app.include_router(products.router)
 
