@@ -341,6 +341,12 @@ class DemandAnalysisService:
         Returns:
             批量分析结果
         """
+        # 调试日志：打印接收到的参数
+        print(f"[DEBUG] Service received parameters:")
+        print(f"  - max_clusters: {max_clusters} (type: {type(max_clusters)})")
+        print(f"  - skip_analyzed: {skip_analyzed}")
+        print(f"  - force_reanalyze: {force_reanalyze}")
+
         # 1. 获取所有簇ID（排除噪音点和未聚类商品）
         if cluster_ids is None:
             # 构建基础查询
@@ -364,10 +370,15 @@ class DemandAnalysisService:
             # 如果两个参数都是 False，则不过滤，处理所有簇
 
             cluster_ids = [row[0] for row in query.distinct().all()]
+            print(f"[DEBUG] Before limiting: {len(cluster_ids)} clusters")
 
             # 限制分析数量
             if max_clusters is not None and max_clusters > 0:
+                print(f"[DEBUG] Limiting to {max_clusters} clusters")
                 cluster_ids = cluster_ids[:max_clusters]
+                print(f"[DEBUG] After limiting: {len(cluster_ids)} clusters")
+            else:
+                print(f"[DEBUG] No limit applied (max_clusters={max_clusters})")
 
         total_clusters = len(cluster_ids)
         results = []

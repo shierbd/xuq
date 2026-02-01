@@ -41,6 +41,12 @@ async def analyze_cluster_demands(
         分析结果统计
     """
     try:
+        # 调试日志：打印接收到的参数
+        print(f"[DEBUG] Router received parameters:")
+        print(f"  - max_clusters: {request.max_clusters} (type: {type(request.max_clusters)})")
+        print(f"  - skip_analyzed: {request.skip_analyzed}")
+        print(f"  - force_reanalyze: {request.force_reanalyze}")
+
         # 创建服务
         service = DemandAnalysisService(db, ai_provider=request.ai_provider)
 

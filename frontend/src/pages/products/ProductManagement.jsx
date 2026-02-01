@@ -146,9 +146,11 @@ const ProductManagement = () => {
 
   // [REQ-004] P3.1: 需求分析
   const handleAnalyzeDemands = async () => {
-    // 创建自定义对话框
-    let maxClusters = null;
-    let skipAnalyzed = true;
+    // 使用对象来存储配置，避免闭包问题
+    const config = {
+      maxClusters: null,
+      skipAnalyzed: true
+    };
 
     Modal.confirm({
       title: '需求分析配置',
@@ -160,7 +162,9 @@ const ProductManagement = () => {
               type="number"
               placeholder="例如：10、50、100"
               onChange={(e) => {
-                maxClusters = e.target.value ? parseInt(e.target.value) : null;
+                const value = e.target.value ? parseInt(e.target.value) : null;
+                config.maxClusters = value;
+                console.log('[DEBUG] Frontend: maxClusters changed to:', value);
               }}
               style={{ width: '100%' }}
             />
@@ -171,7 +175,8 @@ const ProductManagement = () => {
                 type="checkbox"
                 defaultChecked={true}
                 onChange={(e) => {
-                  skipAnalyzed = e.target.checked;
+                  config.skipAnalyzed = e.target.checked;
+                  console.log('[DEBUG] Frontend: skipAnalyzed changed to:', e.target.checked);
                 }}
                 style={{ marginRight: 8 }}
               />
@@ -186,6 +191,7 @@ const ProductManagement = () => {
       width: 500,
       onOk: async () => {
         try {
+          console.log('[DEBUG] Frontend: Sending request with config:', config);
           setDemandAnalysisLoading(true);
           message.loading({ content: '正在进行需求分析...', key: 'analyzing', duration: 0 });
 
@@ -194,8 +200,8 @@ const ProductManagement = () => {
             top_n: 10,
             batch_size: 5,
             ai_provider: 'deepseek',
-            max_clusters: maxClusters,
-            skip_analyzed: skipAnalyzed,
+            max_clusters: config.maxClusters,
+            skip_analyzed: config.skipAnalyzed,
             force_reanalyze: false
           });
 
@@ -221,7 +227,10 @@ const ProductManagement = () => {
 
   // [REQ-004] P3.1: 重新分析已分析的簇
   const handleReanalyzeDemands = async () => {
-    let maxClusters = null;
+    // 使用对象来存储配置，避免闭包问题
+    const config = {
+      maxClusters: null
+    };
 
     Modal.confirm({
       title: '重新分析已分析的簇',
@@ -233,7 +242,9 @@ const ProductManagement = () => {
               type="number"
               placeholder="例如：10、50、100"
               onChange={(e) => {
-                maxClusters = e.target.value ? parseInt(e.target.value) : null;
+                const value = e.target.value ? parseInt(e.target.value) : null;
+                config.maxClusters = value;
+                console.log('[DEBUG] Frontend (Reanalyze): maxClusters changed to:', value);
               }}
               style={{ width: '100%' }}
             />
@@ -248,6 +259,7 @@ const ProductManagement = () => {
       okType: 'danger',
       onOk: async () => {
         try {
+          console.log('[DEBUG] Frontend (Reanalyze): Sending request with config:', config);
           setDemandAnalysisLoading(true);
           message.loading({ content: '正在重新分析...', key: 'reanalyzing', duration: 0 });
 
@@ -256,7 +268,7 @@ const ProductManagement = () => {
             top_n: 10,
             batch_size: 5,
             ai_provider: 'deepseek',
-            max_clusters: maxClusters,
+            max_clusters: config.maxClusters,
             skip_analyzed: false,
             force_reanalyze: true
           });

@@ -4,8 +4,8 @@
 metadata:
   project: 词根聚类需求挖掘系统
   created: 2026-01-29T00:00:00Z
-  last_updated: 2026-01-31T09:54:49Z
-  total_entries: 7
+  last_updated: 2026-01-31T10:30:00Z
+  total_entries: 8
   version: 1.0.0
 
 categories:
@@ -17,6 +17,7 @@ categories:
     description: 功能实现方案
     count: 0
   patterns:
+    count: 1
     description: 代码模式和最佳实践
     count: 0
   decisions:
@@ -157,3 +158,23 @@ entries:
       - KB-P-002
       - KB-P-003
       - KB-P-005
+  - id: KB-P-008
+    title: "React Modal.confirm 闭包问题导致参数无法传递"
+    category: patterns
+    keywords:
+      - "JavaScript闭包"
+      - "React"
+      - "Modal.confirm"
+      - "参数传递"
+      - "对象引用"
+      - "Ant Design"
+      - "事件处理"
+      - "useState"
+      - "useRef"
+    file: patterns/react-modal-closure-parameter-passing.md
+    created: 2026-01-31T10:30:00Z
+    updated: 2026-01-31T10:30:00Z
+    used_count: 1
+    last_used: 2026-01-31T10:30:00Z
+    related:
+      - KB-P-001
