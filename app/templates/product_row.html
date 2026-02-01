@@ -1,0 +1,40 @@
+<!-- 商品行模板 -->
+<tr class="hover:bg-gray-50 fade-in" id="product-{{ product.id }}">
+    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+        {{ product.id }}
+    </td>
+    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+        {{ product.name }}
+    </td>
+    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+        {{ product.category }}
+    </td>
+    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+        ¥{{ "%.2f"|format(product.price) }}
+    </td>
+    <td class="px-6 py-4 whitespace-nowrap">
+        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
+            {% if product.status == 'active' %}bg-green-100 text-green-800
+            {% else %}bg-gray-100 text-gray-800{% endif %}">
+            {{ product.status }}
+        </span>
+    </td>
+    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+        <button
+            class="text-indigo-600 hover:text-indigo-900 mr-3"
+            hx-get="/products/{{ product.id }}/edit"
+            hx-target="#modal-container"
+        >
+            编辑
+        </button>
+        <button
+            class="text-red-600 hover:text-red-900"
+            hx-delete="/products/{{ product.id }}"
+            hx-confirm="确定要删除这个商品吗？"
+            hx-target="#product-{{ product.id }}"
+            hx-swap="outerHTML swap:1s"
+        >
+            删除
+        </button>
+    </td>
+</tr>

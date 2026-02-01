@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="px-4 py-6 sm:px-0">
+    <!-- 页面标题 -->
+    <div class="mb-6">
+        <h2 class="text-2xl font-bold text-gray-900">商品管理</h2>
+        <p class="mt-1 text-sm text-gray-600">管理和查看所有商品数据</p>
+    </div>
+
+    <!-- 筛选和操作栏 -->
+    <div class="bg-white shadow rounded-lg p-4 mb-6">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <!-- 搜索框 -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">搜索</label>
+                <input
+                    type="text"
+                    name="search"
+                    placeholder="搜索商品名称..."
+                    class="form-input"
+                    hx-get="/products/list"
+                    hx-trigger="keyup changed delay:500ms"
+                    hx-target="#products-table"
+                    hx-include="[name='category'], [name='min_price'], [name='max_price']"
+                >
+            </div>
+
+            <!-- 分类筛选 -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">分类</label>
+                <select
+                    name="category"
+                    class="form-input"
+                    hx-get="/products/list"
+                    hx-trigger="change"
+                    hx-target="#products-table"
+                    hx-include="[name='search'], [name='min_price'], [name='max_price']"
+                >
+                    <option value="">全部分类</option>
+                    <option value="electronics">电子产品</option>
+                    <option value="clothing">服装</option>
+                    <option value="home">家居</option>
+                </select>
+            </div>
+
+            <!-- 价格范围 -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">最低价格</label>
+                <input
+                    type="number"
+                    name="min_price"
+                    placeholder="0"
+                    class="form-input"
+                    hx-get="/products/list"
+                    hx-trigger="change"
+                    hx-target="#products-table"
+                    hx-include="[name='search'], [name='category'], [name='max_price']"
+                >
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">最高价格</label>
+                <input
+                    type="number"
+                    name="max_price"
+                    placeholder="999999"
+                    class="form-input"
+                    hx-get="/products/list"
+                    hx-trigger="change"
+                    hx-target="#products-table"
+                    hx-include="[name='search'], [name='category'], [name='min_price']"
+                >
+            </div>
+        </div>
+
+        <!-- 操作按钮 -->
+        <div class="mt-4 flex space-x-2">
+            <button
+                class="btn btn-primary"
+                hx-get="/products/new"
+                hx-target="#modal-container"
+            >
+                新建商品
+            </button>
+            <button
+                class="btn bg-purple-600 text-white hover:bg-purple-700"
+                hx-get="/products/import"
+                hx-target="#modal-container"
+            >
+                导入数据
+            </button>
+            <button
+                class="btn bg-green-600 text-white hover:bg-green-700"
+                hx-get="/products/export"
+            >
+                导出数据
+            </button>
+            <button
+                class="btn bg-gray-600 text-white hover:bg-gray-700"
+                hx-get="/products/list"
+                hx-target="#products-table"
+            >
+                刷新
+            </button>
+        </div>
+    </div>
+
+    <!-- 商品列表 -->
+    <div id="products-table" class="bg-white shadow rounded-lg overflow-hidden">
+        <!-- 初始加载 -->
+        <div class="p-8 text-center" hx-get="/products/list" hx-trigger="load" hx-swap="outerHTML">
+            <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+            <p class="mt-2 text-gray-600">加载中...</p>
+        </div>
+    </div>
+
+    <!-- 模态框容器 -->
+    <div id="modal-container"></div>
+</div>
+{% endblock %}

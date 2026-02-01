@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+
+    <!-- HTMX -->
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+
+    <!-- Tailwind CSS (可选，用于快速样式) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- 自定义样式 -->
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body class="bg-gray-50">
+    <!-- 导航栏 -->
+    <nav class="bg-white shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex">
+                    <div class="flex-shrink-0 flex items-center">
+                        <h1 class="text-xl font-bold text-gray-900">词根聚类需求挖掘系统</h1>
+                    </div>
+                    <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
+                        <a href="/" class="border-indigo-500 text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            首页
+                        </a>
+                        <a href="/products" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            商品管理
+                        </a>
+                        <a href="/clustering" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            聚类分析
+                        </a>
+                        <a href="/analysis" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            需求分析
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主内容区 -->
+    <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        {% block content %}
+        <!-- 欢迎页面 -->
+        <div class="px-4 py-6 sm:px-0">
+            <div class="text-center">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">欢迎使用词根聚类需求挖掘系统</h2>
+                <p class="text-lg text-gray-600 mb-8">基于FastAPI + HTMX的轻量级需求挖掘系统</p>
+
+                <!-- 功能卡片 -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+                    <!-- 商品管理 -->
+                    <div class="bg-white overflow-hidden shadow rounded-lg">
+                        <div class="px-4 py-5 sm:p-6">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 bg-indigo-500 rounded-md p-3">
+                                    <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                                    </svg>
+                                </div>
+                                <div class="ml-5 w-0 flex-1">
+                                    <dl>
+                                        <dt class="text-sm font-medium text-gray-500 truncate">商品管理</dt>
+                                        <dd class="text-lg font-medium text-gray-900">15,792 条</dd>
+                                    </dl>
+                                </div>
+                            </div>
+                            <div class="mt-4">
+                                <a href="/products" class="text-indigo-600 hover:text-indigo-900 text-sm font-medium">
+                                    查看详情 →
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 聚类分析 -->
+                    <div class="bg-white overflow-hidden shadow rounded-lg">
+                        <div class="px-4 py-5 sm:p-6">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 bg-green-500 rounded-md p-3">
+                                    <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                                    </svg>
+                                </div>
+                                <div class="ml-5 w-0 flex-1">
+                                    <dl>
+                                        <dt class="text-sm font-medium text-gray-500 truncate">聚类分析</dt>
+                                        <dd class="text-lg font-medium text-gray-900">1,411 个簇</dd>
+                                    </dl>
+                                </div>
+                            </div>
+                            <div class="mt-4">
+                                <a href="/clustering" class="text-green-600 hover:text-green-900 text-sm font-medium">
+                                    开始分析 →
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 需求分析 -->
+                    <div class="bg-white overflow-hidden shadow rounded-lg">
+                        <div class="px-4 py-5 sm:p-6">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 bg-purple-500 rounded-md p-3">
+                                    <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                                    </svg>
+                                </div>
+                                <div class="ml-5 w-0 flex-1">
+                                    <dl>
+                                        <dt class="text-sm font-medium text-gray-500 truncate">需求分析</dt>
+                                        <dd class="text-lg font-medium text-gray-900">AI 驱动</dd>
+                                    </dl>
+                                </div>
+                            </div>
+                            <div class="mt-4">
+                                <a href="/analysis" class="text-purple-600 hover:text-purple-900 text-sm font-medium">
+                                    开始分析 →
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 系统信息 -->
+                <div class="mt-12 bg-white shadow rounded-lg p-6">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">系统信息</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                        <div>
+                            <p class="text-gray-500">架构</p>
+                            <p class="font-medium text-gray-900">FastAPI + HTMX</p>
+                        </div>
+                        <div>
+                            <p class="text-gray-500">版本</p>
+                            <p class="font-medium text-gray-900">2.0.0</p>
+                        </div>
+                        <div>
+                            <p class="text-gray-500">代码行数</p>
+                            <p class="font-medium text-gray-900">~2,500 行</p>
+                        </div>
+                        <div>
+                            <p class="text-gray-500">响应时间</p>
+                            <p class="font-medium text-gray-900">&lt; 1 秒</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endblock %}
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="bg-white border-t mt-12">
+        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+            <p class="text-center text-sm text-gray-500">
+                词根聚类需求挖掘系统 v2.0.0 | FastAPI + HTMX |
+                <span id="status" class="text-green-600">● 运行中</span>
+            </p>
+        </div>
+    </footer>
+
+    <!-- 自定义脚本 -->
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
