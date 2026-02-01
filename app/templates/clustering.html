@@ -1,0 +1,260 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- 页面标题 -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900">聚类分析</h1>
+        <p class="mt-2 text-sm text-gray-600">查看和分析商品聚类结果</p>
+    </div>
+
+    <!-- 统计卡片 -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8" id="stats-cards">
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <svg class="h-6 w-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                        </svg>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-gray-500 truncate">总聚类数</dt>
+                            <dd class="text-lg font-semibold text-gray-900" id="total-clusters">-</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <svg class="h-6 w-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-gray-500 truncate">方向聚类</dt>
+                            <dd class="text-lg font-semibold text-gray-900" id="direction-count">-</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <svg class="h-6 w-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path>
+                        </svg>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-gray-500 truncate">平均聚类大小</dt>
+                            <dd class="text-lg font-semibold text-gray-900" id="avg-size">-</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <svg class="h-6 w-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-gray-500 truncate">聚类覆盖率</dt>
+                            <dd class="text-lg font-semibold text-gray-900" id="clustering-rate">-</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 图表区域 -->
+    <div class="bg-white shadow rounded-lg p-6 mb-8">
+        <h2 class="text-lg font-medium text-gray-900 mb-4">Top 20 聚类分布</h2>
+        <div id="cluster-chart" style="width: 100%; height: 400px;"></div>
+    </div>
+
+    <!-- 筛选和搜索 -->
+    <div class="bg-white shadow rounded-lg p-6 mb-6">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">搜索</label>
+                <input
+                    type="text"
+                    name="search"
+                    placeholder="搜索聚类标签或关键词..."
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                    hx-get="/clustering/list"
+                    hx-trigger="keyup changed delay:500ms"
+                    hx-target="#clustering-table"
+                    hx-include="[name='stage'], [name='priority'], [name='is_direction']"
+                >
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">阶段</label>
+                <select
+                    name="stage"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                    hx-get="/clustering/list"
+                    hx-trigger="change"
+                    hx-target="#clustering-table"
+                    hx-include="[name='search'], [name='priority'], [name='is_direction']"
+                >
+                    <option value="">全部阶段</option>
+                    <option value="A2">A2</option>
+                    <option value="A3">A3</option>
+                    <option value="B1">B1</option>
+                    <option value="B3">B3</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">优先级</label>
+                <select
+                    name="priority"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                    hx-get="/clustering/list"
+                    hx-trigger="change"
+                    hx-target="#clustering-table"
+                    hx-include="[name='search'], [name='stage'], [name='is_direction']"
+                >
+                    <option value="">全部优先级</option>
+                    <option value="high">高</option>
+                    <option value="medium">中</option>
+                    <option value="low">低</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">类型</label>
+                <select
+                    name="is_direction"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                    hx-get="/clustering/list"
+                    hx-trigger="change"
+                    hx-target="#clustering-table"
+                    hx-include="[name='search'], [name='stage'], [name='priority']"
+                >
+                    <option value="">全部类型</option>
+                    <option value="true">方向聚类</option>
+                    <option value="false">普通聚类</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- 聚类列表 -->
+    <div id="clustering-table"
+         hx-get="/clustering/list"
+         hx-trigger="load"
+         hx-indicator=".htmx-indicator">
+        <div class="flex justify-center items-center py-12">
+            <div class="htmx-indicator">
+                <svg class="animate-spin h-8 w-8 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+<script>
+// 加载统计数据
+fetch('/clustering/stats/overview')
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById('total-clusters').textContent = data.total_clusters;
+        document.getElementById('direction-count').textContent = data.direction_count;
+        document.getElementById('avg-size').textContent = data.avg_cluster_size;
+        document.getElementById('clustering-rate').textContent = data.clustering_rate + '%';
+    });
+
+// 加载图表数据
+fetch('/clustering/stats/chart')
+    .then(response => response.json())
+    .then(data => {
+        const chartDom = document.getElementById('cluster-chart');
+        const myChart = echarts.init(chartDom);
+
+        const option = {
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'shadow'
+                }
+            },
+            legend: {
+                data: ['聚类大小', '总搜索量']
+            },
+            xAxis: {
+                type: 'category',
+                data: data.labels,
+                axisLabel: {
+                    interval: 0,
+                    rotate: 45,
+                    fontSize: 10
+                }
+            },
+            yAxis: [
+                {
+                    type: 'value',
+                    name: '聚类大小',
+                    position: 'left'
+                },
+                {
+                    type: 'value',
+                    name: '总搜索量',
+                    position: 'right'
+                }
+            ],
+            series: [
+                {
+                    name: '聚类大小',
+                    type: 'bar',
+                    data: data.sizes,
+                    itemStyle: {
+                        color: '#4F46E5'
+                    }
+                },
+                {
+                    name: '总搜索量',
+                    type: 'line',
+                    yAxisIndex: 1,
+                    data: data.volumes,
+                    itemStyle: {
+                        color: '#10B981'
+                    }
+                }
+            ],
+            grid: {
+                bottom: 100
+            }
+        };
+
+        myChart.setOption(option);
+
+        // 响应式
+        window.addEventListener('resize', function() {
+            myChart.resize();
+        });
+    });
+</script>
+{% endblock %}

@@ -14,7 +14,7 @@ from fastapi.responses import HTMLResponse
 import uvicorn
 
 # 导入路由
-from app.routers import products
+from app.routers import products, clustering, analysis
 from app.database import init_db
 
 # 创建FastAPI应用
@@ -43,6 +43,8 @@ templates.env.globals.update({
 
 # 注册路由
 app.include_router(products.router)
+app.include_router(clustering.router)
+app.include_router(analysis.router)
 
 # 首页路由
 @app.get("/", response_class=HTMLResponse)

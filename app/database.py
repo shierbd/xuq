@@ -80,6 +80,80 @@ class Product(Base):
             "import_time": self.import_time.isoformat() if self.import_time else None,
         }
 
+# 聚类摘要模型（映射到现有数据库）
+class ClusterSummary(Base):
+    __tablename__ = "cluster_summaries"
+
+    summary_id = Column("summary_id", Integer, primary_key=True, index=True)
+    cluster_id = Column("cluster_id", Integer, nullable=False, index=True)
+    stage = Column("stage", String(10), nullable=False)
+    cluster_size = Column("cluster_size", Integer, nullable=False)
+    seed_words_in_cluster = Column("seed_words_in_cluster", Text)
+    top_keywords = Column("top_keywords", Text)
+    example_phrases = Column("example_phrases", Text)
+    cluster_label = Column("cluster_label", String(200))
+    cluster_explanation = Column("cluster_explanation", Text)
+    avg_volume = Column("avg_volume", Float)
+    total_volume = Column("total_volume", Float)
+    is_direction = Column("is_direction", Boolean)
+    priority = Column("priority", String(20))
+    created_time = Column("created_time", DateTime, nullable=False, default=datetime.utcnow)
+    updated_time = Column("updated_time", DateTime)
+
+    # 属性映射
+    @property
+    def id(self):
+        return self.summary_id
+
+    @property
+    def label(self):
+        return self.cluster_label or f"Cluster {self.cluster_id}"
+
+    @property
+    def explanation(self):
+        return self.cluster_explanation or ""
+
+    @property
+    def keywords_list(self):
+        """将关键词字符串转换为列表"""
+        if self.top_keywords:
+            return [kw.strip() for kw in self.top_keywords.split(',')]
+        return []
+
+    @property
+    def examples_list(self):
+        """将示例短语字符串转换为列表"""
+        if self.example_phrases:
+            return [ex.strip() for ex in self.example_phrases.split(',')]
+        return []
+
+    @property
+    def seed_words_list(self):
+        """将种子词字符串转换为列表"""
+        if self.seed_words_in_cluster:
+            return [sw.strip() for sw in self.seed_words_in_cluster.split(',')]
+        return []
+
+    def to_dict(self):
+        """转换为字典"""
+        return {
+            "id": self.summary_id,
+            "cluster_id": self.cluster_id,
+            "stage": self.stage,
+            "cluster_size": self.cluster_size,
+            "label": self.label,
+            "explanation": self.explanation,
+            "keywords": self.keywords_list,
+            "examples": self.examples_list,
+            "seed_words": self.seed_words_list,
+            "avg_volume": self.avg_volume,
+            "total_volume": self.total_volume,
+            "is_direction": self.is_direction,
+            "priority": self.priority,
+            "created_time": self.created_time.isoformat() if self.created_time else None,
+            "updated_time": self.updated_time.isoformat() if self.updated_time else None,
+        }
+
 # 依赖注入：获取数据库会话
 def get_db():
     """获取数据库会话"""
