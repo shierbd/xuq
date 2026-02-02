@@ -399,6 +399,44 @@ class ClusteringService:
         return attribute_words, analysis_data
 
     def preprocess_text(self, text: str) -> str:
+        """
+        预处理商品名称文本
+
+        清洗步骤：
+        1. 转小写
+        2. 去除特殊字符
+        3. 去除尺寸信息
+        4. 去除常见停用词
+        5. 清理多余空格
+        """
+        if not text:
+            return ""
+
+        # 1. 转小写
+        text = text.lower()
+
+        # 2. 去除特殊字符（保留字母、数字、空格）
+        text = re.sub(r'[|/\\()\[\]{}<>]', ' ', text)
+
+        # 3. 去除尺寸信息
+        text = re.sub(r'\d+x\d+', '', text)  # 8x10, 5x7
+        text = re.sub(r'\d+\s*(mm|cm|inch|in|ft|px)', '', text)  # 50mm, 8in
+
+        # 4. 去除常见停用词（只移除真正的噪音词，保留产品类型标识符）
+        # 保留: template, digital, printable, editable（这些是重要的产品类型词）
+        stop_words = [
+            'instant', 'download',  # 时效性词汇
+            'file', 'files',  # 格式词汇
+        ]
+        for word in stop_words:
+            text = re.sub(rf'\b{word}\b', '', text, flags=re.IGNORECASE)
+
+        # 5. 清理多余空格
+        text = ' '.join(text.split())
+
+        return text.strip()
+
+    def vectorize_products(
         self,
         products: List[Product],
         use_cache: bool = True
