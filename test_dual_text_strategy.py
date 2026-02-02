@@ -62,7 +62,7 @@ def test_dual_text_strategy():
         print_section("实验结果")
 
         if result.get("success"):
-            print("\n✅ 聚类成功完成！")
+            print("\n[SUCCESS] 聚类成功完成！")
 
             print("\n【初始聚类】(使用 full_text)")
             initial = result["initial_clustering"]
@@ -81,7 +81,7 @@ def test_dual_text_strategy():
             print(f"  噪音点: {final['n_noise']} ({final['noise_ratio']:.2f}%)")
 
             if "n_primary_clusters" in final:
-                print(f"  - 主要簇 (≥10): {final['n_primary_clusters']}")
+                print(f"  - 主要簇 (>=10): {final['n_primary_clusters']}")
                 print(f"  - 次级簇 (5-9): {final['n_secondary_clusters']}")
                 print(f"  - 微型簇 (3-4): {final['n_micro_clusters']}")
 
@@ -100,16 +100,16 @@ def test_dual_text_strategy():
             print("\n【Phase 2 目标达成情况】")
             target_clusters = (300, 500)
             if target_clusters[0] <= final['n_clusters'] <= target_clusters[1]:
-                print(f"  ✅ 簇数量: {final['n_clusters']} (目标: {target_clusters[0]}-{target_clusters[1]})")
+                print(f"  [OK] 簇数量: {final['n_clusters']} (目标: {target_clusters[0]}-{target_clusters[1]})")
             else:
-                print(f"  ⚠️ 簇数量: {final['n_clusters']} (目标: {target_clusters[0]}-{target_clusters[1]})")
+                print(f"  [WARN] 簇数量: {final['n_clusters']} (目标: {target_clusters[0]}-{target_clusters[1]})")
 
             if "n_micro_clusters" in final:
                 target_micro = (50, 100)
                 if final['n_micro_clusters'] <= target_micro[1]:
-                    print(f"  ✅ 微型簇: {final['n_micro_clusters']} (目标: <{target_micro[1]})")
+                    print(f"  [OK] 微型簇: {final['n_micro_clusters']} (目标: <{target_micro[1]})")
                 else:
-                    print(f"  ⚠️ 微型簇: {final['n_micro_clusters']} (目标: <{target_micro[1]})")
+                    print(f"  [WARN] 微型簇: {final['n_micro_clusters']} (目标: <{target_micro[1]})")
 
             # 保存结果到文件
             print_section("保存结果")
@@ -145,7 +145,7 @@ def test_dual_text_strategy():
                 f.write(f"  噪音点: {final['n_noise']} ({final['noise_ratio']:.2f}%)\n")
 
                 if "n_primary_clusters" in final:
-                    f.write(f"  - 主要簇 (≥10): {final['n_primary_clusters']}\n")
+                    f.write(f"  - 主要簇 (>=10): {final['n_primary_clusters']}\n")
                     f.write(f"  - 次级簇 (5-9): {final['n_secondary_clusters']}\n")
                     f.write(f"  - 微型簇 (3-4): {final['n_micro_clusters']}\n")
 
@@ -157,13 +157,13 @@ def test_dual_text_strategy():
                 f.write(f"  Phase 2 结果: {final['n_clusters']} 个簇\n")
                 f.write(f"  相比基线减少: {1392 - final['n_clusters']} ({baseline_reduction:.1f}%)\n")
 
-            print(f"✅ 结果已保存到: {result_file}")
+            print(f"[OK] 结果已保存到: {result_file}")
 
         else:
-            print(f"\n❌ 聚类失败: {result.get('message')}")
+            print(f"\n[ERROR] 聚类失败: {result.get('message')}")
 
     except Exception as e:
-        print(f"\n❌ 发生错误: {str(e)}")
+        print(f"\n[ERROR] 发生错误: {str(e)}")
         import traceback
         traceback.print_exc()
 

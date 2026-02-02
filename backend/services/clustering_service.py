@@ -377,7 +377,7 @@ class ClusteringService:
 
             print(f"\n[TOP 20 HIGH-DISPERSION WORDS]:")
             for word, dispersion in sorted_words:
-                is_attr = "✓" if word in attribute_words else " "
+                is_attr = "Y" if word in attribute_words else "N"
                 print(f"  [{is_attr}] {word:20s} {dispersion:.3f}")
 
             print(f"\n[ATTRIBUTE WORDS]:")
