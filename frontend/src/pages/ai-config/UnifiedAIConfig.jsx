@@ -6,9 +6,9 @@
  * 3. 配置使用场景（可选）
  */
 import React, { useState, useEffect } from 'react';
-import { Card, Form, Select, Input, Button, message, Space, Alert, Tag, Divider, Collapse, Switch, Table, Modal } from 'antd';
+import { Card, Form, Select, Input, Button, message, Space, Alert, Tag, Divider, Collapse, Switch, Table, Modal, Tabs, Drawer, Descriptions } from 'antd';
 import { SaveOutlined, CheckCircleOutlined, CloseCircleOutlined, SettingOutlined, ApiOutlined, EditOutlined } from '@ant-design/icons';
-import { getProviders, createProvider, updateProvider, getModels, createModel, getScenarios, createScenario, updateScenario, getActivePrompt, createPrompt, updatePrompt } from '../../api/ai_config';
+import { getProviders, createProvider, updateProvider, getModels, createModel, getScenarios, createScenario, updateScenario, getActivePrompt, createPrompt, updatePrompt, getPromptsByScenario, activatePrompt } from '../../api/ai_config';
 
 const { Option } = Select;
 const { Panel } = Collapse;
@@ -99,6 +99,13 @@ const UnifiedAIConfig = () => {
   const [promptModalVisible, setPromptModalVisible] = useState(false);
   const [currentScenario, setCurrentScenario] = useState(null);
   const [currentPrompt, setCurrentPrompt] = useState(null);
+  const [promptVersions, setPromptVersions] = useState([]);
+  const [versionDrawerVisible, setVersionDrawerVisible] = useState(false);
+  const [selectedVersion, setSelectedVersion] = useState(null);
+  const [compareModalVisible, setCompareModalVisible] = useState(false);
+  const [compareVersion1, setCompareVersion1] = useState(null);
+  const [compareVersion2, setCompareVersion2] = useState(null);
+  const [activeTab, setActiveTab] = useState('edit');
 
   // 加载已配置的提供商和场景
   useEffect(() => {
@@ -342,6 +349,72 @@ const UnifiedAIConfig = () => {
     promptForm.resetFields();
     setCurrentScenario(null);
     setCurrentPrompt(null);
+    setActiveTab('edit');
+    setPromptVersions([]);
+  };
+
+  // 加载提示词版本历史
+  const loadPromptVersions = async (scenarioId) => {
+    if (!scenarioId) return;
+
+    setLoading(true);
+    try {
+      const response = await getPromptsByScenario(scenarioId);
+      if (response && response.success && response.data) {
+        // 按版本号降序排列
+        const versions = (response.data.prompts || []).sort((a, b) => b.version - a.version);
+        setPromptVersions(versions);
+      }
+    } catch (error) {
+      console.error('加载版本历史失败:', error);
+      message.error('加载版本历史失败');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 查看版本详情
+  const handleViewVersion = (version) => {
+    setSelectedVersion(version);
+    setVersionDrawerVisible(true);
+  };
+
+  // 对比版本
+  const handleCompareVersion = (version) => {
+    if (!compareVersion1) {
+      setCompareVersion1(version.version);
+    } else if (!compareVersion2) {
+      setCompareVersion2(version.version);
+    }
+    setCompareModalVisible(true);
+  };
+
+  // 激活版本
+  const handleActivateVersion = async (version) => {
+    setLoading(true);
+    try {
+      await activatePrompt(version.prompt_id);
+      message.success(`已激活版本 v${version.version}`);
+      // 重新加载版本列表
+      await loadPromptVersions(currentScenario.scenario_id);
+      // 更新当前提示词
+      setCurrentPrompt(version);
+      promptForm.setFieldsValue({
+        prompt_name: version.prompt_name,
+        prompt_template: version.prompt_template,
+      });
+    } catch (error) {
+      console.error('激活版本失败:', error);
+      message.error('激活版本失败: ' + (error.response?.data?.detail || error.message));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 获取版本内容（用于对比）
+  const getVersionContent = (versionNumber) => {
+    const version = promptVersions.find(v => v.version === versionNumber);
+    return version?.prompt_template || '';
   };
 
   // 检查模型是否已配置
@@ -605,52 +678,66 @@ const UnifiedAIConfig = () => {
           open={promptModalVisible}
           onCancel={handleClosePromptModal}
           footer={null}
-          width={800}
+          width={1000}
         >
-          <Alert
-            message="提示词说明"
-            description={
-              <div>
-                <p style={{ margin: '8px 0' }}>
-                  提示词是发送给AI的指令模板，用于指导AI如何处理任务。
-                </p>
-                <p style={{ margin: '8px 0' }}>
-                  您可以使用变量（如 {'{'}keyword{'}'}, {'{'}description{'}'}）来动态替换内容。
-                </p>
-                <p style={{ margin: '8px 0 0 0', color: '#999' }}>
-                  💡 提示：清晰、具体的提示词能获得更好的AI输出结果
-                </p>
-              </div>
-            }
-            type="info"
-            showIcon
-            style={{ marginBottom: 16 }}
-          />
+          <Tabs
+            activeKey={activeTab}
+            onChange={(key) => {
+              setActiveTab(key);
+              if (key === 'history' && currentScenario) {
+                loadPromptVersions(currentScenario.scenario_id);
+              }
+            }}
+            items={[
+              {
+                key: 'edit',
+                label: '编辑提示词',
+                children: (
+                  <>
+                    <Alert
+                      message="提示词说明"
+                      description={
+                        <div>
+                          <p style={{ margin: '8px 0' }}>
+                            提示词是发送给AI的指令模板，用于指导AI如何处理任务。
+                          </p>
+                          <p style={{ margin: '8px 0' }}>
+                            您可以使用变量（如 {'{'}keyword{'}'}, {'{'}description{'}'}）来动态替换内容。
+                          </p>
+                          <p style={{ margin: '8px 0 0 0', color: '#999' }}>
+                            💡 提示：清晰、具体的提示词能获得更好的AI输出结果
+                          </p>
+                        </div>
+                      }
+                      type="info"
+                      showIcon
+                      style={{ marginBottom: 16 }}
+                    />
 
-          <Form
-            form={promptForm}
-            layout="vertical"
-            onFinish={handleSavePrompt}
-          >
-            <Form.Item
-              label="提示词名称"
-              name="prompt_name"
-              rules={[{ required: true, message: '请输入提示词名称' }]}
-            >
-              <Input placeholder="例如：类别名称生成提示词" />
-            </Form.Item>
+                    <Form
+                      form={promptForm}
+                      layout="vertical"
+                      onFinish={handleSavePrompt}
+                    >
+                      <Form.Item
+                        label="提示词名称"
+                        name="prompt_name"
+                        rules={[{ required: true, message: '请输入提示词名称' }]}
+                      >
+                        <Input placeholder="例如：类别名称生成提示词" />
+                      </Form.Item>
 
-            <Form.Item
-              label="提示词模板"
-              name="prompt_template"
-              rules={[
-                { required: true, message: '请输入提示词模板' },
-                { min: 10, message: '提示词至少10个字符' }
-              ]}
-            >
-              <Input.TextArea
-                rows={10}
-                placeholder={`请输入提示词模板，例如：
+                      <Form.Item
+                        label="提示词模板"
+                        name="prompt_template"
+                        rules={[
+                          { required: true, message: '请输入提示词模板' },
+                          { min: 10, message: '提示词至少10个字符' }
+                        ]}
+                      >
+                        <Input.TextArea
+                          rows={10}
+                          placeholder={`请输入提示词模板，例如：
 
 你是一个专业的产品分类专家。请根据以下关键词生成一个简洁的类别名称（2-4个单词）。
 
@@ -661,21 +748,235 @@ const UnifiedAIConfig = () => {
 2. 能准确概括关键词的共同特征
 3. 使用英文
 4. 只返回类别名称，不要其他内容`}
-                style={{ fontFamily: 'monospace' }}
-              />
-            </Form.Item>
+                          style={{ fontFamily: 'monospace' }}
+                        />
+                      </Form.Item>
 
-            <Form.Item>
-              <Space>
-                <Button type="primary" htmlType="submit" loading={loading} icon={<SaveOutlined />}>
-                  保存提示词
-                </Button>
-                <Button onClick={handleClosePromptModal}>
-                  取消
-                </Button>
-              </Space>
-            </Form.Item>
-          </Form>
+                      <Form.Item>
+                        <Space>
+                          <Button type="primary" htmlType="submit" loading={loading} icon={<SaveOutlined />}>
+                            保存提示词
+                          </Button>
+                          <Button onClick={handleClosePromptModal}>
+                            取消
+                          </Button>
+                        </Space>
+                      </Form.Item>
+                    </Form>
+                  </>
+                ),
+              },
+              {
+                key: 'history',
+                label: '版本历史',
+                children: (
+                  <>
+                    <Alert
+                      message="版本管理说明"
+                      description="查看所有历史版本，对比不同版本的差异，或激活任意历史版本"
+                      type="info"
+                      showIcon
+                      style={{ marginBottom: 16 }}
+                    />
+
+                    <Table
+                      dataSource={promptVersions}
+                      loading={loading}
+                      rowKey="prompt_id"
+                      pagination={{ pageSize: 10 }}
+                      columns={[
+                        {
+                          title: '版本号',
+                          dataIndex: 'version',
+                          key: 'version',
+                          width: 100,
+                          render: (version) => `v${version}`,
+                        },
+                        {
+                          title: '创建时间',
+                          dataIndex: 'created_time',
+                          key: 'created_time',
+                          width: 180,
+                          render: (time) => time ? new Date(time).toLocaleString('zh-CN') : '-',
+                        },
+                        {
+                          title: '状态',
+                          dataIndex: 'is_active',
+                          key: 'is_active',
+                          width: 100,
+                          render: (active) => (
+                            <Tag color={active ? 'green' : 'default'}>
+                              {active ? '激活' : '未激活'}
+                            </Tag>
+                          ),
+                        },
+                        {
+                          title: '提示词摘要',
+                          dataIndex: 'prompt_template',
+                          key: 'summary',
+                          ellipsis: true,
+                          render: (text) => text ? text.substring(0, 100) + (text.length > 100 ? '...' : '') : '-',
+                        },
+                        {
+                          title: '操作',
+                          key: 'actions',
+                          width: 200,
+                          render: (_, record) => (
+                            <Space>
+                              <Button size="small" onClick={() => handleViewVersion(record)}>
+                                查看
+                              </Button>
+                              <Button size="small" onClick={() => handleCompareVersion(record)}>
+                                对比
+                              </Button>
+                              {!record.is_active && (
+                                <Button
+                                  size="small"
+                                  type="primary"
+                                  onClick={() => handleActivateVersion(record)}
+                                >
+                                  激活
+                                </Button>
+                              )}
+                            </Space>
+                          ),
+                        },
+                      ]}
+                    />
+                  </>
+                ),
+              },
+            ]}
+          />
+        </Modal>
+
+        {/* 版本详情 Drawer */}
+        <Drawer
+          title={`提示词版本 v${selectedVersion?.version || ''}`}
+          open={versionDrawerVisible}
+          onClose={() => setVersionDrawerVisible(false)}
+          width={600}
+        >
+          {selectedVersion && (
+            <Descriptions bordered column={1}>
+              <Descriptions.Item label="版本号">v{selectedVersion.version}</Descriptions.Item>
+              <Descriptions.Item label="提示词名称">{selectedVersion.prompt_name}</Descriptions.Item>
+              <Descriptions.Item label="创建时间">
+                {selectedVersion.created_time ? new Date(selectedVersion.created_time).toLocaleString('zh-CN') : '-'}
+              </Descriptions.Item>
+              <Descriptions.Item label="状态">
+                {selectedVersion.is_active ? (
+                  <Tag color="green">激活</Tag>
+                ) : (
+                  <Tag>未激活</Tag>
+                )}
+              </Descriptions.Item>
+              <Descriptions.Item label="提示词内容">
+                <pre style={{
+                  whiteSpace: 'pre-wrap',
+                  wordWrap: 'break-word',
+                  fontFamily: 'monospace',
+                  fontSize: '13px',
+                  background: '#f5f5f5',
+                  padding: '12px',
+                  borderRadius: '4px',
+                  maxHeight: '400px',
+                  overflow: 'auto'
+                }}>
+                  {selectedVersion.prompt_template}
+                </pre>
+              </Descriptions.Item>
+            </Descriptions>
+          )}
+        </Drawer>
+
+        {/* 版本对比 Modal */}
+        <Modal
+          title="版本对比"
+          open={compareModalVisible}
+          onCancel={() => {
+            setCompareModalVisible(false);
+            setCompareVersion1(null);
+            setCompareVersion2(null);
+          }}
+          footer={[
+            <Button key="close" onClick={() => {
+              setCompareModalVisible(false);
+              setCompareVersion1(null);
+              setCompareVersion2(null);
+            }}>
+              关闭
+            </Button>
+          ]}
+          width={1200}
+        >
+          <Space style={{ marginBottom: 16, width: '100%' }} direction="vertical">
+            <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
+              <div style={{ flex: 1 }}>
+                <span style={{ marginRight: 8 }}>版本1:</span>
+                <Select
+                  value={compareVersion1}
+                  onChange={setCompareVersion1}
+                  style={{ width: 150 }}
+                  placeholder="选择版本"
+                >
+                  {promptVersions.map(v => (
+                    <Option key={v.version} value={v.version}>v{v.version}</Option>
+                  ))}
+                </Select>
+              </div>
+              <div style={{ flex: 1 }}>
+                <span style={{ marginRight: 8 }}>版本2:</span>
+                <Select
+                  value={compareVersion2}
+                  onChange={setCompareVersion2}
+                  style={{ width: 150 }}
+                  placeholder="选择版本"
+                >
+                  {promptVersions.map(v => (
+                    <Option key={v.version} value={v.version}>v{v.version}</Option>
+                  ))}
+                </Select>
+              </div>
+            </div>
+          </Space>
+
+          <div style={{ display: 'flex', gap: 16 }}>
+            <div style={{ flex: 1 }}>
+              <h4 style={{ marginBottom: 8 }}>版本 {compareVersion1 || '-'}</h4>
+              <pre style={{
+                whiteSpace: 'pre-wrap',
+                wordWrap: 'break-word',
+                background: '#f5f5f5',
+                padding: 16,
+                borderRadius: '4px',
+                fontFamily: 'monospace',
+                fontSize: '13px',
+                minHeight: '300px',
+                maxHeight: '500px',
+                overflow: 'auto'
+              }}>
+                {compareVersion1 ? getVersionContent(compareVersion1) : '请选择版本1'}
+              </pre>
+            </div>
+            <div style={{ flex: 1 }}>
+              <h4 style={{ marginBottom: 8 }}>版本 {compareVersion2 || '-'}</h4>
+              <pre style={{
+                whiteSpace: 'pre-wrap',
+                wordWrap: 'break-word',
+                background: '#f5f5f5',
+                padding: 16,
+                borderRadius: '4px',
+                fontFamily: 'monospace',
+                fontSize: '13px',
+                minHeight: '300px',
+                maxHeight: '500px',
+                overflow: 'auto'
+              }}>
+                {compareVersion2 ? getVersionContent(compareVersion2) : '请选择版本2'}
+              </pre>
+            </div>
+          </div>
         </Modal>
       </Card>
     </div>
