@@ -31,6 +31,9 @@ class Product(Base):
     cluster_name_cn = Column(String(200), nullable=True, comment="簇类别名称（中文）")
     cluster_type = Column(String(50), nullable=True, comment="簇类型（primary=主要簇, secondary=次级簇）")
 
+    # [P7.1] 双文本策略字段（Phase 2新增）
+    topic_text = Column(String(500), nullable=True, comment="主题文本（去除属性词后，用于聚类）")
+
     # [REQ-005] 交付产品识别字段
     delivery_type = Column(String(100), nullable=True, comment="交付类型")
     delivery_format = Column(String(100), nullable=True, comment="交付格式")
@@ -59,6 +62,7 @@ class Product(Base):
             "cluster_name": self.cluster_name,
             "cluster_name_cn": self.cluster_name_cn,
             "cluster_type": self.cluster_type,
+            "topic_text": self.topic_text,  # Phase 2新增
             "delivery_type": self.delivery_type,
             "delivery_format": self.delivery_format,
             "delivery_platform": self.delivery_platform,

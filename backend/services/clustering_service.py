@@ -2,12 +2,18 @@
 [REQ-003] 语义聚类分析 - 聚类服务
 使用 Sentence Transformers + HDBSCAN 进行语义聚类
 优化版本：使用 all-mpnet-base-v2 模型 + 文本预处理
+
+Phase 2 (2026-02-02): 双文本策略 + 数据驱动属性词发现
+- 从初始聚类结果中自动发现属性词
+- 生成 topic_text（去除属性词）用于聚类
+- 保留 full_text（完整文本）用于展示和faceting
 """
 import os
 import pickle
 import hashlib
 import re
-from typing import List, Dict, Tuple, Optional
+from typing import List, Dict, Tuple, Optional, Set
+from collections import Counter, defaultdict
 from sqlalchemy.orm import Session
 from sentence_transformers import SentenceTransformer
 import hdbscan
@@ -126,7 +132,273 @@ class ClusteringService:
 
         return text.strip()
 
-    def vectorize_products(
+    def extract_keywords_from_text(self, text: str) -> List[str]:
+        """
+        从文本中提取关键词（单词）
+
+        Args:
+            text: 商品名称文本
+
+        Returns:
+            关键词列表
+        """
+        if not text:
+            return []
+
+        # 转小写
+        text = text.lower()
+
+        # 去除特殊字符，只保留字母和空格
+        text = re.sub(r'[^a-z\s]', ' ', text)
+
+        # 分词
+        words = text.split()
+
+        # 过滤短词（长度<3）和常见停用词
+        common_stopwords = {
+            'the', 'and', 'for', 'with', 'from', 'this', 'that',
+            'are', 'was', 'were', 'been', 'have', 'has', 'had',
+            'can', 'will', 'would', 'could', 'should', 'may', 'might'
+        }
+
+        keywords = [
+            word for word in words
+            if len(word) >= 3 and word not in common_stopwords
+        ]
+
+        return keywords
+
+    def extract_cluster_keywords(
+        self,
+        cluster_labels: np.ndarray,
+        product_names: List[str],
+        top_n: int = 20
+    ) -> Dict[int, List[Tuple[str, int]]]:
+        """
+        提取每个簇的关键词
+
+        Args:
+            cluster_labels: 聚类标签数组
+            product_names: 商品名称列表
+            top_n: 每个簇返回的top关键词数量
+
+        Returns:
+            {cluster_id: [(keyword, count), ...]}
+        """
+        cluster_keywords = defaultdict(Counter)
+
+        # 统计每个簇的关键词
+        for label, name in zip(cluster_labels, product_names):
+            if label == -1:  # 跳过噪音点
+                continue
+
+            keywords = self.extract_keywords_from_text(name)
+            cluster_keywords[int(label)].update(keywords)
+
+        # 转换为排序列表
+        result = {}
+        for cluster_id, counter in cluster_keywords.items():
+            result[cluster_id] = counter.most_common(top_n)
+
+        return result
+
+    def calculate_word_dispersion(
+        self,
+        cluster_keywords: Dict[int, List[Tuple[str, int]]]
+    ) -> Dict[str, float]:
+        """
+        计算词的分散度（出现在多少个不同簇中）
+
+        分散度 = 出现的簇数量 / 总簇数量
+
+        Args:
+            cluster_keywords: {cluster_id: [(keyword, count), ...]}
+
+        Returns:
+            {word: dispersion_score}
+        """
+        if not cluster_keywords:
+            return {}
+
+        # 统计每个词出现在哪些簇中
+        word_clusters = defaultdict(set)
+
+        for cluster_id, keywords in cluster_keywords.items():
+            for word, count in keywords:
+                word_clusters[word].add(cluster_id)
+
+        # 计算分散度
+        total_clusters = len(cluster_keywords)
+        word_dispersion = {}
+
+        for word, clusters in word_clusters.items():
+            dispersion = len(clusters) / total_clusters
+            word_dispersion[word] = dispersion
+
+        return word_dispersion
+
+    def identify_attribute_words(
+        self,
+        word_dispersion: Dict[str, float],
+        dispersion_threshold: float = 0.3,
+        min_word_length: int = 3
+    ) -> Set[str]:
+        """
+        识别属性词（高分散度的词）
+
+        属性词特征：
+        - 出现在多个不同簇中（高分散度）
+        - 通常是颜色、材质、风格、格式等修饰词
+
+        Args:
+            word_dispersion: {word: dispersion_score}
+            dispersion_threshold: 分散度阈值（例如0.3表示出现在>30%的簇中）
+            min_word_length: 最小词长度
+
+        Returns:
+            属性词集合
+        """
+        attribute_words = set()
+
+        for word, dispersion in word_dispersion.items():
+            if dispersion >= dispersion_threshold and len(word) >= min_word_length:
+                attribute_words.add(word)
+
+        return attribute_words
+
+    def generate_topic_text(
+        self,
+        full_text: str,
+        attribute_words: Set[str]
+    ) -> str:
+        """
+        生成主题文本（去除属性词）
+
+        Args:
+            full_text: 完整商品名称
+            attribute_words: 属性词集合
+
+        Returns:
+            主题文本（去除属性词后）
+        """
+        if not full_text:
+            return ""
+
+        # 转小写
+        text = full_text.lower()
+
+        # 分词
+        words = text.split()
+
+        # 去除属性词
+        topic_words = [
+            word for word in words
+            if word.lower() not in attribute_words
+        ]
+
+        # 重新组合
+        topic_text = ' '.join(topic_words)
+
+        return topic_text.strip()
+
+    def discover_attribute_words_from_clustering(
+        self,
+        cluster_labels: np.ndarray,
+        product_names: List[str],
+        dispersion_threshold: float = 0.3,
+        top_n_keywords: int = 20,
+        verbose: bool = True
+    ) -> Tuple[Set[str], Dict]:
+        """
+        从聚类结果中自动发现属性词
+
+        流程：
+        1. 提取每个簇的关键词
+        2. 计算词的分散度
+        3. 识别高分散度的词作为属性词
+
+        Args:
+            cluster_labels: 聚类标签数组
+            product_names: 商品名称列表
+            dispersion_threshold: 分散度阈值
+            top_n_keywords: 每个簇提取的top关键词数量
+            verbose: 是否打印详细信息
+
+        Returns:
+            (attribute_words, analysis_data)
+            - attribute_words: 属性词集合
+            - analysis_data: 分析数据（用于调试和展示）
+        """
+        if verbose:
+            print("\n" + "="*60)
+            print("[ATTRIBUTE DISCOVERY] Discovering attribute words from clustering")
+            print("="*60)
+
+        # 步骤1: 提取每个簇的关键词
+        if verbose:
+            print(f"\n[STEP 1] Extracting keywords from each cluster...")
+
+        cluster_keywords = self.extract_cluster_keywords(
+            cluster_labels,
+            product_names,
+            top_n=top_n_keywords
+        )
+
+        if verbose:
+            print(f"  Extracted keywords from {len(cluster_keywords)} clusters")
+
+        # 步骤2: 计算词的分散度
+        if verbose:
+            print(f"\n[STEP 2] Calculating word dispersion...")
+
+        word_dispersion = self.calculate_word_dispersion(cluster_keywords)
+
+        if verbose:
+            print(f"  Calculated dispersion for {len(word_dispersion)} unique words")
+
+        # 步骤3: 识别属性词
+        if verbose:
+            print(f"\n[STEP 3] Identifying attribute words (threshold={dispersion_threshold})...")
+
+        attribute_words = self.identify_attribute_words(
+            word_dispersion,
+            dispersion_threshold=dispersion_threshold
+        )
+
+        if verbose:
+            print(f"  Identified {len(attribute_words)} attribute words")
+
+            # 显示top 20高分散度的词
+            sorted_words = sorted(
+                word_dispersion.items(),
+                key=lambda x: x[1],
+                reverse=True
+            )[:20]
+
+            print(f"\n[TOP 20 HIGH-DISPERSION WORDS]:")
+            for word, dispersion in sorted_words:
+                is_attr = "✓" if word in attribute_words else " "
+                print(f"  [{is_attr}] {word:20s} {dispersion:.3f}")
+
+            print(f"\n[ATTRIBUTE WORDS]:")
+            print(f"  {', '.join(sorted(attribute_words))}")
+
+        # 准备分析数据
+        analysis_data = {
+            'cluster_keywords': cluster_keywords,
+            'word_dispersion': word_dispersion,
+            'attribute_words': list(attribute_words),
+            'total_clusters': len(cluster_keywords),
+            'total_unique_words': len(word_dispersion),
+            'n_attribute_words': len(attribute_words)
+        }
+
+        if verbose:
+            print("\n" + "="*60)
+
+        return attribute_words, analysis_data
+
+    def preprocess_text(self, text: str) -> str:
         self,
         products: List[Product],
         use_cache: bool = True
@@ -589,6 +861,233 @@ class ClusteringService:
 
         return final_labels, cluster_types
 
+    def cluster_all_products_with_dual_text(
+        self,
+        use_cache: bool = True,
+        use_three_stage: bool = True,
+        stage1_min_size: int = 10,
+        stage2_min_size: int = 5,
+        stage3_min_size: int = 3,
+        dispersion_threshold: float = 0.3,
+        limit: int = None,
+        verbose: bool = True
+    ) -> Dict:
+        """
+        使用双文本策略进行聚类（Phase 2 新增）
+
+        流程：
+        1. 初始聚类（使用full_text）
+        2. 发现属性词
+        3. 生成topic_text
+        4. 重新聚类（使用topic_text）
+
+        Args:
+            use_cache: 是否使用缓存
+            use_three_stage: 是否使用三阶段聚类
+            stage1_min_size: 第一阶段最小簇大小
+            stage2_min_size: 第二阶段最小簇大小
+            stage3_min_size: 第三阶段最小簇大小
+            dispersion_threshold: 属性词分散度阈值
+            limit: 限制处理的商品数量
+            verbose: 是否打印详细信息
+
+        Returns:
+            聚类结果统计
+        """
+        if verbose:
+            print("\n" + "="*80)
+            print("[DUAL TEXT STRATEGY] Phase 2 - Data-Driven Attribute Discovery")
+            print("="*80)
+
+        # 查询所有未删除的商品
+        query = self.db.query(Product).filter(Product.is_deleted == False)
+        if limit is not None:
+            query = query.limit(limit)
+        products = query.all()
+
+        if not products:
+            return {"success": False, "message": "没有可聚类的商品"}
+
+        if verbose:
+            print(f"\n[STEP 1] Initial clustering with full_text ({len(products)} products)")
+            print("-" * 80)
+
+        # 步骤1: 初始聚类（使用full_text）
+        embeddings, product_ids = self.vectorize_products(products, use_cache)
+
+        if use_three_stage:
+            initial_labels, cluster_types = self.perform_three_stage_clustering(
+                embeddings, product_ids,
+                stage1_min_size=stage1_min_size,
+                stage2_min_size=stage2_min_size,
+                stage3_min_size=stage3_min_size
+            )
+        else:
+            initial_labels = self.perform_clustering(
+                embeddings,
+                min_cluster_size=stage1_min_size,
+                min_samples=max(3, stage1_min_size // 2)
+            )
+            cluster_types = {}
+
+        # 步骤2: 发现属性词
+        if verbose:
+            print("\n" + "="*80)
+            print("[STEP 2] Discovering attribute words from initial clustering")
+            print("="*80)
+
+        product_names = [p.product_name for p in products]
+        attribute_words, analysis_data = self.discover_attribute_words_from_clustering(
+            initial_labels,
+            product_names,
+            dispersion_threshold=dispersion_threshold,
+            verbose=verbose
+        )
+
+        # 步骤3: 生成topic_text
+        if verbose:
+            print("\n" + "="*80)
+            print("[STEP 3] Generating topic_text (removing attribute words)")
+            print("="*80)
+
+        topic_texts = []
+        for product in products:
+            topic_text = self.generate_topic_text(product.product_name, attribute_words)
+            topic_texts.append(topic_text)
+
+        if verbose:
+            print(f"\n[EXAMPLES] Full text → Topic text:")
+            for i in range(min(5, len(products))):
+                print(f"  {products[i].product_name}")
+                print(f"  → {topic_texts[i]}")
+                print()
+
+        # 步骤4: 重新向量化（使用topic_text）
+        if verbose:
+            print("\n" + "="*80)
+            print("[STEP 4] Re-vectorizing with topic_text")
+            print("="*80)
+
+        # 临时修改商品名称为topic_text
+        original_names = [p.product_name for p in products]
+        for i, product in enumerate(products):
+            product.product_name = topic_texts[i]
+
+        # 重新向量化
+        topic_embeddings, _ = self.vectorize_products(products, use_cache=False)
+
+        # 恢复原始名称
+        for i, product in enumerate(products):
+            product.product_name = original_names[i]
+
+        # 步骤5: 重新聚类（使用topic_text向量）
+        if verbose:
+            print("\n" + "="*80)
+            print("[STEP 5] Re-clustering with topic_text embeddings")
+            print("="*80)
+
+        if use_three_stage:
+            final_labels, final_cluster_types = self.perform_three_stage_clustering(
+                topic_embeddings, product_ids,
+                stage1_min_size=stage1_min_size,
+                stage2_min_size=stage2_min_size,
+                stage3_min_size=stage3_min_size
+            )
+        else:
+            final_labels = self.perform_clustering(
+                topic_embeddings,
+                min_cluster_size=stage1_min_size,
+                min_samples=max(3, stage1_min_size // 2)
+            )
+            final_cluster_types = {}
+
+        # 更新数据库
+        if verbose:
+            print("\n" + "="*80)
+            print("[STEP 6] Updating database")
+            print("="*80)
+
+        for i, product_id in enumerate(product_ids):
+            product = self.db.query(Product).filter(
+                Product.product_id == product_id
+            ).first()
+
+            if product:
+                product.cluster_id = int(final_labels[i])
+                product.topic_text = topic_texts[i]  # 保存topic_text
+
+                # 设置簇类型
+                if use_three_stage and final_labels[i] != -1:
+                    cluster_info = final_cluster_types.get(int(final_labels[i]), {})
+                    product.cluster_type = cluster_info.get('type', 'unknown')
+                else:
+                    product.cluster_type = None
+
+        self.db.commit()
+
+        if verbose:
+            print("[DATABASE] Database updated successfully")
+
+        # 生成统计信息
+        n_initial_clusters = len(set(initial_labels)) - (1 if -1 in initial_labels else 0)
+        n_final_clusters = len(set(final_labels)) - (1 if -1 in final_labels else 0)
+        n_initial_noise = list(initial_labels).count(-1)
+        n_final_noise = list(final_labels).count(-1)
+
+        result = {
+            "success": True,
+            "strategy": "dual_text",
+            "total_products": len(products),
+            "initial_clustering": {
+                "n_clusters": n_initial_clusters,
+                "n_noise": n_initial_noise,
+                "noise_ratio": n_initial_noise / len(products) * 100
+            },
+            "attribute_discovery": {
+                "n_attribute_words": len(attribute_words),
+                "attribute_words": list(attribute_words),
+                "dispersion_threshold": dispersion_threshold
+            },
+            "final_clustering": {
+                "n_clusters": n_final_clusters,
+                "n_noise": n_final_noise,
+                "noise_ratio": n_final_noise / len(products) * 100
+            },
+            "improvement": {
+                "cluster_reduction": n_initial_clusters - n_final_clusters,
+                "cluster_reduction_pct": (n_initial_clusters - n_final_clusters) / n_initial_clusters * 100 if n_initial_clusters > 0 else 0
+            }
+        }
+
+        if use_three_stage:
+            primary_clusters = [cid for cid, info in final_cluster_types.items() if info['type'] == 'primary']
+            secondary_clusters = [cid for cid, info in final_cluster_types.items() if info['type'] == 'secondary']
+            micro_clusters = [cid for cid, info in final_cluster_types.items() if info.get('type') == 'micro']
+
+            result["final_clustering"].update({
+                "n_primary_clusters": len(primary_clusters),
+                "n_secondary_clusters": len(secondary_clusters),
+                "n_micro_clusters": len(micro_clusters)
+            })
+
+        if verbose:
+            print("\n" + "="*80)
+            print("[RESULTS SUMMARY]")
+            print("="*80)
+            print(f"\nInitial clustering (full_text):")
+            print(f"  Clusters: {n_initial_clusters}")
+            print(f"  Noise: {n_initial_noise} ({n_initial_noise / len(products) * 100:.2f}%)")
+            print(f"\nAttribute discovery:")
+            print(f"  Attribute words: {len(attribute_words)}")
+            print(f"\nFinal clustering (topic_text):")
+            print(f"  Clusters: {n_final_clusters}")
+            print(f"  Noise: {n_final_noise} ({n_final_noise / len(products) * 100:.2f}%)")
+            print(f"\nImprovement:")
+            print(f"  Cluster reduction: {n_initial_clusters - n_final_clusters} ({result['improvement']['cluster_reduction_pct']:.1f}%)")
+            print("\n" + "="*80)
+
+        return result
+
     def cluster_all_products(
         self,
         min_cluster_size: int = 8,
@@ -599,7 +1098,9 @@ class ClusteringService:
         stage1_min_size: int = 10,
         stage2_min_size: int = 5,
         stage3_min_size: int = 3,
-        limit: int = None
+        limit: int = None,
+        use_dual_text: bool = False,  # ✅ 新增：是否使用双文本策略
+        dispersion_threshold: float = 0.3  # ✅ 新增：属性词分散度阈值
     ) -> Dict:
         """
         对所有商品进行聚类
@@ -614,10 +1115,24 @@ class ClusteringService:
             stage2_min_size: 第二阶段最小簇大小
             stage3_min_size: 第三阶段最小簇大小
             limit: 限制处理的商品数量（用于测试，None表示处理所有）
+            use_dual_text: 是否使用双文本策略（Phase 2新增）
+            dispersion_threshold: 属性词分散度阈值（Phase 2新增）
 
         Returns:
             聚类结果统计
         """
+        # ✅ Phase 2: 如果启用双文本策略，使用新方法
+        if use_dual_text:
+            return self.cluster_all_products_with_dual_text(
+                use_cache=use_cache,
+                use_three_stage=use_three_stage,
+                stage1_min_size=stage1_min_size,
+                stage2_min_size=stage2_min_size,
+                stage3_min_size=stage3_min_size,
+                dispersion_threshold=dispersion_threshold,
+                limit=limit,
+                verbose=True
+            )
         # 查询所有未删除的商品
         query = self.db.query(Product).filter(
             Product.is_deleted == False
