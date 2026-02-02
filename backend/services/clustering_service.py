@@ -213,7 +213,8 @@ class ClusteringService:
         embeddings: np.ndarray,
         min_cluster_size: int = 8,
         min_samples: int = 3,
-        metric: str = 'cosine'  # ✅ 改用 cosine（更适合文本向量）
+        metric: str = 'euclidean',
+        normalize: bool = True  # ✅ 新增：是否归一化（用于模拟 cosine 距离）
     ) -> np.ndarray:
         """
         执行 HDBSCAN 聚类（优化版）
@@ -222,15 +223,23 @@ class ClusteringService:
             embeddings: 向量矩阵
             min_cluster_size: 最小簇大小
             min_samples: 最小样本数
-            metric: 距离度量（推荐 cosine 用于文本向量）
+            metric: 距离度量
+            normalize: 是否对向量进行 L2 归一化（归一化后的 euclidean 等价于 cosine）
 
         Returns:
             cluster_labels: 聚类标签数组
         """
+        from sklearn.preprocessing import normalize as sklearn_normalize
+
+        # ✅ 对文本向量进行 L2 归一化（等价于使用 cosine 距离）
+        if normalize:
+            print(f"Normalizing embeddings (L2 norm) for cosine-equivalent distance...")
+            embeddings = sklearn_normalize(embeddings, norm='l2')
+
         print(f"Performing HDBSCAN clustering (optimized)...")
         print(f"  min_cluster_size: {min_cluster_size}")
         print(f"  min_samples: {min_samples}")
-        print(f"  metric: {metric}")
+        print(f"  metric: {metric} {'(with L2 normalization → cosine-equivalent)' if normalize else ''}")
         print(f"  cluster_selection_method: leaf")
         print(f"  cluster_selection_epsilon: 0.3")
 
