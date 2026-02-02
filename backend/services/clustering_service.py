@@ -214,7 +214,9 @@ class ClusteringService:
         min_cluster_size: int = 8,
         min_samples: int = 3,
         metric: str = 'euclidean',
-        normalize: bool = True  # ✅ 新增：是否归一化（用于模拟 cosine 距离）
+        normalize: bool = True,  # 是否归一化（用于模拟 cosine 距离）
+        cluster_selection_method: str = 'leaf',  # ✅ 新增：簇选择方法
+        cluster_selection_epsilon: float = 0.3   # ✅ 新增：簇合并阈值
     ) -> np.ndarray:
         """
         执行 HDBSCAN 聚类（优化版）
@@ -225,6 +227,8 @@ class ClusteringService:
             min_samples: 最小样本数
             metric: 距离度量
             normalize: 是否对向量进行 L2 归一化（归一化后的 euclidean 等价于 cosine）
+            cluster_selection_method: 簇选择方法 ('eom' 保守, 'leaf' 激进)
+            cluster_selection_epsilon: 簇合并阈值
 
         Returns:
             cluster_labels: 聚类标签数组
@@ -240,15 +244,15 @@ class ClusteringService:
         print(f"  min_cluster_size: {min_cluster_size}")
         print(f"  min_samples: {min_samples}")
         print(f"  metric: {metric} {'(with L2 normalization → cosine-equivalent)' if normalize else ''}")
-        print(f"  cluster_selection_method: leaf")
-        print(f"  cluster_selection_epsilon: 0.3")
+        print(f"  cluster_selection_method: {cluster_selection_method}")  # ✅ 显示实际使用的方法
+        print(f"  cluster_selection_epsilon: {cluster_selection_epsilon}")
 
         clusterer = hdbscan.HDBSCAN(
             min_cluster_size=min_cluster_size,
             min_samples=min_samples,
             metric=metric,
-            cluster_selection_method='leaf',  # 使用leaf方法（更激进，减少噪点）
-            cluster_selection_epsilon=0.3,     # 允许距离在0.3内的簇合并
+            cluster_selection_method=cluster_selection_method,  # ✅ 使用参数
+            cluster_selection_epsilon=cluster_selection_epsilon,  # ✅ 使用参数
             core_dist_n_jobs=-1                # 使用所有CPU核心加速
         )
 
@@ -445,10 +449,13 @@ class ClusteringService:
         print(f"\n[STAGE 1] Primary clustering (min_cluster_size={stage1_min_size})")
         print("-" * 60)
 
+        # ✅ Stage 1 使用 eom（保守，生成稳定的主题簇）
         stage1_labels = self.perform_clustering(
             embeddings,
             min_cluster_size=stage1_min_size,
-            min_samples=max(3, stage1_min_size // 2)
+            min_samples=max(3, stage1_min_size // 2),
+            cluster_selection_method='eom',  # ✅ 使用 eom（保守）
+            cluster_selection_epsilon=0.0    # ✅ 关闭 epsilon
         )
 
         stage1_clusters = set(stage1_labels) - {-1}
