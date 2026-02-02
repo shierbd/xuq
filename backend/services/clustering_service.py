@@ -899,6 +899,371 @@ class ClusteringService:
 
         return final_labels, cluster_types
 
+    def perform_three_stage_clustering_with_merge(
+        self,
+        embeddings: np.ndarray,
+        product_ids: List[int],
+        stage1_min_size: int = 10,
+        merge_threshold: float = 0.5,
+        min_cohesion: float = 0.5,
+        min_separation: float = 0.3,
+        min_cluster_size: int = 3,
+        verbose: bool = True
+    ) -> Tuple[np.ndarray, Dict]:
+        """
+        执行三阶段聚类（Stage 2/3 重新设计版本）
+
+        第一阶段：使用较大的 min_cluster_size 获取主要簇
+        第二阶段：归并噪音点到最近的主题簇（不创建新簇）
+        第三阶段：质量门控（只保留高质量簇）
+
+        Args:
+            embeddings: 向量矩阵
+            product_ids: 产品ID列表
+            stage1_min_size: 第一阶段最小簇大小
+            merge_threshold: Stage 2 归并相似度阈值 (0-1)
+            min_cohesion: Stage 3 最小簇内一致性
+            min_separation: Stage 3 最小簇区分度
+            min_cluster_size: Stage 3 最小簇大小
+            verbose: 是否打印详细信息
+
+        Returns:
+            (final_labels, cluster_info): 最终聚类标签和簇信息字典
+        """
+        if verbose:
+            print("\n" + "="*80)
+            print("[THREE-STAGE CLUSTERING V2] Stage 2/3 Redesign with Merge Strategy")
+            print("="*80)
+
+        # ============ 第一阶段：主要聚类 ============
+        if verbose:
+            print(f"\n[STAGE 1] Primary clustering (min_cluster_size={stage1_min_size})")
+            print("-" * 80)
+
+        stage1_labels = self.perform_clustering(
+            embeddings,
+            min_cluster_size=stage1_min_size,
+            min_samples=max(3, stage1_min_size // 2),
+            cluster_selection_method='eom',
+            cluster_selection_epsilon=0.0
+        )
+
+        stage1_clusters = set(stage1_labels) - {-1}
+        stage1_noise_count = np.sum(stage1_labels == -1)
+
+        if verbose:
+            print(f"\n[STAGE 1 RESULTS]:")
+            print(f"  Primary clusters: {len(stage1_clusters)}")
+            print(f"  Noise points: {stage1_noise_count}")
+            print(f"  Noise ratio: {stage1_noise_count / len(stage1_labels) * 100:.2f}%")
+
+        # ============ 第二阶段：归并策略 ============
+        if verbose:
+            print(f"\n[STAGE 2] Merge Strategy (threshold={merge_threshold})")
+            print("-" * 80)
+
+        # 计算簇中心
+        centroids = self.calculate_cluster_centroids(embeddings, stage1_labels)
+
+        # 归并噪音点到最近的簇
+        stage2_labels = self.merge_noise_to_clusters(
+            embeddings,
+            stage1_labels,
+            centroids,
+            threshold=merge_threshold,
+            verbose=verbose
+        )
+
+        stage2_noise_count = np.sum(stage2_labels == -1)
+
+        if verbose:
+            merged_count = stage1_noise_count - stage2_noise_count
+            print(f"\n[STAGE 2 RESULTS]:")
+            print(f"  Merged to clusters: {merged_count}")
+            print(f"  Remaining noise: {stage2_noise_count}")
+            print(f"  Merge rate: {merged_count / stage1_noise_count * 100:.1f}%")
+
+        # ============ 第三阶段：质量门控 ============
+        if verbose:
+            print(f"\n[STAGE 3] Quality Gate")
+            print("-" * 80)
+            print(f"  Min cohesion: {min_cohesion}")
+            print(f"  Min separation: {min_separation}")
+            print(f"  Min cluster size: {min_cluster_size}")
+
+        # 应用质量门控
+        final_labels = self.apply_quality_gate(
+            embeddings,
+            stage2_labels,
+            min_size=min_cluster_size,
+            min_cohesion=min_cohesion,
+            min_separation=min_separation,
+            verbose=verbose
+        )
+
+        # ============ 最终统计 ============
+        if verbose:
+            print("\n" + "="*80)
+            print("[FINAL RESULTS] Three-stage clustering summary (V2)")
+            print("="*80)
+
+        final_clusters = set(final_labels) - {-1}
+        final_noise_count = np.sum(final_labels == -1)
+
+        # 生成簇信息
+        cluster_info = {}
+        for cluster_id in final_clusters:
+            cluster_mask = final_labels == cluster_id
+            cluster_size = np.sum(cluster_mask)
+            cluster_info[int(cluster_id)] = {
+                'type': 'high_quality',
+                'size': int(cluster_size),
+                'stage': 'final'
+            }
+
+        if verbose:
+            print(f"\nOverall statistics:")
+            print(f"  Total clusters: {len(final_clusters)}")
+            print(f"  Final noise points: {final_noise_count}")
+            print(f"  Final noise ratio: {final_noise_count / len(final_labels) * 100:.2f}%")
+            print(f"  Cluster reduction: {len(stage1_clusters)} -> {len(final_clusters)}")
+            print(f"  Noise reduction: {stage1_noise_count} -> {final_noise_count}")
+            print("\n" + "="*80)
+
+        return final_labels, cluster_info
+
+    def calculate_cluster_centroids(
+        self,
+        embeddings: np.ndarray,
+        labels: np.ndarray
+    ) -> Dict[int, np.ndarray]:
+        """
+        计算每个簇的中心向量（质心）
+
+        Args:
+            embeddings: 向量矩阵
+            labels: 聚类标签
+
+        Returns:
+            {cluster_id: centroid_vector}
+        """
+        centroids = {}
+        unique_labels = set(labels) - {-1}
+
+        for label in unique_labels:
+            cluster_mask = labels == label
+            cluster_points = embeddings[cluster_mask]
+            centroid = np.mean(cluster_points, axis=0)
+            centroids[int(label)] = centroid
+
+        return centroids
+
+    def merge_noise_to_clusters(
+        self,
+        embeddings: np.ndarray,
+        labels: np.ndarray,
+        centroids: Dict[int, np.ndarray],
+        threshold: float = 0.5,
+        verbose: bool = True
+    ) -> np.ndarray:
+        """
+        将噪音点归并到最近的簇（Stage 2 归并策略）
+
+        Args:
+            embeddings: 向量矩阵
+            labels: 聚类标签
+            centroids: 簇中心字典
+            threshold: 相似度阈值（0-1）
+            verbose: 是否打印详细信息
+
+        Returns:
+            新的聚类标签
+        """
+        from sklearn.metrics.pairwise import cosine_similarity
+
+        if verbose:
+            print("\n[MERGE STRATEGY] Merging noise points to nearest clusters")
+            print(f"  Threshold: {threshold}")
+
+        new_labels = labels.copy()
+        noise_mask = labels == -1
+        noise_indices = np.where(noise_mask)[0]
+        noise_count = len(noise_indices)
+
+        if noise_count == 0:
+            if verbose:
+                print("  No noise points to merge")
+            return new_labels
+
+        merged_count = 0
+
+        for idx in noise_indices:
+            noise_point = embeddings[idx].reshape(1, -1)
+
+            # 计算与所有簇中心的相似度
+            max_sim = -1
+            best_cluster = -1
+
+            for cluster_id, centroid in centroids.items():
+                centroid_reshaped = centroid.reshape(1, -1)
+                sim = cosine_similarity(noise_point, centroid_reshaped)[0][0]
+
+                if sim > max_sim:
+                    max_sim = sim
+                    best_cluster = cluster_id
+
+            # 如果相似度足够高，归并
+            if max_sim > threshold:
+                new_labels[idx] = best_cluster
+                merged_count += 1
+
+        if verbose:
+            print(f"  Noise points: {noise_count}")
+            print(f"  Merged: {merged_count} ({merged_count/noise_count*100:.1f}%)")
+            print(f"  Remaining noise: {noise_count - merged_count}")
+
+        return new_labels
+
+    def calculate_cohesion(self, cluster_points: np.ndarray) -> float:
+        """
+        计算簇内一致性（平均相似度）
+
+        Args:
+            cluster_points: 簇内所有点的向量
+
+        Returns:
+            一致性分数（0-1）
+        """
+        from sklearn.metrics.pairwise import cosine_similarity
+
+        n = len(cluster_points)
+        if n < 2:
+            return 0.0
+
+        # 计算所有点对之间的相似度
+        similarities = []
+        for i in range(n):
+            for j in range(i+1, n):
+                point_i = cluster_points[i].reshape(1, -1)
+                point_j = cluster_points[j].reshape(1, -1)
+                sim = cosine_similarity(point_i, point_j)[0][0]
+                similarities.append(sim)
+
+        return np.mean(similarities)
+
+    def calculate_separation(
+        self,
+        cluster_centroid: np.ndarray,
+        all_centroids: List[np.ndarray]
+    ) -> float:
+        """
+        计算簇区分度（与最近簇的距离）
+
+        Args:
+            cluster_centroid: 当前簇的中心
+            all_centroids: 所有簇的中心列表
+
+        Returns:
+            区分度分数（0-1）
+        """
+        from sklearn.metrics.pairwise import cosine_similarity
+
+        # 计算与所有其他簇中心的距离
+        distances = []
+        centroid_reshaped = cluster_centroid.reshape(1, -1)
+
+        for other_centroid in all_centroids:
+            if not np.array_equal(cluster_centroid, other_centroid):
+                other_reshaped = other_centroid.reshape(1, -1)
+                sim = cosine_similarity(centroid_reshaped, other_reshaped)[0][0]
+                dist = 1 - sim  # 距离 = 1 - 相似度
+                distances.append(dist)
+
+        # 返回最近距离（最小距离）
+        return min(distances) if distances else 1.0
+
+    def apply_quality_gate(
+        self,
+        embeddings: np.ndarray,
+        labels: np.ndarray,
+        min_size: int = 3,
+        min_cohesion: float = 0.5,
+        min_separation: float = 0.3,
+        verbose: bool = True
+    ) -> np.ndarray:
+        """
+        应用质量门控，淘汰低质量簇（Stage 3 质量门控）
+
+        Args:
+            embeddings: 向量矩阵
+            labels: 聚类标签
+            min_size: 最小簇大小
+            min_cohesion: 最小簇内一致性
+            min_separation: 最小簇区分度
+            verbose: 是否打印详细信息
+
+        Returns:
+            新的聚类标签
+        """
+        if verbose:
+            print("\n[QUALITY GATE] Filtering low-quality clusters")
+            print(f"  Min size: {min_size}")
+            print(f"  Min cohesion: {min_cohesion}")
+            print(f"  Min separation: {min_separation}")
+
+        new_labels = labels.copy()
+        unique_labels = set(labels) - {-1}
+        initial_cluster_count = len(unique_labels)
+
+        # 计算所有簇中心
+        centroids = self.calculate_cluster_centroids(embeddings, labels)
+        all_centroids = list(centroids.values())
+
+        rejected_clusters = []
+
+        for cluster_id in unique_labels:
+            cluster_mask = labels == cluster_id
+            cluster_points = embeddings[cluster_mask]
+            cluster_size = len(cluster_points)
+
+            # 检查簇大小
+            if cluster_size < min_size:
+                new_labels[cluster_mask] = -1
+                rejected_clusters.append((cluster_id, "size_too_small", cluster_size))
+                continue
+
+            # 检查簇内一致性
+            cohesion = self.calculate_cohesion(cluster_points)
+            if cohesion < min_cohesion:
+                new_labels[cluster_mask] = -1
+                rejected_clusters.append((cluster_id, "low_cohesion", cohesion))
+                continue
+
+            # 检查簇区分度
+            separation = self.calculate_separation(centroids[cluster_id], all_centroids)
+            if separation < min_separation:
+                new_labels[cluster_mask] = -1
+                rejected_clusters.append((cluster_id, "low_separation", separation))
+                continue
+
+        final_cluster_count = len(set(new_labels) - {-1})
+        rejected_count = len(rejected_clusters)
+
+        if verbose:
+            print(f"  Initial clusters: {initial_cluster_count}")
+            print(f"  Rejected: {rejected_count}")
+            print(f"  Final clusters: {final_cluster_count}")
+
+            if rejected_clusters and verbose:
+                print(f"\n  Rejection reasons:")
+                reason_counts = {}
+                for _, reason, _ in rejected_clusters:
+                    reason_counts[reason] = reason_counts.get(reason, 0) + 1
+                for reason, count in reason_counts.items():
+                    print(f"    - {reason}: {count}")
+
+        return new_labels
+
     def cluster_all_products_with_dual_text(
         self,
         use_cache: bool = True,
@@ -1137,8 +1502,12 @@ class ClusteringService:
         stage2_min_size: int = 5,
         stage3_min_size: int = 3,
         limit: int = None,
-        use_dual_text: bool = False,  # ✅ 新增：是否使用双文本策略
-        dispersion_threshold: float = 0.3  # ✅ 新增：属性词分散度阈值
+        use_dual_text: bool = False,  # Phase 2: 是否使用双文本策略
+        dispersion_threshold: float = 0.3,  # Phase 2: 属性词分散度阈值
+        use_merge_strategy: bool = False,  # Stage 2/3 Redesign: 是否使用归并策略
+        merge_threshold: float = 0.5,  # Stage 2/3 Redesign: 归并相似度阈值
+        min_cohesion: float = 0.5,  # Stage 2/3 Redesign: 最小簇内一致性
+        min_separation: float = 0.3  # Stage 2/3 Redesign: 最小簇区分度
     ) -> Dict:
         """
         对所有商品进行聚类
@@ -1155,6 +1524,10 @@ class ClusteringService:
             limit: 限制处理的商品数量（用于测试，None表示处理所有）
             use_dual_text: 是否使用双文本策略（Phase 2新增）
             dispersion_threshold: 属性词分散度阈值（Phase 2新增）
+            use_merge_strategy: 是否使用归并策略（Stage 2/3 Redesign）
+            merge_threshold: 归并相似度阈值（Stage 2/3 Redesign）
+            min_cohesion: 最小簇内一致性（Stage 2/3 Redesign）
+            min_separation: 最小簇区分度（Stage 2/3 Redesign）
 
         Returns:
             聚类结果统计
@@ -1195,7 +1568,20 @@ class ClusteringService:
         embeddings, product_ids = self.vectorize_products(products, use_cache)
 
         # 选择聚类模式
-        if use_three_stage:
+        if use_merge_strategy:
+            # Stage 2/3 重新设计：归并策略 + 质量门控
+            print(f"DEBUG: Using three-stage clustering with merge strategy (V2)")
+            cluster_labels, cluster_types = self.perform_three_stage_clustering_with_merge(
+                embeddings,
+                product_ids,
+                stage1_min_size=stage1_min_size,
+                merge_threshold=merge_threshold,
+                min_cohesion=min_cohesion,
+                min_separation=min_separation,
+                min_cluster_size=3,
+                verbose=True
+            )
+        elif use_three_stage:
             # 三阶段聚类（推荐）
             print(f"DEBUG: Using three-stage clustering")
             cluster_labels, cluster_types = self.perform_three_stage_clustering(

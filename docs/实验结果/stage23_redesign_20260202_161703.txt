@@ -1,0 +1,27 @@
+================================================================================
+Stage 2/3 Redesign Test Results
+================================================================================
+
+Test time: 2026-02-02 16:17:03
+
+Configuration:
+  - use_merge_strategy: True
+  - stage1_min_size: 10
+  - merge_threshold: 0.5
+  - min_cohesion: 0.5
+  - min_separation: 0.3
+  - min_cluster_size: 3
+
+Results:
+  - Total products: 15792
+  - Total clusters: 33
+  - Noise points: 14700 (93.09%)
+
+Comparison with Phase 2 Baseline:
+  - Cluster reduction: 1349 -> 33 (97.6%)
+  - Noise change: 4631 -> 14700
+
+Target Achievement:
+  - Target: 150-200 clusters
+  - Actual: 33 clusters
+  - Status: NOT ACHIEVED
