@@ -213,7 +213,7 @@ class ClusteringService:
         embeddings: np.ndarray,
         min_cluster_size: int = 8,
         min_samples: int = 3,
-        metric: str = 'euclidean'
+        metric: str = 'cosine'  # ✅ 改用 cosine（更适合文本向量）
     ) -> np.ndarray:
         """
         执行 HDBSCAN 聚类（优化版）
@@ -222,7 +222,7 @@ class ClusteringService:
             embeddings: 向量矩阵
             min_cluster_size: 最小簇大小
             min_samples: 最小样本数
-            metric: 距离度量
+            metric: 距离度量（推荐 cosine 用于文本向量）
 
         Returns:
             cluster_labels: 聚类标签数组
