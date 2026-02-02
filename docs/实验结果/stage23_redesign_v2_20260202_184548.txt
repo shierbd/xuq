@@ -1,0 +1,28 @@
+================================================================================
+Stage 2/3 Redesign Test Results V2 (Adjusted Parameters)
+================================================================================
+
+Test time: 2026-02-02 18:45:48
+
+Configuration V2 (Adjusted):
+  - use_merge_strategy: True
+  - stage1_min_size: 10
+  - merge_threshold: 0.5 (unchanged)
+  - min_cohesion: 0.4 (decreased from 0.5)
+  - min_separation: 0.15 (decreased from 0.3)
+  - min_cluster_size: 3
+
+Results:
+  - Total products: 15792
+  - Total clusters: 164
+  - Noise points: 5774 (36.56%)
+
+Comparison:
+  - V1 (sep=0.3): 33 clusters, 14700 noise
+  - V2 (sep=0.15): 164 clusters, 5774 noise
+  - Change: +131 clusters, -8926 noise
+
+Target Achievement:
+  - Target: 150-200 clusters
+  - Actual: 164 clusters
+  - Status: ACHIEVED
