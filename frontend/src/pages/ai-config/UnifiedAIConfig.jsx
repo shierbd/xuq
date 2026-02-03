@@ -7,8 +7,8 @@
  */
 import React, { useState, useEffect } from 'react';
 import { Card, Form, Select, Input, Button, message, Space, Alert, Tag, Divider, Collapse, Switch, Table, Modal, Tabs, Drawer, Descriptions } from 'antd';
-import { SaveOutlined, CheckCircleOutlined, CloseCircleOutlined, SettingOutlined, ApiOutlined, EditOutlined } from '@ant-design/icons';
-import { getProviders, createProvider, updateProvider, getModels, createModel, getScenarios, createScenario, updateScenario, getActivePrompt, createPrompt, updatePrompt, getPromptsByScenario, activatePrompt } from '../../api/ai_config';
+import { SaveOutlined, CheckCircleOutlined, CloseCircleOutlined, SettingOutlined, ApiOutlined, EditOutlined, DownloadOutlined, UploadOutlined } from '@ant-design/icons';
+import { getProviders, createProvider, updateProvider, getModels, createModel, getScenarios, createScenario, updateScenario, getActivePrompt, createPrompt, updatePrompt, getPromptsByScenario, activatePrompt, exportConfig, importConfig } from '../../api/ai_config';
 
 const { Option } = Select;
 const { Panel } = Collapse;
@@ -106,6 +106,15 @@ const UnifiedAIConfig = () => {
   const [compareVersion1, setCompareVersion1] = useState(null);
   const [compareVersion2, setCompareVersion2] = useState(null);
   const [activeTab, setActiveTab] = useState('edit');
+  const [importModalVisible, setImportModalVisible] = useState(false);
+  const [importFile, setImportFile] = useState(null);
+  const [overwriteConfig, setOverwriteConfig] = useState(false);
+  const [exportOptions, setExportOptions] = useState({
+    include_providers: true,
+    include_models: true,
+    include_scenarios: true,
+    include_prompts: true
+  });
 
   // 加载已配置的提供商和场景
   useEffect(() => {
@@ -422,6 +431,92 @@ const UnifiedAIConfig = () => {
     return configuredProviders.some(p => p.provider_name === model.provider && p.is_enabled);
   };
 
+  // 导出配置
+  const handleExportConfig = async () => {
+    setLoading(true);
+    try {
+      const response = await exportConfig(exportOptions);
+      if (response.success) {
+        // 创建下载链接
+        const dataStr = JSON.stringify(response.data, null, 2);
+        const dataBlob = new Blob([dataStr], { type: 'application/json' });
+        const url = URL.createObjectURL(dataBlob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `ai-config-${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        message.success('配置导出成功！');
+      }
+    } catch (error) {
+      console.error('导出配置失败:', error);
+      message.error('导出配置失败: ' + (error.response?.data?.detail || error.message));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 处理文件选择
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.type !== 'application/json') {
+        message.error('请选择JSON文件');
+        return;
+      }
+      setImportFile(file);
+    }
+  };
+
+  // 导入配置
+  const handleImportConfig = async () => {
+    if (!importFile) {
+      message.error('请先选择配置文件');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      // 读取文件内容
+      const fileContent = await importFile.text();
+      const configData = JSON.parse(fileContent);
+
+      // 调用导入API
+      const response = await importConfig({
+        config_data: configData,
+        overwrite: overwriteConfig
+      });
+
+      if (response.success) {
+        const { imported_counts, errors } = response.data;
+        let successMsg = `导入成功！提供商: ${imported_counts.providers}, 模型: ${imported_counts.models}, 场景: ${imported_counts.scenarios}, 提示词: ${imported_counts.prompts}`;
+
+        if (errors && errors.length > 0) {
+          message.warning(successMsg + ` (部分失败: ${errors.length})`);
+          console.error('导入错误:', errors);
+        } else {
+          message.success(successMsg);
+        }
+
+        // 重新加载数据
+        await loadConfiguredProviders();
+        await loadScenarios();
+
+        // 关闭弹窗
+        setImportModalVisible(false);
+        setImportFile(null);
+        setOverwriteConfig(false);
+      }
+    } catch (error) {
+      console.error('导入配置失败:', error);
+      message.error('导入配置失败: ' + (error.response?.data?.detail || error.message));
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // 已配置模型的表格列
   const providerColumns = [
     {
@@ -670,7 +765,188 @@ const UnifiedAIConfig = () => {
               </div>
             )}
           </Panel>
+
+          {/* 配置导入导出 */}
+          <Panel
+            header={
+              <div>
+                <DownloadOutlined /> 配置导入导出
+                <span style={{ marginLeft: 8, color: '#999', fontSize: '13px' }}>
+                  备份和恢复AI配置
+                </span>
+              </div>
+            }
+            key="import-export"
+          >
+            <Alert
+              message="配置导入导出说明"
+              description={
+                <div>
+                  <p style={{ margin: '8px 0' }}>
+                    <strong>导出配置</strong>：将当前所有AI配置导出为JSON文件，用于备份或迁移
+                  </p>
+                  <p style={{ margin: '8px 0' }}>
+                    <strong>导入配置</strong>：从JSON文件导入AI配置，可选择覆盖或合并现有配置
+                  </p>
+                  <p style={{ margin: '8px 0 0 0', color: '#999' }}>
+                    💡 提示：导出的配置不包含API密钥，导入后需要重新填写
+                  </p>
+                </div>
+              }
+              type="info"
+              showIcon
+              style={{ marginBottom: 16 }}
+            />
+
+            <Space direction="vertical" style={{ width: '100%' }}>
+              {/* 导出配置 */}
+              <Card size="small" title="导出配置">
+                <Space direction="vertical" style={{ width: '100%' }}>
+                  <div>
+                    <p style={{ marginBottom: 8 }}>选择要导出的内容：</p>
+                    <Space wrap>
+                      <label>
+                        <input
+                          type="checkbox"
+                          checked={exportOptions.include_providers}
+                          onChange={(e) => setExportOptions({ ...exportOptions, include_providers: e.target.checked })}
+                        />
+                        <span style={{ marginLeft: 4 }}>提供商</span>
+                      </label>
+                      <label>
+                        <input
+                          type="checkbox"
+                          checked={exportOptions.include_models}
+                          onChange={(e) => setExportOptions({ ...exportOptions, include_models: e.target.checked })}
+                        />
+                        <span style={{ marginLeft: 4 }}>模型</span>
+                      </label>
+                      <label>
+                        <input
+                          type="checkbox"
+                          checked={exportOptions.include_scenarios}
+                          onChange={(e) => setExportOptions({ ...exportOptions, include_scenarios: e.target.checked })}
+                        />
+                        <span style={{ marginLeft: 4 }}>场景</span>
+                      </label>
+                      <label>
+                        <input
+                          type="checkbox"
+                          checked={exportOptions.include_prompts}
+                          onChange={(e) => setExportOptions({ ...exportOptions, include_prompts: e.target.checked })}
+                        />
+                        <span style={{ marginLeft: 4 }}>提示词</span>
+                      </label>
+                    </Space>
+                  </div>
+                  <Button
+                    type="primary"
+                    icon={<DownloadOutlined />}
+                    onClick={handleExportConfig}
+                    loading={loading}
+                    block
+                  >
+                    导出配置
+                  </Button>
+                </Space>
+              </Card>
+
+              {/* 导入配置 */}
+              <Card size="small" title="导入配置">
+                <Space direction="vertical" style={{ width: '100%' }}>
+                  <Button
+                    icon={<UploadOutlined />}
+                    onClick={() => setImportModalVisible(true)}
+                    block
+                  >
+                    选择配置文件导入
+                  </Button>
+                </Space>
+              </Card>
+            </Space>
+          </Panel>
         </Collapse>
+
+        {/* 导入配置弹窗 */}
+        <Modal
+          title="导入AI配置"
+          open={importModalVisible}
+          onCancel={() => {
+            setImportModalVisible(false);
+            setImportFile(null);
+            setOverwriteConfig(false);
+          }}
+          footer={[
+            <Button
+              key="cancel"
+              onClick={() => {
+                setImportModalVisible(false);
+                setImportFile(null);
+                setOverwriteConfig(false);
+              }}
+            >
+              取消
+            </Button>,
+            <Button
+              key="import"
+              type="primary"
+              icon={<UploadOutlined />}
+              onClick={handleImportConfig}
+              loading={loading}
+              disabled={!importFile}
+            >
+              开始导入
+            </Button>
+          ]}
+        >
+          <Space direction="vertical" style={{ width: '100%' }}>
+            <Alert
+              message="导入说明"
+              description={
+                <div>
+                  <p style={{ margin: '8px 0' }}>
+                    1. 选择之前导出的JSON配置文件
+                  </p>
+                  <p style={{ margin: '8px 0' }}>
+                    2. 选择导入模式：合并（保留现有配置）或覆盖（替换同名配置）
+                  </p>
+                  <p style={{ margin: '8px 0 0 0', color: '#ff4d4f' }}>
+                    ⚠️ 注意：导入后需要重新填写API密钥
+                  </p>
+                </div>
+              }
+              type="warning"
+              showIcon
+              style={{ marginBottom: 16 }}
+            />
+
+            <div>
+              <p style={{ marginBottom: 8 }}>选择配置文件：</p>
+              <input
+                type="file"
+                accept=".json"
+                onChange={handleFileChange}
+                style={{ width: '100%' }}
+              />
+              {importFile && (
+                <p style={{ marginTop: 8, color: '#52c41a' }}>
+                  已选择：{importFile.name}
+                </p>
+              )}
+            </div>
+
+            <div>
+              <label>
+                <input
+                  type="checkbox"
+                  checked={overwriteConfig}
+                  onChange={(e) => setOverwriteConfig(e.target.checked)}
+                />
+                <span style={{ marginLeft: 8 }}>覆盖现有配置（如果存在同名配置）</span>
+              </label>
+            </div>
+          </Space>
+        </Modal>
 
         {/* 提示词编辑弹窗 */}
         <Modal

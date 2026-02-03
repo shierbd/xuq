@@ -328,3 +328,103 @@ export const renderPrompt = (promptId, data) => {
 export const getPromptStatistics = () => {
   return apiClient.get('/ai-config/prompts/statistics');
 };
+
+// ==================== AI成本监控 ====================
+
+/**
+ * 获取成本统计信息
+ * @param {Object} params - 查询参数
+ * @param {string} params.start_date - 开始日期 (YYYY-MM-DD)
+ * @param {string} params.end_date - 结束日期 (YYYY-MM-DD)
+ * @param {number} params.scenario_id - 场景ID
+ * @param {number} params.model_id - 模型ID
+ * @param {number} params.provider_id - 提供商ID
+ * @returns {Promise}
+ */
+export const getCostStatistics = (params = {}) => {
+  return apiClient.get('/ai-config/cost/statistics', { params });
+};
+
+/**
+ * 按场景统计成本
+ * @param {Object} params - 查询参数
+ * @param {string} params.start_date - 开始日期 (YYYY-MM-DD)
+ * @param {string} params.end_date - 结束日期 (YYYY-MM-DD)
+ * @returns {Promise}
+ */
+export const getCostByScenario = (params = {}) => {
+  return apiClient.get('/ai-config/cost/by-scenario', { params });
+};
+
+/**
+ * 按模型统计成本
+ * @param {Object} params - 查询参数
+ * @param {string} params.start_date - 开始日期 (YYYY-MM-DD)
+ * @param {string} params.end_date - 结束日期 (YYYY-MM-DD)
+ * @returns {Promise}
+ */
+export const getCostByModel = (params = {}) => {
+  return apiClient.get('/ai-config/cost/by-model', { params });
+};
+
+/**
+ * 按提供商统计成本
+ * @param {Object} params - 查询参数
+ * @param {string} params.start_date - 开始日期 (YYYY-MM-DD)
+ * @param {string} params.end_date - 结束日期 (YYYY-MM-DD)
+ * @returns {Promise}
+ */
+export const getCostByProvider = (params = {}) => {
+  return apiClient.get('/ai-config/cost/by-provider', { params });
+};
+
+/**
+ * 获取成本趋势
+ * @param {Object} params - 查询参数
+ * @param {string} params.start_date - 开始日期 (YYYY-MM-DD)
+ * @param {string} params.end_date - 结束日期 (YYYY-MM-DD)
+ * @param {string} params.granularity - 粒度 (day, hour, month)
+ * @returns {Promise}
+ */
+export const getCostTrend = (params = {}) => {
+  return apiClient.get('/ai-config/cost/trend', { params });
+};
+
+/**
+ * 获取最近的成本日志
+ * @param {Object} params - 查询参数
+ * @param {number} params.skip - 跳过数量
+ * @param {number} params.limit - 限制数量
+ * @param {string} params.status - 状态筛选
+ * @param {number} params.scenario_id - 场景ID筛选
+ * @returns {Promise}
+ */
+export const getRecentCostLogs = (params = {}) => {
+  return apiClient.get('/ai-config/cost/recent-logs', { params });
+};
+
+// ==================== AI配置导入导出 ====================
+
+/**
+ * 导出AI配置
+ * @param {Object} params - 导出参数
+ * @param {boolean} params.include_providers - 是否包含提供商
+ * @param {boolean} params.include_models - 是否包含模型
+ * @param {boolean} params.include_scenarios - 是否包含场景
+ * @param {boolean} params.include_prompts - 是否包含提示词
+ * @returns {Promise}
+ */
+export const exportConfig = (params = {}) => {
+  return apiClient.get('/ai-config/config/export', { params });
+};
+
+/**
+ * 导入AI配置
+ * @param {Object} data - 导入数据
+ * @param {Object} data.config_data - 配置数据
+ * @param {boolean} data.overwrite - 是否覆盖现有配置
+ * @returns {Promise}
+ */
+export const importConfig = (data) => {
+  return apiClient.post('/ai-config/config/import', data);
+};

@@ -48,6 +48,7 @@ import DataAnalysis from './pages/reddit/DataAnalysis';
 
 // AI配置管理模块页面
 import UnifiedAIConfig from './pages/ai-config/UnifiedAIConfig';
+import CostMonitoring from './pages/ai-config/CostMonitoring';
 
 import './App.css';
 
@@ -172,6 +173,11 @@ const menuItems = [
         icon: <SettingOutlined />,
         label: 'AI配置',
       },
+      {
+        key: '/ai-config/cost',
+        icon: <BarChartOutlined />,
+        label: '成本监控',
+      },
     ],
   },
 ];
@@ -271,6 +277,7 @@ function AppContent() {
 
             {/* AI配置管理模块 */}
             <Route path="/ai-config" element={<UnifiedAIConfig />} />
+            <Route path="/ai-config/cost" element={<CostMonitoring />} />
           </Routes>
         </Content>
       </Layout>
