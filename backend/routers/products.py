@@ -1081,6 +1081,84 @@ def cluster_products_large_scale_async(
         "message": "cluster-large task submitted"
     }
 
+class IncrementalClusterRequest(BaseModel):
+    product_ids: Optional[TypingList[int]] = None
+    limit: Optional[int] = None
+    similarity_threshold: float = 0.55
+    sample_size: int = 50
+    use_cache: bool = True
+    include_noise: bool = False
+    mark_unassigned_as_noise: bool = True
+    update_keywords: bool = True
+    keyword_top_n: int = 10
+    keyword_min_word_len: int = 3
+    keyword_method: str = "tfidf"
+
+@router.post("/cluster-incremental")
+def cluster_products_incremental(
+    request: IncrementalClusterRequest,
+    db: Session = Depends(get_db)
+):
+    """
+    Incrementally assign new products to existing clusters.
+    """
+    clustering_service = ClusteringService(db)
+    result = clustering_service.incremental_cluster_products(
+        product_ids=request.product_ids,
+        limit=request.limit,
+        similarity_threshold=request.similarity_threshold,
+        sample_size=request.sample_size,
+        use_cache=request.use_cache,
+        include_noise=request.include_noise,
+        mark_unassigned_as_noise=request.mark_unassigned_as_noise,
+        update_keywords=request.update_keywords,
+        keyword_top_n=request.keyword_top_n,
+        keyword_min_word_len=request.keyword_min_word_len,
+        keyword_method=request.keyword_method
+    )
+    return {
+        "success": True,
+        "data": result
+    }
+
+
+@router.post("/cluster-incremental/async")
+def cluster_products_incremental_async(
+    request: IncrementalClusterRequest
+):
+    params = request.model_dump() if hasattr(request, "model_dump") else request.dict()
+    task_id = task_manager.create_task("cluster-incremental", params=params)
+
+    def _job():
+        db = SessionLocal()
+        try:
+            clustering_service = ClusteringService(db)
+            progress_cb = lambda pct, msg=None: task_manager.set_progress(task_id, pct, msg)
+            return clustering_service.incremental_cluster_products(
+                product_ids=request.product_ids,
+                limit=request.limit,
+                similarity_threshold=request.similarity_threshold,
+                sample_size=request.sample_size,
+                use_cache=request.use_cache,
+                include_noise=request.include_noise,
+                mark_unassigned_as_noise=request.mark_unassigned_as_noise,
+                update_keywords=request.update_keywords,
+                keyword_top_n=request.keyword_top_n,
+                keyword_min_word_len=request.keyword_min_word_len,
+                keyword_method=request.keyword_method,
+                progress_callback=progress_cb
+            )
+        finally:
+            db.close()
+
+    task_manager.run_task(task_id, _job)
+    return {
+        "success": True,
+        "task_id": task_id,
+        "message": "cluster-incremental task submitted"
+    }
+
+
 class ClusterKeywordRequest(BaseModel):
     cluster_ids: Optional[TypingList[int]] = None
     top_n: int = 10

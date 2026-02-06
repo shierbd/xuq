@@ -1961,7 +1961,183 @@ class ClusteringService:
 
         return result
 
-    def generate_cluster_summary(self) -> List[Dict]:
+    def incremental_cluster_products(
+        self,
+        product_ids: Optional[List[int]] = None,
+        limit: Optional[int] = None,
+        similarity_threshold: float = 0.55,
+        sample_size: int = 50,
+        use_cache: bool = True,
+        include_noise: bool = False,
+        mark_unassigned_as_noise: bool = True,
+        update_keywords: bool = True,
+        keyword_top_n: int = 10,
+        keyword_min_word_len: int = 3,
+        keyword_method: str = "tfidf",
+        progress_callback: Optional[Callable[[float, Optional[str]], None]] = None
+    ) -> Dict:
+        """
+        Incrementally assign new products to existing clusters using centroid similarity.
+        """
+        query = self.db.query(Product).filter(Product.is_deleted == False)
+        if product_ids:
+            query = query.filter(Product.product_id.in_(product_ids))
+        else:
+            if include_noise:
+                query = query.filter(
+                    (Product.cluster_id.is_(None)) | (Product.cluster_id == -1)
+                )
+            else:
+                query = query.filter(Product.cluster_id.is_(None))
+
+        if limit:
+            query = query.limit(limit)
+
+        products = query.all()
+        if not products:
+            return {
+                "success": True,
+                "total_products": 0,
+                "assigned": 0,
+                "unassigned": 0,
+                "updated_clusters": 0
+            }
+
+        cluster_rows = self.db.query(Product.cluster_id).filter(
+            Product.is_deleted == False,
+            Product.cluster_id.isnot(None),
+            Product.cluster_id != -1
+        ).distinct().all()
+        cluster_ids = [row[0] for row in cluster_rows]
+
+        if not cluster_ids:
+            if mark_unassigned_as_noise:
+                updates = [{"product_id": p.product_id, "cluster_id": -1} for p in products]
+                if updates:
+                    self.db.bulk_update_mappings(Product, updates)
+                    self.db.commit()
+            return {
+                "success": True,
+                "total_products": len(products),
+                "assigned": 0,
+                "unassigned": len(products),
+                "updated_clusters": 0,
+                "message": "no existing clusters"
+            }
+
+        type_rows = self.db.query(Product.cluster_id, Product.cluster_type).filter(
+            Product.cluster_id.in_(cluster_ids),
+            Product.cluster_type.isnot(None)
+        ).all()
+        cluster_type_map = {}
+        for cid, ctype in type_rows:
+            if cid not in cluster_type_map and ctype:
+                cluster_type_map[cid] = ctype
+
+        centroids = {}
+        total_clusters = len(cluster_ids)
+        for idx_cluster, cluster_id in enumerate(cluster_ids, start=1):
+            sample_products = self.db.query(Product).filter(
+                Product.is_deleted == False,
+                Product.cluster_id == cluster_id
+            ).order_by(func.coalesce(Product.review_count, 0).desc()).limit(sample_size).all()
+
+            if not sample_products:
+                continue
+
+            sample_embeddings, _ = self.vectorize_products(sample_products, use_cache=use_cache)
+            centroids[cluster_id] = np.mean(sample_embeddings, axis=0)
+
+            if progress_callback and total_clusters > 0:
+                progress_callback(5 + 35 * (idx_cluster / total_clusters), f"centroids {idx_cluster}/{total_clusters}")
+
+        if not centroids:
+            return {
+                "success": True,
+                "total_products": len(products),
+                "assigned": 0,
+                "unassigned": len(products),
+                "updated_clusters": 0,
+                "message": "no centroids"
+            }
+
+        new_embeddings, new_ids = self.vectorize_products(products, use_cache=use_cache)
+
+        from sklearn.metrics.pairwise import cosine_similarity
+        centroid_ids = list(centroids.keys())
+        centroid_matrix = np.vstack([centroids[cid] for cid in centroid_ids])
+        sims = cosine_similarity(new_embeddings, centroid_matrix)
+        best_idx = np.argmax(sims, axis=1)
+        best_scores = np.max(sims, axis=1)
+
+        updates = []
+        assigned_clusters = set()
+        unassigned = 0
+        for pid, idx_best, score in zip(new_ids, best_idx, best_scores):
+            if score >= similarity_threshold:
+                cluster_id = int(centroid_ids[int(idx_best)])
+                update = {"product_id": int(pid), "cluster_id": cluster_id}
+                if cluster_id in cluster_type_map:
+                    update["cluster_type"] = cluster_type_map[cluster_id]
+                updates.append(update)
+                assigned_clusters.add(cluster_id)
+            else:
+                if mark_unassigned_as_noise:
+                    updates.append({"product_id": int(pid), "cluster_id": -1})
+                unassigned += 1
+
+        if updates:
+            self.db.bulk_update_mappings(Product, updates)
+            self.db.commit()
+
+        if progress_callback:
+            progress_callback(80, "db update")
+
+        keyword_result = None
+        summary_result = None
+        if assigned_clusters and update_keywords:
+            from backend.services.product_keyword_service import ProductClusterKeywordService
+            keyword_service = ProductClusterKeywordService(self.db)
+            keyword_result = keyword_service.generate_cluster_keywords(
+                cluster_ids=sorted(assigned_clusters),
+                top_n=keyword_top_n,
+                min_word_len=keyword_min_word_len,
+                overwrite=True,
+                method=keyword_method
+            )
+
+        if assigned_clusters:
+            summary_result = self.persist_cluster_summary(
+                top_keywords_limit=keyword_top_n,
+                overwrite=False,
+                cluster_ids=sorted(assigned_clusters)
+            )
+
+        if progress_callback:
+            progress_callback(100, "completed")
+
+        assigned = len(products) - unassigned
+        avg_score = float(np.mean(best_scores)) if len(best_scores) else 0.0
+        min_score = float(np.min(best_scores)) if len(best_scores) else 0.0
+        max_score = float(np.max(best_scores)) if len(best_scores) else 0.0
+
+        return {
+            "success": True,
+            "total_products": len(products),
+            "assigned": assigned,
+            "unassigned": unassigned,
+            "updated_clusters": len(assigned_clusters),
+            "similarity_threshold": similarity_threshold,
+            "similarity": {
+                "avg": avg_score,
+                "min": min_score,
+                "max": max_score
+            },
+            "keyword_result": keyword_result,
+            "summary_persisted": summary_result
+        }
+
+    def generate_cluster_summary(self, cluster_ids: Optional[List[int]] = None) -> List[Dict]:
         """
         生成簇级汇总
 
@@ -1969,10 +2145,13 @@ class ClusteringService:
             簇级统计信息列表
         """
         # 查询已聚类的商品
-        products = self.db.query(Product).filter(
+        query = self.db.query(Product).filter(
             Product.is_deleted == False,
             Product.cluster_id.isnot(None)
-        ).all()
+        )
+        if cluster_ids:
+            query = query.filter(Product.cluster_id.in_(cluster_ids))
+        products = query.all()
 
         # 按簇分组统计
         cluster_data = {}
@@ -2027,17 +2206,23 @@ class ClusteringService:
     def persist_cluster_summary(
         self,
         top_keywords_limit: int = 10,
-        overwrite: bool = True
+        overwrite: bool = True,
+        cluster_ids: Optional[List[int]] = None
     ) -> Dict:
         """
         将簇级汇总落库到 product_cluster_summaries
         """
-        summary = self.generate_cluster_summary()
+        summary = self.generate_cluster_summary(cluster_ids=cluster_ids)
         if not summary:
             return {"success": True, "total": 0, "inserted": 0}
 
         if overwrite:
-            self.db.query(ProductClusterSummary).delete()
+            if cluster_ids:
+                self.db.query(ProductClusterSummary).filter(
+                    ProductClusterSummary.cluster_id.in_(cluster_ids)
+                ).delete()
+            else:
+                self.db.query(ProductClusterSummary).delete()
             self.db.commit()
 
         inserted = 0
