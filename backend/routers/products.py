@@ -430,7 +430,8 @@ async def generate_cluster_names(
     if not clusters:
         return {
             "success": True,
-            "message": "没有需要处理的簇",
+            "message": "没有需要处理的簇名",
+            "summary_persisted": None,
             "data": {
                 "total_clusters": 0,
                 "processed": 0,
@@ -486,8 +487,15 @@ async def generate_cluster_names(
             logger.error(f"Failed to generate name for cluster {cluster_id}: {e}")
             db.rollback()
 
+    summary_result = None
+    try:
+        summary_result = ClusteringService(db).persist_cluster_summary()
+    except Exception as persist_err:
+        summary_result = {"success": False, "message": str(persist_err)}
+
     return {
         "success": True,
+        "summary_persisted": summary_result,
         "message": f"成功生成{len(results)}个簇的类别名称",
         "data": {
             "total_clusters": len(clusters),
