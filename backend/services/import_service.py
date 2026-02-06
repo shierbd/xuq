@@ -66,24 +66,24 @@ class ImportService:
             if 'review_count' in df_clean.columns:
                 df_clean['review_count'] = df_clean['review_count'].apply(parse_review_count)
             else:
-                df_clean['review_count'] = 0
+                df_clean['review_count'] = None
 
             if 'price' in df_clean.columns:
                 df_clean['price'] = df_clean['price'].apply(clean_price)
             else:
-                df_clean['price'] = 0.0
+                df_clean['price'] = None
 
             if 'rating' in df_clean.columns:
                 df_clean['rating'] = df_clean['rating'].apply(clean_rating)
             else:
-                df_clean['rating'] = 0.0
+                df_clean['rating'] = None
 
             if 'shop_name' in df_clean.columns:
                 df_clean['shop_name'] = df_clean['shop_name'].apply(
-                    lambda x: str(x).strip() if pd.notna(x) else ''
+                    lambda x: str(x).strip() if pd.notna(x) and str(x).strip() else None
                 )
             else:
-                df_clean['shop_name'] = ''
+                df_clean['shop_name'] = None
 
             # 数据验证
             valid_mask = df_clean['product_name'].str.len() > 0
@@ -127,34 +127,63 @@ class ImportService:
             'import_time': datetime.utcnow().isoformat()
         }
 
-        for _, row in df.iterrows():
-            if skip_duplicates:
-                # 检查是否重复（基于商品名称 + 店铺名称）
-                existing = self.db.query(Product).filter(
-                    Product.product_name == row['product_name'],
-                    Product.shop_name == row['shop_name'],
-                    Product.is_deleted == False
-                ).first()
+        existing_pairs = set()
+        if skip_duplicates:
+            raw_pairs = self.db.query(
+                Product.product_name, Product.shop_name
+            ).filter(Product.is_deleted == False).all()
+            existing_pairs = set(
+                (name, shop if shop else None) for name, shop in raw_pairs
+            )
 
-                if existing:
+        new_pairs = set()
+        batch = []
+        batch_size = 1000
+
+        def normalize_optional(value):
+            if pd.isna(value):
+                return None
+            if isinstance(value, str) and value.strip() == "":
+                return None
+            return value
+
+        for _, row in df.iterrows():
+            product_name = normalize_optional(row.get('product_name'))
+            shop_name = normalize_optional(row.get('shop_name'))
+
+            if skip_duplicates:
+                key = (product_name, shop_name)
+                if key in existing_pairs or key in new_pairs:
                     stats['duplicates'] += 1
                     continue
+                new_pairs.add(key)
+
+            rating_value = normalize_optional(row.get('rating'))
+            review_count_value = normalize_optional(row.get('review_count'))
+            price_value = normalize_optional(row.get('price'))
 
             # 创建新商品
             product = Product(
-                product_name=row['product_name'],
-                rating=float(row.get('rating', 0.0)) if row.get('rating') else 0.0,
-                review_count=int(row.get('review_count', 0)) if row.get('review_count') else 0,
-                shop_name=str(row.get('shop_name', '')),
-                price=float(row.get('price', 0.0)) if row.get('price') else 0.0,
+                product_name=str(product_name),
+                rating=float(rating_value) if rating_value is not None else None,
+                review_count=int(review_count_value) if review_count_value is not None else None,
+                shop_name=str(shop_name) if shop_name is not None else None,
+                price=float(price_value) if price_value is not None else None,
                 import_time=datetime.utcnow()
             )
 
-            self.db.add(product)
-            stats['imported'] += 1
+            batch.append(product)
 
-        # 提交事务
-        self.db.commit()
+            if len(batch) >= batch_size:
+                self.db.bulk_save_objects(batch)
+                self.db.commit()
+                stats['imported'] += len(batch)
+                batch.clear()
+
+        if batch:
+            self.db.bulk_save_objects(batch)
+            self.db.commit()
+            stats['imported'] += len(batch)
 
         # 确保返回的是 Python 原生类型
         return {

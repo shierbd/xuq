@@ -8,14 +8,16 @@ import {
   flexRender,
 } from '@tanstack/react-table';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import { Checkbox, Tag, Button, Space, message } from 'antd';
+import { Checkbox, Tag, Button, Space } from 'antd';
 import './ProductTable.css';
 
 const ProductTable = ({
   data = [],
   loading = false,
   onSelectionChange,
-  selectedRows = []
+  selectedRows = [],
+  onEdit,
+  onDelete
 }) => {
   const [rowSelection, setRowSelection] = useState({});
   const tableContainerRef = useRef(null);
@@ -69,7 +71,7 @@ const ProductTable = ({
       {
         accessorKey: 'product_name',
         header: '商品名称',
-        size: 300,
+        size: 320,
         cell: ({ getValue }) => (
           <div className="product-name" title={getValue()}>
             {getValue()}
@@ -77,21 +79,11 @@ const ProductTable = ({
         ),
       },
       {
-        accessorKey: 'product_name_cn',
-        header: '中文名称',
-        size: 200,
+        accessorKey: 'shop_name',
+        header: '店铺',
+        size: 160,
         cell: ({ getValue }) => (
-          <div className="product-name-cn" title={getValue()}>
-            {getValue() || '-'}
-          </div>
-        ),
-      },
-      {
-        accessorKey: 'platform',
-        header: '平台',
-        size: 80,
-        cell: ({ getValue }) => (
-          <Tag color="blue">{getValue()}</Tag>
+          <div title={getValue() || ''}>{getValue() || '-'}</div>
         ),
       },
       {
@@ -99,7 +91,6 @@ const ProductTable = ({
         header: '类别名称',
         size: 200,
         cell: ({ row }) => {
-          // 优先显示中文名称，如果没有则显示英文名称
           const clusterNameCn = row.original.cluster_name_cn;
           const clusterName = row.original.cluster_name;
           const displayName = clusterNameCn || clusterName;
@@ -111,9 +102,36 @@ const ProductTable = ({
         },
       },
       {
+        accessorKey: 'delivery_type',
+        header: '交付类型',
+        size: 140,
+        cell: ({ getValue }) => {
+          const value = getValue();
+          return value ? <Tag color="blue">{value}</Tag> : '-';
+        },
+      },
+      {
+        accessorKey: 'delivery_platform',
+        header: '平台',
+        size: 120,
+        cell: ({ getValue }) => {
+          const value = getValue();
+          return value ? <Tag color="geekblue">{value}</Tag> : '-';
+        },
+      },
+      {
+        accessorKey: 'delivery_format',
+        header: '格式',
+        size: 120,
+        cell: ({ getValue }) => {
+          const value = getValue();
+          return value ? <Tag color="purple">{value}</Tag> : '-';
+        },
+      },
+      {
         accessorKey: 'user_need',
         header: '用户需求',
-        size: 300,
+        size: 320,
         cell: ({ getValue }) => {
           const userNeed = getValue();
           return userNeed ? (
@@ -153,55 +171,31 @@ const ProductTable = ({
         },
       },
       {
-        accessorKey: 'ai_analysis_status',
-        header: 'AI状态',
-        size: 100,
-        cell: ({ getValue }) => {
-          const status = getValue();
-          const colorMap = {
-            'completed': 'green',
-            'pending': 'orange',
-            'failed': 'red',
-          };
-          return <Tag color={colorMap[status] || 'default'}>{status}</Tag>;
-        },
-      },
-      {
-        accessorKey: 'translation_status',
-        header: '翻译状态',
-        size: 100,
-        cell: ({ getValue }) => {
-          const status = getValue();
-          if (!status) return <Tag>未翻译</Tag>;
-          const colorMap = {
-            'completed': 'green',
-            'pending': 'orange',
-            'failed': 'red',
-          };
-          return <Tag color={colorMap[status] || 'default'}>{status}</Tag>;
-        },
-      },
-      {
-        accessorKey: 'tags',
-        header: '标签',
-        size: 250,
-        cell: ({ getValue }) => {
-          const tags = getValue();
-          if (!tags || tags.length === 0) return '-';
-          return (
-            <div className="tags-container">
-              {tags.slice(0, 3).map((tag, idx) => (
-                <Tag key={idx} color="purple" style={{ marginBottom: 4 }}>
-                  {tag}
-                </Tag>
-              ))}
-              {tags.length > 3 && <span>+{tags.length - 3}</span>}
-            </div>
-          );
-        },
+        id: 'actions',
+        header: '操作',
+        size: 140,
+        cell: ({ row }) => (
+          <Space size="small">
+            <Button
+              size="small"
+              type="link"
+              onClick={() => onEdit?.(row.original)}
+            >
+              编辑
+            </Button>
+            <Button
+              size="small"
+              type="link"
+              danger
+              onClick={() => onDelete?.(row.original)}
+            >
+              删除
+            </Button>
+          </Space>
+        ),
       },
     ],
-    []
+    [onEdit, onDelete]
   );
 
   // 创建表格实例

@@ -3,7 +3,7 @@
 提供商品查询、编辑、删除等业务逻辑
 """
 from sqlalchemy.orm import Session
-from sqlalchemy import or_, and_
+from sqlalchemy import or_, and_, func
 from backend.models.product import Product
 from backend.schemas.product_schema import ProductQueryParams, ProductUpdate
 from typing import List, Tuple
@@ -29,12 +29,15 @@ class ProductService:
         
         # [REQ-002] 搜索功能（商品名称）
         if params.search:
-            search_pattern = f"%{params.search}%"
-            query = query.filter(Product.product_name.like(search_pattern))
+            search_pattern = f"%{params.search.lower()}%"
+            query = query.filter(func.lower(Product.product_name).like(search_pattern))
         
         # [REQ-002] 筛选功能
         if params.shop_name:
             query = query.filter(Product.shop_name == params.shop_name)
+
+        if params.cluster_id is not None:
+            query = query.filter(Product.cluster_id == params.cluster_id)
 
         # [REQ-009] P4.2: 类别名称筛选（模糊匹配）
         if params.cluster_name:

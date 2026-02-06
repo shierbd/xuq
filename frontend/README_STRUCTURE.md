@@ -24,9 +24,8 @@ frontend/src/
 │   └── products/                 # 商品管理模块页面
 │       ├── ProductManagement.jsx         # P1-商品管理
 │       ├── DataImport.jsx                # P1-数据导入
-│       ├── AIAnnotation.jsx              # P3-AI标注
-│       ├── DataExport.jsx                # P1-数据导出
-│       └── ImportHistory.jsx             # 导入历史
+│       ├── BatchImport.jsx               # P1-批量导入
+│       └── DataExport.jsx                # P1-数据导出
 │
 ├── components/                   # 共享组件
 │   └── ProductTable.jsx          # 商品表格组件
@@ -56,11 +55,10 @@ frontend/src/
 **目标**: 分析市场供给情况，识别交付产品类型
 
 **页面列表**:
-- P1: 商品管理 - 查看、编辑、删除商品
+ - P1: 商品管理 - 商品列表与聚类分析
 - P1: 数据导入 - 导入Etsy商品数据
 - P1: 数据导出 - 导出各阶段数据
-- P3: AI标注 - AI辅助商品标注
-- 导入历史 - 查看导入记录
+- P1: 批量导入 - 导入文件夹内商品数据
 
 ## 📝 导入路径规范
 
@@ -106,9 +104,8 @@ import ProductManagement from './pages/products/ProductManagement';
 ### 商品管理模块路由
 - `/` - 商品管理
 - `/import` - 数据导入
-- `/annotation` - AI标注
+- `/batch-import` - 批量导入
 - `/export` - 数据导出
-- `/history` - 导入历史
 
 ## 📦 模块独立性
 
@@ -133,5 +130,5 @@ import ProductManagement from './pages/products/ProductManagement';
 
 ---
 
-**最后更新**: 2026-01-28
+**最后更新**: 2026-02-04
 **版本**: v2.0

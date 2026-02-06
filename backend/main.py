@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from backend.database import init_db
-from backend.routers import products, keywords, batch_import, clusters, demand_analysis, delivery_identification, attribute_extraction, top_product_analysis, ai_config
+from backend.routers import products, keywords, batch_import, clusters, demand_analysis, delivery_identification, attribute_extraction, top_product_analysis, ai_config, tasks
 
 # 加载环境变量
 load_dotenv()
@@ -40,6 +40,7 @@ app.include_router(delivery_identification.router)  # 交付产品识别模块
 app.include_router(attribute_extraction.router)  # 商品属性提取模块
 app.include_router(top_product_analysis.router)  # Top商品AI深度分析模块
 app.include_router(ai_config.router)  # AI配置管理模块
+app.include_router(tasks.router)  # background tasks
 
 @app.on_event("startup")
 async def startup_event():

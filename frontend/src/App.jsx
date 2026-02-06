@@ -11,7 +11,6 @@ import {
   UploadOutlined,
   RobotOutlined,
   DownloadOutlined,
-  HistoryOutlined,
   BarChartOutlined,
   ClusterOutlined,
   FileTextOutlined,
@@ -28,9 +27,7 @@ import {
 import ProductManagement from './pages/products/ProductManagement';
 import DataImport from './pages/products/DataImport';
 import BatchImport from './pages/products/BatchImport';
-import AIAnnotation from './pages/products/AIAnnotation';
 import DataExport from './pages/products/DataExport';
-import ImportHistory from './pages/products/ImportHistory';
 
 // 词根聚类模块页面
 import ClusterOverview from './pages/keywords/ClusterOverview';
@@ -130,19 +127,9 @@ const menuItems = [
         label: '批量导入',
       },
       {
-        key: '/annotation',
-        icon: <RobotOutlined />,
-        label: 'AI标注',
-      },
-      {
         key: '/export',
         icon: <DownloadOutlined />,
         label: '数据导出',
-      },
-      {
-        key: '/history',
-        icon: <HistoryOutlined />,
-        label: '导入历史',
       },
     ],
   },
@@ -267,9 +254,7 @@ function AppContent() {
             <Route path="/" element={<ProductManagement />} />
             <Route path="/import" element={<DataImport />} />
             <Route path="/batch-import" element={<BatchImport />} />
-            <Route path="/annotation" element={<AIAnnotation />} />
             <Route path="/export" element={<DataExport />} />
-            <Route path="/history" element={<ImportHistory />} />
 
             {/* Reddit模块 */}
             <Route path="/reddit/collection" element={<DataCollection />} />

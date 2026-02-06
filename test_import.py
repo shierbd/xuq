@@ -17,8 +17,8 @@ def test_parse_review_count():
         ("(9.8k)", 9800),
         ("(15)", 15),
         ("(2.5m)", 2500000),
-        ("(abc)", 0),
-        ("", 0),
+        ("(abc)", None),
+        ("", None),
     ]
     
     for input_val, expected in test_cases:

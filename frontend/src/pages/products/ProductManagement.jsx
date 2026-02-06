@@ -9,6 +9,7 @@ import {
   Button,
   Select,
   Input,
+  InputNumber,
   Pagination,
   Statistic,
   Row,
@@ -16,10 +17,10 @@ import {
   message,
   Modal,
   Tabs,
+  Form,
 } from 'antd';
 import {
   ReloadOutlined,
-  TranslationOutlined,
   FilterOutlined,
   BarChartOutlined,
   TableOutlined,
@@ -30,26 +31,22 @@ import ClusterOverview from '../../components/ClusterOverview';
 import {
   getProducts,
   getStatistics,
-  getUniqueTags,
-  translateProducts,
-  translateProductsSync,
+  updateProduct,
+  deleteProduct,
+  batchDeleteProducts,
 } from '../../api/products';
 import {
   analyzeDemands,
-  getDemandAnalysisStatistics,
 } from '../../api/demand_analysis';
 import {
   identifyProducts,
-  getDeliveryIdentificationStatistics,
 } from '../../api/delivery_identification';
 import {
   extractAllAttributes,
   extractMissingAttributes,
-  getAttributeExtractionStatistics,
 } from '../../api/attribute_extraction';
 import {
   analyzeAllTopProducts,
-  getAnalysisStatistics,
 } from '../../api/top_product_analysis';
 import './ProductManagement.css';
 import axios from 'axios';
@@ -63,10 +60,8 @@ const ProductManagement = () => {
   const [filters, setFilters] = useState({
     page: 1,
     page_size: 50,
-    platform: null,
-    ai_status: null,
-    translation_status: null,
     search: '',
+    cluster_id: null,
     cluster_name: '',
     min_price: null,
     max_price: null,
@@ -74,7 +69,6 @@ const ProductManagement = () => {
     max_rating: null,
     min_review_count: null,
     max_review_count: null,
-    tags: [],
     sort_by: 'product_id',
     sort_order: 'desc',
   });
@@ -84,6 +78,11 @@ const ProductManagement = () => {
 
   // 选中的商品
   const [selectedProductIds, setSelectedProductIds] = useState([]);
+
+  // 编辑商品弹窗
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [editingProduct, setEditingProduct] = useState(null);
+  const [editForm] = Form.useForm();
 
   // [REQ-013] P6.1: Tab切换状态
   const [activeTab, setActiveTab] = useState('list');
@@ -105,6 +104,50 @@ const ProductManagement = () => {
 
   // [REQ-012] P5.3: AI辅助兜底状态
   const [aiAssistLoading, setAiAssistLoading] = useState(false);
+
+  // [REQ-002] 更新商品
+  const updateMutation = useMutation({
+    mutationFn: ({ productId, data }) => updateProduct(productId, data),
+    onSuccess: () => {
+      message.success('商品更新成功');
+      setEditModalOpen(false);
+      setEditingProduct(null);
+      editForm.resetFields();
+      queryClient.invalidateQueries(['products']);
+      queryClient.invalidateQueries(['statistics']);
+    },
+    onError: (error) => {
+      message.error('商品更新失败: ' + (error.response?.data?.detail || error.message));
+    },
+  });
+
+  // [REQ-002] 删除商品
+  const deleteMutation = useMutation({
+    mutationFn: (productId) => deleteProduct(productId),
+    onSuccess: () => {
+      message.success('商品删除成功');
+      queryClient.invalidateQueries(['products']);
+      queryClient.invalidateQueries(['statistics']);
+    },
+    onError: (error) => {
+      message.error('商品删除失败: ' + (error.response?.data?.detail || error.message));
+    },
+  });
+
+  // [REQ-002] 批量删除商品
+  const batchDeleteMutation = useMutation({
+    mutationFn: (productIds) => batchDeleteProducts(productIds),
+    onSuccess: (data) => {
+      const deletedCount = data?.deleted_count ?? selectedProductIds.length;
+      message.success(`已删除 ${deletedCount} 个商品`);
+      setSelectedProductIds([]);
+      queryClient.invalidateQueries(['products']);
+      queryClient.invalidateQueries(['statistics']);
+    },
+    onError: (error) => {
+      message.error('批量删除失败: ' + (error.response?.data?.detail || error.message));
+    },
+  });
 
   // [REQ-003] P2.1: 开始聚类
   const handleStartClustering = async () => {
@@ -447,60 +490,6 @@ const ProductManagement = () => {
     queryFn: getStatistics,
   });
 
-  // 获取标签列表
-  const { data: tagsData } = useQuery({
-    queryKey: ['tags'],
-    queryFn: getUniqueTags,
-  });
-
-  // [REQ-004] P3.1: 获取需求分析统计
-  const { data: demandAnalysisStats } = useQuery({
-    queryKey: ['demandAnalysisStats'],
-    queryFn: getDemandAnalysisStatistics,
-  });
-
-  // [REQ-005] P3.2: 获取交付产品识别统计
-  const { data: deliveryIdentificationStats } = useQuery({
-    queryKey: ['deliveryIdentificationStats'],
-    queryFn: getDeliveryIdentificationStatistics,
-  });
-
-  // [REQ-010] P5.1: 获取属性提取统计
-  const { data: attributeExtractionStats } = useQuery({
-    queryKey: ['attributeExtractionStats'],
-    queryFn: getAttributeExtractionStatistics,
-  });
-
-  // [REQ-011] P5.2: 获取Top商品AI分析统计
-  const { data: topProductAnalysisStats } = useQuery({
-    queryKey: ['topProductAnalysisStats'],
-    queryFn: getAnalysisStatistics,
-  });
-
-  // 翻译Mutation
-  const translateMutation = useMutation({
-    mutationFn: translateProducts,
-    onSuccess: () => {
-      message.success('翻译任务已提交，正在后台处理');
-      queryClient.invalidateQueries(['products']);
-    },
-    onError: (error) => {
-      message.error(`翻译失败: ${error.message}`);
-    },
-  });
-
-  // 同步翻译Mutation
-  const translateSyncMutation = useMutation({
-    mutationFn: translateProductsSync,
-    onSuccess: (data) => {
-      message.success(data.message);
-      queryClient.invalidateQueries(['products']);
-      setSelectedProductIds([]);
-    },
-    onError: (error) => {
-      message.error(`翻译失败: ${error.message}`);
-    },
-  });
 
   // 处理筛选变化
   const handleFilterChange = (key, value) => {
@@ -525,78 +514,60 @@ const ProductManagement = () => {
     setSelectedProductIds(selectedIds);
   }, []);
 
-  // 翻译选中商品
-  const handleTranslateSelected = () => {
-    if (selectedProductIds.length === 0) {
-      message.warning('请先选择要翻译的商品');
-      return;
-    }
+  // 打开编辑弹窗
+  const handleEditProduct = (product) => {
+    setEditingProduct(product);
+    editForm.setFieldsValue({
+      product_name: product.product_name || '',
+      shop_name: product.shop_name || '',
+      price: product.price ?? null,
+      rating: product.rating ?? null,
+      review_count: product.review_count ?? null,
+    });
+    setEditModalOpen(true);
+  };
 
-    if (selectedProductIds.length <= 10) {
-      // 少量商品使用同步翻译
-      Modal.confirm({
-        title: '确认翻译',
-        content: `确定要翻译选中的 ${selectedProductIds.length} 个商品吗？`,
-        onOk: () => {
-          translateSyncMutation.mutate(selectedProductIds);
-        },
+  // 提交编辑
+  const handleEditSubmit = async () => {
+    if (!editingProduct) return;
+    try {
+      const values = await editForm.validateFields();
+      updateMutation.mutate({
+        productId: editingProduct.product_id,
+        data: values,
       });
-    } else {
-      // 大量商品使用异步翻译
-      Modal.confirm({
-        title: '确认翻译',
-        content: `确定要翻译选中的 ${selectedProductIds.length} 个商品吗？翻译将在后台进行。`,
-        onOk: () => {
-          translateMutation.mutate(selectedProductIds);
-        },
-      });
+    } catch (error) {
+      // 表单校验失败时保持弹窗打开
     }
   };
 
-  // 翻译当前页
-  const handleTranslateCurrentPage = () => {
-    const currentPageIds = productsData?.items?.map(item => item.product_id) || [];
-    if (currentPageIds.length === 0) {
-      message.warning('当前页没有商品');
-      return;
-    }
-
+  // 删除单个商品
+  const handleDeleteProduct = (product) => {
     Modal.confirm({
-      title: '确认翻译',
-      content: `确定要翻译当前页的 ${currentPageIds.length} 个商品吗？`,
-      onOk: () => {
-        if (currentPageIds.length <= 10) {
-          translateSyncMutation.mutate(currentPageIds);
-        } else {
-          translateMutation.mutate(currentPageIds);
-        }
-      },
+      title: '确认删除',
+      content: `确定删除商品 #${product.product_id} 吗？`,
+      okType: 'danger',
+      onOk: () => deleteMutation.mutateAsync(product.product_id)
+        .then(() => {
+          setSelectedProductIds(prev => prev.filter(id => id !== product.product_id));
+        }),
     });
   };
 
-  // 翻译未完成的商品
-  const handleTranslateUncompleted = () => {
-    const uncompletedIds = productsData?.items
-      ?.filter(item => !item.translation_status || item.translation_status !== 'completed')
-      ?.map(item => item.product_id) || [];
-
-    if (uncompletedIds.length === 0) {
-      message.info('当前页所有商品都已翻译');
+  // 批量删除
+  const handleBatchDelete = () => {
+    if (!selectedProductIds.length) {
+      message.warning('请先选择要删除的商品');
       return;
     }
-
     Modal.confirm({
-      title: '确认翻译',
-      content: `确定要翻译当前页未完成的 ${uncompletedIds.length} 个商品吗？`,
-      onOk: () => {
-        if (uncompletedIds.length <= 10) {
-          translateSyncMutation.mutate(uncompletedIds);
-        } else {
-          translateMutation.mutate(uncompletedIds);
-        }
-      },
+      title: '确认批量删除',
+      content: `确定删除选中的 ${selectedProductIds.length} 个商品吗？`,
+      okType: 'danger',
+      onOk: () => batchDeleteMutation.mutateAsync(selectedProductIds),
     });
   };
+
 
   return (
     <div className="product-management">
@@ -607,7 +578,7 @@ const ProductManagement = () => {
             <Card>
               <Statistic
                 title="总商品数"
-                value={statsData?.total || 0}
+                value={statsData?.data?.total_products || 0}
                 valueStyle={{ color: '#3f8600' }}
               />
             </Card>
@@ -615,8 +586,9 @@ const ProductManagement = () => {
           <Col span={6}>
             <Card>
               <Statistic
-                title="已标注"
-                value={statsData?.by_ai_status?.completed || 0}
+                title="平均评分"
+                value={statsData?.data?.rating_stats?.avg || 0}
+                precision={2}
                 valueStyle={{ color: '#1890ff' }}
               />
             </Card>
@@ -624,8 +596,10 @@ const ProductManagement = () => {
           <Col span={6}>
             <Card>
               <Statistic
-                title="待标注"
-                value={statsData?.by_ai_status?.pending || 0}
+                title="平均价格"
+                value={statsData?.data?.price_stats?.avg || 0}
+                precision={2}
+                prefix="$"
                 valueStyle={{ color: '#faad14' }}
               />
             </Card>
@@ -644,42 +618,6 @@ const ProductManagement = () => {
         {/* 筛选器 */}
         <Card className="filter-card" style={{ marginBottom: 16 }}>
           <Space wrap>
-            <Select
-              placeholder="平台"
-              style={{ width: 120 }}
-              allowClear
-              value={filters.platform}
-              onChange={(value) => handleFilterChange('platform', value)}
-            >
-              <Option value="etsy">Etsy</Option>
-              <Option value="amazon">Amazon</Option>
-              <Option value="gumroad">Gumroad</Option>
-            </Select>
-
-            <Select
-              placeholder="AI状态"
-              style={{ width: 120 }}
-              allowClear
-              value={filters.ai_status}
-              onChange={(value) => handleFilterChange('ai_status', value)}
-            >
-              <Option value="completed">已完成</Option>
-              <Option value="pending">待处理</Option>
-              <Option value="failed">失败</Option>
-            </Select>
-
-            <Select
-              placeholder="翻译状态"
-              style={{ width: 120 }}
-              allowClear
-              value={filters.translation_status}
-              onChange={(value) => handleFilterChange('translation_status', value)}
-            >
-              <Option value="completed">已翻译</Option>
-              <Option value="pending">翻译中</Option>
-              <Option value="failed">失败</Option>
-            </Select>
-
             <Input
               placeholder="搜索商品名称"
               style={{ width: 200 }}
@@ -721,32 +659,6 @@ const ProductManagement = () => {
               onClick={() => refetchProducts()}
             >
               刷新
-            </Button>
-
-            <Button
-              type="primary"
-              icon={<TranslationOutlined />}
-              onClick={handleTranslateSelected}
-              disabled={selectedProductIds.length === 0}
-              loading={translateMutation.isPending || translateSyncMutation.isPending}
-            >
-              翻译选中 ({selectedProductIds.length})
-            </Button>
-
-            <Button
-              icon={<TranslationOutlined />}
-              onClick={handleTranslateCurrentPage}
-              loading={translateMutation.isPending || translateSyncMutation.isPending}
-            >
-              翻译当前页
-            </Button>
-
-            <Button
-              icon={<TranslationOutlined />}
-              onClick={handleTranslateUncompleted}
-              loading={translateMutation.isPending || translateSyncMutation.isPending}
-            >
-              翻译未完成
             </Button>
 
             <Button
@@ -810,6 +722,14 @@ const ProductManagement = () => {
             >
               AI辅助兜底
             </Button>
+            <Button
+              danger
+              onClick={handleBatchDelete}
+              disabled={!selectedProductIds.length}
+              loading={batchDeleteMutation.isPending}
+            >
+              批量删除
+            </Button>
           </Space>
 
           {/* 高级筛选 */}
@@ -822,6 +742,14 @@ const ProductManagement = () => {
                   value={filters.cluster_name}
                   onChange={(e) => handleFilterChange('cluster_name', e.target.value)}
                   allowClear
+                />
+                <Input
+                  placeholder="簇ID"
+                  type="number"
+                  style={{ width: 120 }}
+                  value={filters.cluster_id}
+                  onChange={(e) => handleFilterChange('cluster_id', e.target.value ? parseInt(e.target.value, 10) : null)}
+                  min={-1}
                 />
                 <Input
                   placeholder="最低价格"
@@ -873,26 +801,18 @@ const ProductManagement = () => {
                   value={filters.max_review_count}
                   onChange={(e) => handleFilterChange('max_review_count', e.target.value ? parseInt(e.target.value) : null)}
                 />
-                <Select
-                  mode="multiple"
-                  placeholder="选择标签"
-                  style={{ minWidth: 200 }}
-                  value={filters.tags}
-                  onChange={(value) => handleFilterChange('tags', value)}
-                  maxTagCount={2}
-                >
-                  {tagsData?.tags?.map(tag => (
-                    <Option key={tag} value={tag}>{tag}</Option>
-                  ))}
-                </Select>
                 <Button
                   onClick={() => {
                     setFilters(prev => ({
                       ...prev,
+                      cluster_name: '',
+                      cluster_id: null,
                       min_price: null,
                       max_price: null,
+                      min_rating: null,
+                      max_rating: null,
                       min_review_count: null,
-                      tags: [],
+                      max_review_count: null,
                       page: 1,
                     }));
                   }}
@@ -925,6 +845,8 @@ const ProductManagement = () => {
                       loading={productsLoading}
                       onSelectionChange={handleSelectionChange}
                       selectedRows={selectedProductIds}
+                      onEdit={handleEditProduct}
+                      onDelete={handleDeleteProduct}
                     />
 
                     {/* 分页 */}
@@ -967,6 +889,60 @@ const ProductManagement = () => {
           />
         </Card>
       </div>
+
+      <Modal
+        title={editingProduct ? `编辑商品 #${editingProduct.product_id}` : '编辑商品'}
+        open={editModalOpen}
+        onCancel={() => {
+          setEditModalOpen(false);
+          setEditingProduct(null);
+          editForm.resetFields();
+        }}
+        onOk={handleEditSubmit}
+        okText="保存"
+        confirmLoading={updateMutation.isPending}
+      >
+        <Form
+          form={editForm}
+          layout="vertical"
+        >
+          <Form.Item
+            label="商品名称"
+            name="product_name"
+            rules={[{ required: true, message: '请输入商品名称' }]}
+          >
+            <Input placeholder="请输入商品名称" />
+          </Form.Item>
+          <Form.Item label="店铺名称" name="shop_name">
+            <Input placeholder="请输入店铺名称" />
+          </Form.Item>
+          <Form.Item label="价格" name="price">
+            <InputNumber
+              min={0}
+              step={0.01}
+              style={{ width: '100%' }}
+              placeholder="请输入价格"
+            />
+          </Form.Item>
+          <Form.Item label="评分" name="rating">
+            <InputNumber
+              min={0}
+              max={5}
+              step={0.1}
+              style={{ width: '100%' }}
+              placeholder="请输入评分"
+            />
+          </Form.Item>
+          <Form.Item label="评价数" name="review_count">
+            <InputNumber
+              min={0}
+              step={1}
+              style={{ width: '100%' }}
+              placeholder="请输入评价数"
+            />
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 };

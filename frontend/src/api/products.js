@@ -18,38 +18,29 @@ export const getProduct = async (productId) => {
 };
 
 /**
- * 批量获取商品
+ * 更新商品
  */
-export const getProductsByIds = async (ids) => {
-  return apiClient.get('/products/batch/by-ids', {
-    params: { ids: ids.join(',') }
-  });
+export const updateProduct = async (productId, data) => {
+  return apiClient.put(`/products/${productId}`, data);
 };
 
 /**
- * 获取统计信息
+ * 删除商品
+ */
+export const deleteProduct = async (productId) => {
+  return apiClient.delete(`/products/${productId}`);
+};
+
+/**
+ * 批量删除商品
+ */
+export const batchDeleteProducts = async (productIds) => {
+  return apiClient.post('/products/batch-delete', { product_ids: productIds });
+};
+
+/**
+ * 批量获取商品
  */
 export const getStatistics = async () => {
   return apiClient.get('/products/stats/summary');
-};
-
-/**
- * 获取唯一标签
- */
-export const getUniqueTags = async () => {
-  return apiClient.get('/products/tags/unique');
-};
-
-/**
- * 批量翻译商品（异步）
- */
-export const translateProducts = async (productIds) => {
-  return apiClient.post('/translation/batch', { product_ids: productIds });
-};
-
-/**
- * 批量翻译商品（同步）
- */
-export const translateProductsSync = async (productIds) => {
-  return apiClient.post('/translation/batch/sync', { product_ids: productIds });
 };

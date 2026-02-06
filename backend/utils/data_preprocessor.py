@@ -6,7 +6,7 @@ import re
 import pandas as pd
 from typing import Optional, Union
 
-def parse_review_count(value: Union[str, int, float]) -> int:
+def parse_review_count(value: Union[str, int, float]) -> Optional[int]:
     """
     [REQ-001] 解析评价数量字符串
     
@@ -20,13 +20,15 @@ def parse_review_count(value: Union[str, int, float]) -> int:
         value: 评价数量原始值
         
     Returns:
-        int: 转换后的整数值
+        Optional[int]: 转换后的整数值（无效则为 None）
     """
     if pd.isna(value):
-        return 0
+        return None
     
     # 转换为字符串
     value_str = str(value).strip()
+    if value_str == "":
+        return None
     
     # 去除括号
     value_str = value_str.replace('(', '').replace(')', '')
@@ -43,7 +45,7 @@ def parse_review_count(value: Union[str, int, float]) -> int:
     try:
         return int(float(value_str) * multiplier)
     except (ValueError, TypeError):
-        return 0
+        return None
 
 def clean_product_name(name: str) -> str:
     """

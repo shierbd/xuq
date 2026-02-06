@@ -4,7 +4,7 @@
 """
 from fastapi import APIRouter, UploadFile, File, Depends, HTTPException
 from sqlalchemy.orm import Session
-from backend.database import get_db
+from backend.database import get_db, SessionLocal
 from backend.services.import_service import ImportService
 from typing import Dict, Optional, List as TypingList
 from pydantic import BaseModel
@@ -329,6 +329,7 @@ def get_products(
     page_size: int = 50,
     search: Optional[str] = None,
     shop_name: Optional[str] = None,
+    cluster_id: Optional[int] = None,
     cluster_name: Optional[str] = None,
     min_rating: Optional[float] = None,
     max_rating: Optional[float] = None,
@@ -352,6 +353,7 @@ def get_products(
         page_size=page_size,
         search=search,
         shop_name=shop_name,
+        cluster_id=cluster_id,
         cluster_name=cluster_name,
         min_rating=min_rating,
         max_rating=max_rating,
@@ -760,16 +762,19 @@ def delete_product(
         "message": "商品删除成功"
     }
 
+class BatchDeleteRequest(BaseModel):
+    product_ids: List[int]
+
 @router.post("/batch-delete")
 def batch_delete_products(
-    product_ids: List[int],
+    request: BatchDeleteRequest,
     db: Session = Depends(get_db)
 ):
     """
     [REQ-002] 批量删除商品（软删除）
     """
     product_service = ProductService(db)
-    count = product_service.batch_delete_products(product_ids)
+    count = product_service.batch_delete_products(request.product_ids)
     
     return {
         "success": True,
@@ -876,6 +881,8 @@ def export_cluster_summary(
 # [REQ-003] 语义聚类分析 - API 路由扩展
 
 from backend.services.clustering_service import ClusteringService
+from backend.services.product_keyword_service import ProductClusterKeywordService
+from backend.services.task_manager import task_manager
 
 @router.post("/cluster")
 def cluster_products(
@@ -949,6 +956,175 @@ def cluster_products(
         import traceback
         traceback.print_exc()
         raise
+
+@router.post("/cluster-large")
+def cluster_products_large_scale(
+    batch_size: int = 1000,
+    coarse_k: Optional[int] = None,
+    min_cluster_size: int = 10,
+    min_samples: int = 3,
+    use_cache: bool = True,
+    limit: Optional[int] = None,
+    use_merge_strategy: bool = False,
+    merge_threshold: float = 0.5,
+    min_cohesion: float = 0.4,
+    min_separation: float = 0.15,
+    db: Session = Depends(get_db)
+):
+    """
+    大规模聚类：分块向量化 + 粗聚类 + 细聚类
+    """
+    try:
+        clustering_service = ClusteringService(db)
+        result = clustering_service.cluster_all_products_large_scale(
+            batch_size=batch_size,
+            coarse_k=coarse_k,
+            min_cluster_size=min_cluster_size,
+            min_samples=min_samples,
+            use_cache=use_cache,
+            limit=limit,
+            use_merge_strategy=use_merge_strategy,
+            merge_threshold=merge_threshold,
+            min_cohesion=min_cohesion,
+            min_separation=min_separation
+        )
+        return result
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/cluster-large/async")
+def cluster_products_large_scale_async(
+    batch_size: int = 1000,
+    coarse_k: Optional[int] = None,
+    min_cluster_size: int = 10,
+    min_samples: int = 3,
+    use_cache: bool = True,
+    limit: Optional[int] = None,
+    use_merge_strategy: bool = False,
+    merge_threshold: float = 0.5,
+    min_cohesion: float = 0.4,
+    min_separation: float = 0.15
+):
+    params = {
+        "batch_size": batch_size,
+        "coarse_k": coarse_k,
+        "min_cluster_size": min_cluster_size,
+        "min_samples": min_samples,
+        "use_cache": use_cache,
+        "limit": limit,
+        "use_merge_strategy": use_merge_strategy,
+        "merge_threshold": merge_threshold,
+        "min_cohesion": min_cohesion,
+        "min_separation": min_separation
+    }
+    task_id = task_manager.create_task("cluster-large", params=params)
+
+    def _job():
+        db = SessionLocal()
+        try:
+            clustering_service = ClusteringService(db)
+            progress_cb = lambda pct, msg=None: task_manager.set_progress(task_id, pct, msg)
+            return clustering_service.cluster_all_products_large_scale(
+                batch_size=batch_size,
+                coarse_k=coarse_k,
+                min_cluster_size=min_cluster_size,
+                min_samples=min_samples,
+                use_cache=use_cache,
+                limit=limit,
+                use_merge_strategy=use_merge_strategy,
+                merge_threshold=merge_threshold,
+                min_cohesion=min_cohesion,
+                min_separation=min_separation,
+                progress_callback=progress_cb
+            )
+        finally:
+            db.close()
+
+    task_manager.run_task(task_id, _job)
+    return {
+        "success": True,
+        "task_id": task_id,
+        "message": "cluster-large task submitted"
+    }
+
+class ClusterKeywordRequest(BaseModel):
+    cluster_ids: Optional[TypingList[int]] = None
+    top_n: int = 10
+    min_word_len: int = 3
+    overwrite: bool = True
+    method: str = "tfidf"
+
+@router.post("/cluster-keywords")
+def generate_cluster_keywords(
+    request: ClusterKeywordRequest,
+    db: Session = Depends(get_db)
+):
+    """
+    为簇生成关键词/词根，并落库
+    """
+    service = ProductClusterKeywordService(db)
+    result = service.generate_cluster_keywords(
+        cluster_ids=request.cluster_ids,
+        top_n=request.top_n,
+        min_word_len=request.min_word_len,
+        overwrite=request.overwrite,
+        method=request.method
+    )
+    return {
+        "success": True,
+        "data": result
+    }
+
+
+@router.post("/cluster-keywords/async")
+def generate_cluster_keywords_async(
+    request: ClusterKeywordRequest
+):
+    params = request.model_dump() if hasattr(request, "model_dump") else request.dict()
+    task_id = task_manager.create_task("cluster-keywords", params=params)
+
+    def _job():
+        db = SessionLocal()
+        try:
+            service = ProductClusterKeywordService(db)
+            progress_cb = lambda pct, msg=None: task_manager.set_progress(task_id, pct, msg)
+            return service.generate_cluster_keywords(
+                cluster_ids=request.cluster_ids,
+                top_n=request.top_n,
+                min_word_len=request.min_word_len,
+                overwrite=request.overwrite,
+                method=request.method,
+                progress_callback=progress_cb
+            )
+        finally:
+            db.close()
+
+    task_manager.run_task(task_id, _job)
+    return {
+        "success": True,
+        "task_id": task_id,
+        "message": "cluster-keywords task submitted"
+    }
+
+@router.get("/cluster-keywords/{cluster_id}")
+def get_cluster_keywords(
+    cluster_id: int,
+    limit: int = 20,
+    db: Session = Depends(get_db)
+):
+    """
+    获取指定簇的关键词/词根
+    """
+    service = ProductClusterKeywordService(db)
+    data = service.get_cluster_keywords(cluster_id, limit=limit)
+    return {
+        "success": True,
+        "cluster_id": cluster_id,
+        "data": data
+    }
 
 @router.post("/cluster/test")
 def cluster_products_test(

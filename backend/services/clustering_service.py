@@ -12,12 +12,15 @@ import os
 import pickle
 import hashlib
 import re
-from typing import List, Dict, Tuple, Optional, Set
+import json
+from datetime import datetime
+from typing import List, Dict, Tuple, Optional, Set, Callable
 from collections import Counter, defaultdict
 from sqlalchemy.orm import Session
 from sentence_transformers import SentenceTransformer
 import hdbscan
 import numpy as np
+from sklearn.cluster import MiniBatchKMeans
 from backend.models.product import Product
 
 
@@ -29,7 +32,9 @@ class ClusteringService:
         self.model_name = model_name
         self.model = None
         self.cache_dir = "data/cache/embeddings"
+        self.large_cache_dir = "data/cache/embeddings_large"
         os.makedirs(self.cache_dir, exist_ok=True)
+        os.makedirs(self.large_cache_dir, exist_ok=True)
 
         # 强制设置离线模式（在初始化时就设置，避免网络请求）
         os.environ['TRANSFORMERS_OFFLINE'] = '1'
@@ -93,6 +98,276 @@ class ClusteringService:
         cache_path = self._get_cache_path(cache_key)
         with open(cache_path, 'wb') as f:
             pickle.dump(embedding, f)
+
+    def _encode_texts_with_cache(self, texts: List[str], use_cache: bool = True) -> np.ndarray:
+        """批量编码文本（支持缓存）"""
+        embeddings = [None] * len(texts)
+        texts_to_encode = []
+        indices_to_encode = []
+
+        for i, text in enumerate(texts):
+            if use_cache:
+                cache_key = self._get_cache_key(text)
+                cached_embedding = self._load_from_cache(cache_key)
+                if cached_embedding is not None:
+                    embeddings[i] = cached_embedding
+                else:
+                    texts_to_encode.append(text)
+                    indices_to_encode.append(i)
+            else:
+                texts_to_encode.append(text)
+                indices_to_encode.append(i)
+
+        if texts_to_encode:
+            new_embeddings = self.model.encode(
+                texts_to_encode,
+                show_progress_bar=False,
+                batch_size=64
+            )
+            for idx, embedding in zip(indices_to_encode, new_embeddings):
+                embeddings[idx] = embedding
+
+            if use_cache:
+                for text, embedding in zip(texts_to_encode, new_embeddings):
+                    cache_key = self._get_cache_key(text)
+                    self._save_to_cache(cache_key, embedding)
+
+        return np.array(embeddings, dtype=np.float32)
+
+    def _get_large_cache_paths(self, total: int, limit: Optional[int]) -> Tuple[str, str, str]:
+        safe_model = re.sub(r'[^a-zA-Z0-9_.-]+', '_', self.model_name)
+        suffix = f"{safe_model}_n{total}"
+        if limit:
+            suffix += f"_limit{limit}"
+        base_path = os.path.join(self.large_cache_dir, f"embeddings_{suffix}")
+        return f"{base_path}.dat", f"{base_path}_ids.dat", f"{base_path}.json"
+
+    def build_embeddings_memmap(
+        self,
+        batch_size: int = 1000,
+        use_cache: bool = True,
+        limit: Optional[int] = None,
+        reuse_existing: bool = True,
+        progress_callback: Optional[Callable[[float, Optional[str]], None]] = None,
+        progress_offset: float = 0.0,
+        progress_scale: float = 50.0
+    ) -> Tuple[np.memmap, np.memmap, Dict]:
+        """分块向量化并写入 memmap，返回 embeddings/ids/metadata"""
+        self.load_model()
+
+        query = self.db.query(Product).filter(Product.is_deleted == False)
+        total = query.count()
+        if limit is not None:
+            total = min(total, limit)
+
+        if total == 0:
+            return None, None, {"total": 0}
+
+        dim = self.model.get_sentence_embedding_dimension()
+        embeddings_path, ids_path, meta_path = self._get_large_cache_paths(total, limit)
+
+        if reuse_existing and os.path.exists(meta_path) and os.path.exists(embeddings_path) and os.path.exists(ids_path):
+            with open(meta_path, 'r', encoding='utf-8') as f:
+                metadata = json.load(f)
+            embeddings = np.memmap(embeddings_path, dtype=metadata["dtype"], mode='r', shape=(metadata["total"], metadata["dim"]))
+            product_ids = np.memmap(ids_path, dtype='int64', mode='r', shape=(metadata["total"],))
+            if progress_callback:
+                progress_callback(progress_offset + progress_scale, "embeddings cache hit")
+            return embeddings, product_ids, metadata
+
+        embeddings = np.memmap(embeddings_path, dtype='float32', mode='w+', shape=(total, dim))
+        product_ids = np.memmap(ids_path, dtype='int64', mode='w+', shape=(total,))
+
+        index = 0
+        last_id = 0
+        while index < total:
+            batch = self.db.query(Product.product_id, Product.product_name).filter(
+                Product.is_deleted == False,
+                Product.product_id > last_id
+            ).order_by(Product.product_id).limit(batch_size).all()
+
+            if not batch:
+                break
+
+            if limit is not None and index + len(batch) > total:
+                batch = batch[: total - index]
+
+            texts = [self.preprocess_text(name) for _, name in batch]
+            batch_embeddings = self._encode_texts_with_cache(texts, use_cache=use_cache)
+
+            embeddings[index:index + len(batch), :] = batch_embeddings
+            product_ids[index:index + len(batch)] = [pid for pid, _ in batch]
+
+            index += len(batch)
+            last_id = batch[-1][0]
+            if progress_callback and total > 0:
+                progress = progress_offset + progress_scale * (index / total)
+                progress_callback(progress, f"embeddings {index}/{total}")
+
+        embeddings.flush()
+        product_ids.flush()
+
+        metadata = {
+            "model_name": self.model_name,
+            "total": int(total),
+            "dim": int(dim),
+            "dtype": "float32",
+            "embeddings_path": embeddings_path,
+            "ids_path": ids_path,
+            "created_at": datetime.utcnow().isoformat()
+        }
+        with open(meta_path, 'w', encoding='utf-8') as f:
+            json.dump(metadata, f, ensure_ascii=False, indent=2)
+
+        if progress_callback:
+            progress_callback(progress_offset + progress_scale, "embeddings completed")
+
+        return embeddings, product_ids, metadata
+
+    def cluster_all_products_large_scale(
+        self,
+        batch_size: int = 1000,
+        coarse_k: Optional[int] = None,
+        min_cluster_size: int = 10,
+        min_samples: int = 3,
+        use_cache: bool = True,
+        limit: Optional[int] = None,
+        use_merge_strategy: bool = False,
+        merge_threshold: float = 0.5,
+        min_cohesion: float = 0.4,
+        min_separation: float = 0.15,
+        progress_callback: Optional[Callable[[float, Optional[str]], None]] = None
+    ) -> Dict:
+        """
+        大规模聚类：分块向量化 + 粗聚类 + 细聚类
+        """
+        if progress_callback:
+            progress_callback(0, "starting")
+        embeddings, product_ids, metadata = self.build_embeddings_memmap(
+            batch_size=batch_size,
+            use_cache=use_cache,
+            limit=limit,
+            reuse_existing=True,
+            progress_callback=progress_callback,
+            progress_offset=0.0,
+            progress_scale=40.0
+        )
+
+        if embeddings is None or product_ids is None:
+            return {"success": False, "message": "没有可聚类的商品"}
+
+        total = len(product_ids)
+        if coarse_k is None:
+            coarse_k = max(50, min(3000, total // 100))
+        if coarse_k >= total:
+            coarse_k = max(1, total // 2)
+
+        print(f"[LARGE SCALE] total={total}, coarse_k={coarse_k}")
+
+        if progress_callback:
+            progress_callback(45, "coarse clustering")
+
+        kmeans = MiniBatchKMeans(
+            n_clusters=coarse_k,
+            batch_size=4096,
+            random_state=42,
+            n_init="auto"
+        )
+        coarse_labels = kmeans.fit_predict(embeddings)
+
+        if progress_callback:
+            progress_callback(55, "coarse clustering completed")
+
+        order = np.argsort(coarse_labels)
+        sorted_labels = coarse_labels[order]
+        global_labels = np.full(total, -1, dtype=int)
+        global_cluster_id = 0
+
+        start = 0
+        while start < total:
+            label = sorted_labels[start]
+            end = start + 1
+            while end < total and sorted_labels[end] == label:
+                end += 1
+
+            indices = order[start:end]
+            if len(indices) >= min_cluster_size:
+                subset = np.asarray(embeddings[indices])
+                sub_labels = self.perform_clustering(
+                    subset,
+                    min_cluster_size=min_cluster_size,
+                    min_samples=min_samples,
+                    cluster_selection_method='eom',
+                    cluster_selection_epsilon=0.0
+                )
+                for sub_label in sorted(set(sub_labels) - {-1}):
+                    mask = sub_labels == sub_label
+                    global_labels[indices[mask]] = global_cluster_id
+                    global_cluster_id += 1
+
+            start = end
+            if progress_callback and total > 0:
+                progress = 55 + 30 * (start / total)
+                progress_callback(progress, f"sub-clustering {start}/{total}")
+
+        if use_merge_strategy:
+            if progress_callback:
+                progress_callback(86, "merge strategy")
+            centroids = self.calculate_cluster_centroids(embeddings, global_labels)
+            global_labels = self.merge_noise_to_clusters(
+                embeddings,
+                global_labels,
+                centroids,
+                threshold=merge_threshold,
+                verbose=True
+            )
+            global_labels = self.apply_quality_gate(
+                embeddings,
+                global_labels,
+                min_size=min_cluster_size,
+                min_cohesion=min_cohesion,
+                min_separation=min_separation,
+                verbose=True
+            )
+
+        # 批量更新数据库
+        updates = []
+        processed_updates = 0
+        for pid, label in zip(product_ids, global_labels):
+            updates.append({
+                "product_id": int(pid),
+                "cluster_id": int(label)
+            })
+            if len(updates) >= 1000:
+                self.db.bulk_update_mappings(Product, updates)
+                self.db.commit()
+                processed_updates += len(updates)
+                updates.clear()
+                if progress_callback and total > 0:
+                    progress = 90 + 10 * (processed_updates / total)
+                    progress_callback(progress, f"db update {processed_updates}/{total}")
+
+        if updates:
+            self.db.bulk_update_mappings(Product, updates)
+            self.db.commit()
+            processed_updates += len(updates)
+            if progress_callback and total > 0:
+                progress = 90 + 10 * (processed_updates / total)
+                progress_callback(progress, f"db update {processed_updates}/{total}")
+
+        n_clusters = len(set(global_labels)) - (1 if -1 in global_labels else 0)
+        n_noise = int(np.sum(global_labels == -1))
+
+        return {
+            "success": True,
+            "total_products": total,
+            "n_clusters": n_clusters,
+            "n_noise": n_noise,
+            "noise_ratio": n_noise / total * 100 if total else 0.0,
+            "coarse_k": coarse_k,
+            "embeddings_path": metadata.get("embeddings_path"),
+            "ids_path": metadata.get("ids_path")
+        }
 
     def preprocess_text(self, text: str) -> str:
         """

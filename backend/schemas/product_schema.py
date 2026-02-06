@@ -21,10 +21,10 @@ class ProductCreate(ProductBase):
 class ProductUpdate(BaseModel):
     """[REQ-002] 更新商品"""
     product_name: Optional[str] = None
-    rating: Optional[float] = None
-    review_count: Optional[int] = None
+    rating: Optional[float] = Field(None, ge=0, le=5, description="评分 (0-5)")
+    review_count: Optional[int] = Field(None, ge=0, description="评价数量")
     shop_name: Optional[str] = None
-    price: Optional[float] = None
+    price: Optional[float] = Field(None, ge=0, description="价格")
 
 class ProductResponse(ProductBase):
     """[REQ-002] 商品响应"""
@@ -55,6 +55,7 @@ class ProductQueryParams(BaseModel):
     page_size: int = Field(50, ge=1, le=100, description="每页数量")
     search: Optional[str] = Field(None, description="搜索关键词")
     shop_name: Optional[str] = Field(None, description="店铺名称筛选")
+    cluster_id: Optional[int] = Field(None, description="簇ID筛选")
     cluster_name: Optional[str] = Field(None, description="类别名称筛选")
     min_rating: Optional[float] = Field(None, ge=0, le=5, description="最低评分")
     max_rating: Optional[float] = Field(None, ge=0, le=5, description="最高评分")
