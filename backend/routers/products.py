@@ -1181,6 +1181,56 @@ def get_cluster_summary(db: Session = Depends(get_db)):
         "data": summary
     }
 
+
+@router.post("/cluster/summary/persist")
+def persist_cluster_summary(
+    top_keywords_limit: int = 10,
+    overwrite: bool = True,
+    db: Session = Depends(get_db)
+):
+    """
+    将簇级汇总落库到 product_cluster_summaries
+    """
+    clustering_service = ClusteringService(db)
+    result = clustering_service.persist_cluster_summary(
+        top_keywords_limit=top_keywords_limit,
+        overwrite=overwrite
+    )
+    return {
+        "success": True,
+        "data": result
+    }
+
+
+@router.get("/cluster/summary/stored")
+def get_stored_cluster_summary(db: Session = Depends(get_db)):
+    """
+    读取已落库的簇级汇总
+    """
+    from backend.models.product_cluster_summary import ProductClusterSummary
+
+    rows = db.query(ProductClusterSummary).order_by(
+        ProductClusterSummary.cluster_size.desc()
+    ).all()
+
+    return {
+        "success": True,
+        "data": [
+            {
+                "cluster_id": row.cluster_id,
+                "cluster_name": row.cluster_name,
+                "cluster_name_cn": row.cluster_name_cn,
+                "cluster_size": row.cluster_size,
+                "avg_rating": row.avg_rating,
+                "avg_price": row.avg_price,
+                "total_reviews": row.total_reviews,
+                "example_products": row.example_products.split("; ") if row.example_products else [],
+                "top_keywords": row.top_keywords.split(", ") if row.top_keywords else []
+            }
+            for row in rows
+        ]
+    }
+
 @router.get("/cluster/quality")
 def get_cluster_quality(db: Session = Depends(get_db)):
     """

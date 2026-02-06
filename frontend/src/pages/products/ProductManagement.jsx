@@ -298,6 +298,7 @@ const ProductManagement = () => {
   const batchDeleteMutation = useMutation({
     mutationFn: (productIds) => batchDeleteProducts(productIds),
     onSuccess: (data) => {
+      const deletedCount = data?.deleted_count ?? selectedProductIds.length;
       message.success(`已删除 ${deletedCount} 个商品`);
       setSelectedProductIds([]);
       queryClient.invalidateQueries(['products']);

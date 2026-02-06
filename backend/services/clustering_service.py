@@ -17,11 +17,14 @@ from datetime import datetime
 from typing import List, Dict, Tuple, Optional, Set, Callable
 from collections import Counter, defaultdict
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 from sentence_transformers import SentenceTransformer
 import hdbscan
 import numpy as np
 from sklearn.cluster import MiniBatchKMeans
 from backend.models.product import Product
+from backend.models.product_cluster_summary import ProductClusterSummary
+from backend.models.product_cluster_keyword import ProductClusterKeyword
 
 
 class ClusteringService:
@@ -2020,6 +2023,59 @@ class ClusteringService:
         summary.sort(key=lambda x: x['cluster_size'], reverse=True)
 
         return summary
+
+    def persist_cluster_summary(
+        self,
+        top_keywords_limit: int = 10,
+        overwrite: bool = True
+    ) -> Dict:
+        """
+        将簇级汇总落库到 product_cluster_summaries
+        """
+        summary = self.generate_cluster_summary()
+        if not summary:
+            return {"success": True, "total": 0, "inserted": 0}
+
+        if overwrite:
+            self.db.query(ProductClusterSummary).delete()
+            self.db.commit()
+
+        inserted = 0
+        for item in summary:
+            cluster_id = item.get('cluster_id')
+            if cluster_id is None:
+                continue
+            if cluster_id == -1:
+                continue
+
+            keywords_rows = self.db.query(ProductClusterKeyword).filter(
+                ProductClusterKeyword.cluster_id == cluster_id
+            ).order_by(
+                func.coalesce(ProductClusterKeyword.score, 0).desc(),
+                ProductClusterKeyword.count.desc()
+            ).limit(top_keywords_limit).all()
+
+            top_keywords = ", ".join([row.keyword for row in keywords_rows]) if keywords_rows else None
+            example_products = "; ".join(item.get('example_products') or [])
+
+            self.db.add(ProductClusterSummary(
+                cluster_id=cluster_id,
+                cluster_name=item.get('cluster_name'),
+                cluster_name_cn=item.get('cluster_name_cn'),
+                cluster_size=item.get('cluster_size') or 0,
+                avg_rating=item.get('avg_rating'),
+                avg_price=item.get('avg_price'),
+                total_reviews=item.get('total_reviews'),
+                example_products=example_products,
+                top_keywords=top_keywords
+            ))
+            inserted += 1
+
+            if inserted % 200 == 0:
+                self.db.commit()
+
+        self.db.commit()
+        return {"success": True, "total": len(summary), "inserted": inserted}
 
     def get_cluster_quality_report(self) -> Dict:
         """

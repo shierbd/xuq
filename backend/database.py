@@ -47,6 +47,7 @@ def init_db():
     from backend.models.keyword import Keyword, ClusterSummary
     from backend.models.product_cluster_keyword import ProductClusterKeyword
     from backend.models.task_status import TaskStatus
+    from backend.models.product_cluster_summary import ProductClusterSummary
     from backend.models.ai_config import AIProvider, AIModel, AIScenario, AIPrompt, AIUsageLog
     Base.metadata.create_all(bind=engine)
     print("Database initialized successfully")

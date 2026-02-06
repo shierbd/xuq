@@ -3,7 +3,7 @@
  * 展示所有簇的概览信息
  */
 import React, { useEffect, useState } from 'react';
-import { Card, Table, Statistic, Row, Col, Spin, message, Tag, Button, Space } from 'antd';
+import { Card, Table, Statistic, Row, Col, Spin, message, Tag, Button, Space, Modal, Typography } from 'antd';
 import { ClusterOutlined, ReloadOutlined } from '@ant-design/icons';
 import axios from 'axios';
 
@@ -11,6 +11,10 @@ const ClusterOverview = () => {
     const [loading, setLoading] = useState(true);
     const [clusterData, setClusterData] = useState([]);
     const [statistics, setStatistics] = useState(null);
+    const [keywordModalOpen, setKeywordModalOpen] = useState(false);
+    const [keywordLoading, setKeywordLoading] = useState(false);
+    const [keywordList, setKeywordList] = useState([]);
+    const [keywordCluster, setKeywordCluster] = useState(null);
 
     useEffect(() => {
         fetchClusterData();
@@ -36,6 +40,30 @@ const ClusterOverview = () => {
             message.error('获取聚类数据失败');
         } finally {
             setLoading(false);
+        }
+    };
+
+    const openKeywordModal = async (record) => {
+        if (!record || record.cluster_id === -1) return;
+        setKeywordCluster(record);
+        setKeywordModalOpen(true);
+        setKeywordLoading(true);
+        try {
+            const response = await axios.get(`/api/products/cluster-keywords/${record.cluster_id}`, {
+                params: { limit: 30 }
+            });
+            if (response.data?.success) {
+                setKeywordList(response.data.data || []);
+            } else {
+                setKeywordList([]);
+                message.error(response.data?.message || '获取关键词失败');
+            }
+        } catch (error) {
+            console.error('获取簇关键词失败:', error);
+            message.error('获取簇关键词失败');
+            setKeywordList([]);
+        } finally {
+            setKeywordLoading(false);
         }
     };
 
@@ -123,6 +151,20 @@ const ClusterOverview = () => {
                 </div>
             ),
         },
+        {
+            title: '簇关键词',
+            key: 'cluster_keywords',
+            width: 120,
+            render: (_, record) => (
+                <Button
+                    size="small"
+                    onClick={() => openKeywordModal(record)}
+                    disabled={record.cluster_id === -1}
+                >
+                    查看
+                </Button>
+            ),
+        },
     ];
 
     if (loading) {
@@ -205,6 +247,34 @@ const ClusterOverview = () => {
                     }}
                 />
             </Card>
+
+            <Modal
+                title={`簇关键词${keywordCluster ? ` - ${keywordCluster.cluster_id}` : ''}`}
+                open={keywordModalOpen}
+                onCancel={() => setKeywordModalOpen(false)}
+                footer={null}
+            >
+                {keywordLoading ? (
+                    <Spin />
+                ) : (
+                    <>
+                        <Typography.Paragraph>
+                            {keywordCluster?.cluster_name_cn || keywordCluster?.cluster_name || '未命名簇'}
+                        </Typography.Paragraph>
+                        {keywordList.length === 0 ? (
+                            <Typography.Text type="secondary">暂无关键词</Typography.Text>
+                        ) : (
+                            <Space wrap>
+                                {keywordList.map((item) => (
+                                    <Tag key={item.keyword} color="geekblue">
+                                        {item.keyword} ({item.count})
+                                    </Tag>
+                                ))}
+                            </Space>
+                        )}
+                    </>
+                )}
+            </Modal>
         </div>
     );
 };
