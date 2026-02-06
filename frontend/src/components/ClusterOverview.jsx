@@ -25,10 +25,30 @@ const ClusterOverview = () => {
             setLoading(true);
 
             // 获取簇汇总数据
-            const summaryResponse = await axios.get('/api/products/cluster/summary');
-            if (summaryResponse.data.success) {
-                setClusterData(summaryResponse.data.data);
+            let summaryData = [];
+            let loadedStored = false;
+            try {
+                const storedResponse = await axios.get('/api/products/cluster/summary/stored');
+                if (storedResponse.data?.success) {
+                    summaryData = storedResponse.data.data || [];
+                    loadedStored = summaryData.length > 0;
+                }
+            } catch (e) {
+                loadedStored = false;
             }
+
+            if (!loadedStored) {
+                const summaryResponse = await axios.get('/api/products/cluster/summary');
+                if (summaryResponse.data.success) {
+                    summaryData = summaryResponse.data.data || [];
+                }
+            }
+
+            summaryData = (summaryData || []).map((item) => ({
+                ...item,
+                top_keywords: item.top_keywords || []
+            }));
+            setClusterData(summaryData);
 
             // 获取聚类统计信息
             const statsResponse = await axios.get('/api/products/clusters/statistics');
@@ -152,7 +172,31 @@ const ClusterOverview = () => {
             ),
         },
         {
-            title: '簇关键词',
+            title: 'Top???',
+            dataIndex: 'top_keywords',
+            key: 'top_keywords',
+            width: 220,
+            render: (keywords) => {
+                if (!keywords || keywords.length === 0) {
+                    return <span style={{ color: '#999' }}>???</span>;
+                }
+                const display = keywords.slice(0, 6);
+                return (
+                    <Space size={[4, 4]} wrap>
+                        {display.map((kw) => (
+                            <Tag key={kw} color="geekblue">
+                                {kw}
+                            </Tag>
+                        ))}
+                        {keywords.length > display.length ? (
+                            <Tag color="default">+{keywords.length - display.length}</Tag>
+                        ) : null}
+                    </Space>
+                );
+            },
+        },
+        {
+            title: '?????',
             key: 'cluster_keywords',
             width: 120,
             render: (_, record) => (
@@ -161,7 +205,7 @@ const ClusterOverview = () => {
                     onClick={() => openKeywordModal(record)}
                     disabled={record.cluster_id === -1}
                 >
-                    查看
+                    ??
                 </Button>
             ),
         },

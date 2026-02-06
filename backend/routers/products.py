@@ -946,6 +946,17 @@ def cluster_products(
         )
         print("[DEBUG] cluster_all_products completed successfully")
 
+        summary_result = None
+        if result.get("success"):
+            try:
+                summary_result = clustering_service.persist_cluster_summary()
+            except Exception as persist_err:
+                summary_result = {"success": False, "message": str(persist_err)}
+                print(f"[WARN] persist_cluster_summary failed: {persist_err}")
+
+        if summary_result is not None:
+            result["summary_persisted"] = summary_result
+
         return {
             "success": result["success"],
             "message": "聚类分析完成" if result["success"] else result.get("message", "聚类失败"),
@@ -972,7 +983,7 @@ def cluster_products_large_scale(
     db: Session = Depends(get_db)
 ):
     """
-    大规模聚类：分块向量化 + 粗聚类 + 细聚类
+    Large-scale clustering: embeddings + coarse clustering + sub-clustering.
     """
     try:
         clustering_service = ClusteringService(db)
@@ -988,12 +999,17 @@ def cluster_products_large_scale(
             min_cohesion=min_cohesion,
             min_separation=min_separation
         )
+        if result.get("success"):
+            try:
+                result["summary_persisted"] = clustering_service.persist_cluster_summary()
+            except Exception as persist_err:
+                result["summary_persisted"] = {"success": False, "message": str(persist_err)}
+                print(f"[WARN] persist_cluster_summary failed: {persist_err}")
         return result
     except Exception as e:
         import traceback
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
-
 
 @router.post("/cluster-large/async")
 def cluster_products_large_scale_async(
@@ -1027,7 +1043,7 @@ def cluster_products_large_scale_async(
         try:
             clustering_service = ClusteringService(db)
             progress_cb = lambda pct, msg=None: task_manager.set_progress(task_id, pct, msg)
-            return clustering_service.cluster_all_products_large_scale(
+            result = clustering_service.cluster_all_products_large_scale(
                 batch_size=batch_size,
                 coarse_k=coarse_k,
                 min_cluster_size=min_cluster_size,
@@ -1040,6 +1056,13 @@ def cluster_products_large_scale_async(
                 min_separation=min_separation,
                 progress_callback=progress_cb
             )
+            if result.get("success"):
+                try:
+                    result["summary_persisted"] = clustering_service.persist_cluster_summary()
+                except Exception as persist_err:
+                    result["summary_persisted"] = {"success": False, "message": str(persist_err)}
+                    print(f"[WARN] persist_cluster_summary failed: {persist_err}")
+            return result
         finally:
             db.close()
 
@@ -1073,9 +1096,15 @@ def generate_cluster_keywords(
         overwrite=request.overwrite,
         method=request.method
     )
+    summary_result = None
+    try:
+        summary_result = ClusteringService(db).persist_cluster_summary()
+    except Exception as persist_err:
+        summary_result = {"success": False, "message": str(persist_err)}
     return {
         "success": True,
-        "data": result
+        "data": result,
+        "summary_persisted": summary_result
     }
 
 
@@ -1091,7 +1120,7 @@ def generate_cluster_keywords_async(
         try:
             service = ProductClusterKeywordService(db)
             progress_cb = lambda pct, msg=None: task_manager.set_progress(task_id, pct, msg)
-            return service.generate_cluster_keywords(
+            result = service.generate_cluster_keywords(
                 cluster_ids=request.cluster_ids,
                 top_n=request.top_n,
                 min_word_len=request.min_word_len,
@@ -1099,6 +1128,11 @@ def generate_cluster_keywords_async(
                 method=request.method,
                 progress_callback=progress_cb
             )
+            try:
+                result["summary_persisted"] = ClusteringService(db).persist_cluster_summary()
+            except Exception as persist_err:
+                result["summary_persisted"] = {"success": False, "message": str(persist_err)}
+            return result
         finally:
             db.close()
 
