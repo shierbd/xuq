@@ -1,7 +1,7 @@
-/**
+﻿/**
  * 商品管理主页面
  */
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   Card,
@@ -18,6 +18,8 @@ import {
   Modal,
   Tabs,
   Form,
+  Progress,
+  Typography,
 } from 'antd';
 import {
   ReloadOutlined,
@@ -90,7 +92,106 @@ const ProductManagement = () => {
   // [REQ-003] P2.1: 聚类状态
   const [clusterLoading, setClusterLoading] = useState(false);
 
-  // [REQ-004] P3.1: 需求分析状态
+  // 生成簇关键词/词根（异步任务）
+  const handleGenerateClusterKeywords = async () => {
+    const config = {
+      topN: 10,
+      minWordLen: 3,
+      method: 'tfidf',
+      overwrite: true
+    };
+
+    Modal.confirm({
+      title: '生成簇关键词/词根',
+      content: (
+        <div style={{ marginTop: 16 }}>
+          <div style={{ marginBottom: 12 }}>
+            <label style={{ display: 'block', marginBottom: 4 }}>Top 关键词数量</label>
+            <InputNumber
+              min={3}
+              max={50}
+              defaultValue={10}
+              style={{ width: '100%' }}
+              onChange={(value) => {
+                config.topN = value || 10;
+              }}
+            />
+          </div>
+          <div style={{ marginBottom: 12 }}>
+            <label style={{ display: 'block', marginBottom: 4 }}>最小词长</label>
+            <InputNumber
+              min={2}
+              max={10}
+              defaultValue={3}
+              style={{ width: '100%' }}
+              onChange={(value) => {
+                config.minWordLen = value || 3;
+              }}
+            />
+          </div>
+          <div style={{ marginBottom: 12 }}>
+            <label style={{ display: 'block', marginBottom: 4 }}>提取方法</label>
+            <Select
+              defaultValue="tfidf"
+              style={{ width: '100%' }}
+              onChange={(value) => {
+                config.method = value;
+              }}
+            >
+              <Option value="tfidf">TF-IDF（推荐）</Option>
+              <Option value="tf">TF（频次）</Option>
+            </Select>
+          </div>
+          <div style={{ marginBottom: 12 }}>
+            <label style={{ display: 'flex', alignItems: 'center' }}>
+              <input
+                type="checkbox"
+                defaultChecked={true}
+                onChange={(e) => {
+                  config.overwrite = e.target.checked;
+                }}
+                style={{ marginRight: 8 }}
+              />
+              覆盖已生成结果
+            </label>
+          </div>
+        </div>
+      ),
+      width: 420,
+      onOk: async () => {
+        try {
+          setKeywordTaskLoading(true);
+          message.loading({ content: '正在提交关键词任务...', key: 'cluster-keywords', duration: 0 });
+
+          const response = await axios.post('/api/products/cluster-keywords/async', {
+            cluster_ids: null,
+            top_n: config.topN,
+            min_word_len: config.minWordLen,
+            overwrite: config.overwrite,
+            method: config.method
+          });
+
+          message.destroy('cluster-keywords');
+
+          const taskId = response.data?.task_id;
+          if (taskId) {
+            startTaskPolling(taskId, '生成簇关键词', () => {
+              setActiveTab('clusters');
+            });
+          } else {
+            message.error(response.data?.message || '关键词任务提交失败');
+          }
+        } catch (error) {
+          message.destroy('cluster-keywords');
+          console.error('生成关键词失败:', error);
+          message.error('生成关键词失败: ' + (error.response?.data?.detail || error.message));
+        } finally {
+          setKeywordTaskLoading(false);
+        }
+      },
+    });
+  };
+// [REQ-004] P3.1: 需求分析状态
   const [demandAnalysisLoading, setDemandAnalysisLoading] = useState(false);
 
   // [REQ-005] P3.2: 交付产品识别状态
@@ -104,6 +205,65 @@ const ProductManagement = () => {
 
   // [REQ-012] P5.3: AI辅助兜底状态
   const [aiAssistLoading, setAiAssistLoading] = useState(false);
+
+  // Async task progress (cluster/keywords)
+  const [taskModalOpen, setTaskModalOpen] = useState(false);
+  const [taskProgress, setTaskProgress] = useState(0);
+  const [taskMessage, setTaskMessage] = useState('');
+  const [taskTitle, setTaskTitle] = useState('');
+  const [taskStatus, setTaskStatus] = useState('pending');
+  const [taskId, setTaskId] = useState('');
+  const [keywordTaskLoading, setKeywordTaskLoading] = useState(false);
+  const taskPollRef = useRef(null);
+
+  const stopTaskPolling = useCallback(() => {
+    if (taskPollRef.current) {
+      clearInterval(taskPollRef.current);
+      taskPollRef.current = null;
+    }
+  }, []);
+
+  useEffect(() => {
+    return () => stopTaskPolling();
+  }, [stopTaskPolling]);
+
+  const startTaskPolling = useCallback((id, title, onSuccess) => {
+    stopTaskPolling();
+    setTaskId(id);
+    setTaskTitle(title);
+    setTaskModalOpen(true);
+    setTaskStatus('pending');
+    setTaskProgress(0);
+    setTaskMessage('queued');
+
+    const poll = async () => {
+      try {
+        const response = await axios.get(`/api/tasks/${id}`);
+        const task = response.data?.data;
+        if (!task) return;
+        setTaskMessage(task.message || task.status || '');
+        setTaskStatus(task.status || 'pending');
+
+        if (task.status === 'success') {
+          stopTaskPolling();
+          message.success(`${title}完成`);
+          if (onSuccess) onSuccess(task);
+          setTimeout(() => setTaskModalOpen(false), 800);
+        } else if (task.status === 'failed') {
+          stopTaskPolling();
+          const errorMsg = task.error || 'unknown error';
+          setTaskMessage(`failed: ${errorMsg}`);
+          message.error(`${title}失败: ${errorMsg}`);
+        }
+      } catch (error) {
+        stopTaskPolling();
+        message.error('任务状态获取失败: ' + (error.response?.data?.detail || error.message));
+      }
+    };
+
+    poll();
+    taskPollRef.current = setInterval(poll, 2000);
+  }, [stopTaskPolling]);
 
   // [REQ-002] 更新商品
   const updateMutation = useMutation({
@@ -138,7 +298,6 @@ const ProductManagement = () => {
   const batchDeleteMutation = useMutation({
     mutationFn: (productIds) => batchDeleteProducts(productIds),
     onSuccess: (data) => {
-      const deletedCount = data?.deleted_count ?? selectedProductIds.length;
       message.success(`已删除 ${deletedCount} 个商品`);
       setSelectedProductIds([]);
       queryClient.invalidateQueries(['products']);
@@ -153,28 +312,31 @@ const ProductManagement = () => {
   const handleStartClustering = async () => {
     Modal.confirm({
       title: '确认聚类',
-      content: '确定要对所有商品进行语义聚类分析吗？这可能需要几分钟时间。',
+      content: '确认要对所有商品进行语义聚类分析吗？这将提交到后台任务，请稍等...',
       onOk: async () => {
         try {
           setClusterLoading(true);
-          message.loading({ content: '正在进行聚类分析...', key: 'clustering', duration: 0 });
+          message.loading({ content: '正在提交聚类任务...', key: 'clustering', duration: 0 });
 
-          const response = await axios.post('/api/products/cluster', {
-            min_cluster_size: 15,
-            min_samples: 5,
-            use_cache: true,
+          const response = await axios.post('/api/products/cluster-large/async', null, {
+            params: {
+              batch_size: 1000,
+              min_cluster_size: 10,
+              min_samples: 3,
+              use_cache: true
+            }
           });
 
           message.destroy('clustering');
 
-          if (response.data.success) {
-            message.success('聚类分析完成！');
-            // 刷新数据
-            refetchProducts();
-            // 切换到聚类结果Tab
-            setActiveTab('clusters');
+          const taskId = response.data?.task_id;
+          if (taskId) {
+            startTaskPolling(taskId, '聚类分析', () => {
+              refetchProducts();
+              setActiveTab('clusters');
+            });
           } else {
-            message.error(response.data.message || '聚类分析失败');
+            message.error(response.data?.message || '聚类任务提交失败');
           }
         } catch (error) {
           message.destroy('clustering');
@@ -186,8 +348,7 @@ const ProductManagement = () => {
       },
     });
   };
-
-  // [REQ-004] P3.1: 需求分析
+// [REQ-004] P3.1: 需求分析
   const handleAnalyzeDemands = async () => {
     // 使用对象来存储配置，避免闭包问题
     const config = {
@@ -520,9 +681,6 @@ const ProductManagement = () => {
     editForm.setFieldsValue({
       product_name: product.product_name || '',
       shop_name: product.shop_name || '',
-      price: product.price ?? null,
-      rating: product.rating ?? null,
-      review_count: product.review_count ?? null,
     });
     setEditModalOpen(true);
   };
@@ -668,6 +826,14 @@ const ProductManagement = () => {
               loading={clusterLoading}
             >
               开始聚类
+            </Button>
+
+            <Button
+              onClick={handleGenerateClusterKeywords}
+              loading={keywordTaskLoading}
+              style={{ borderColor: '#13c2c2', color: '#13c2c2' }}
+            >
+              生成簇关键词
             </Button>
 
             <Button
@@ -891,6 +1057,24 @@ const ProductManagement = () => {
       </div>
 
       <Modal
+        title={taskTitle || '任务进度'}
+        open={taskModalOpen}
+        onCancel={() => setTaskModalOpen(false)}
+        footer={null}
+        maskClosable={taskStatus !== 'running'}
+        closable={taskStatus !== 'running'}
+      >
+        <Progress
+          percent={taskProgress}
+          status={taskStatus === 'failed' ? 'exception' : taskStatus === 'success' ? 'success' : 'active'}
+        />
+        <div style={{ marginTop: 12 }}>
+          <Typography.Text>{taskMessage || taskStatus}</Typography.Text>
+        </div>
+        <div style={{ marginTop: 8, color: '#999', fontSize: '12px' }}>Task ID: {taskId}</div>
+      </Modal>
+
+      <Modal
         title={editingProduct ? `编辑商品 #${editingProduct.product_id}` : '编辑商品'}
         open={editModalOpen}
         onCancel={() => {
@@ -948,3 +1132,7 @@ const ProductManagement = () => {
 };
 
 export default ProductManagement;
+
+
+
+
