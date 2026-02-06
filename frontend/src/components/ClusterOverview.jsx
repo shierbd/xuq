@@ -172,13 +172,13 @@ const ClusterOverview = () => {
             ),
         },
         {
-            title: 'Top???',
+            title: 'Top关键词',
             dataIndex: 'top_keywords',
             key: 'top_keywords',
             width: 220,
             render: (keywords) => {
                 if (!keywords || keywords.length === 0) {
-                    return <span style={{ color: '#999' }}>???</span>;
+                    return <span style={{ color: '#999' }}>未生成</span>;
                 }
                 const display = keywords.slice(0, 6);
                 return (
@@ -196,7 +196,7 @@ const ClusterOverview = () => {
             },
         },
         {
-            title: '?????',
+            title: '关键词详情',
             key: 'cluster_keywords',
             width: 120,
             render: (_, record) => (
@@ -205,7 +205,7 @@ const ClusterOverview = () => {
                     onClick={() => openKeywordModal(record)}
                     disabled={record.cluster_id === -1}
                 >
-                    ??
+                    查看
                 </Button>
             ),
         },
